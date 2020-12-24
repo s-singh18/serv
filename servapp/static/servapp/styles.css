@@ -1,0 +1,122 @@
+body {
+    background-color : #552583;
+}
+
+.navbar navbar-expand-lg navbar-light bg-light {
+    background-color: #552583;
+
+    /* background-color: #FDB927; */
+}
+
+.title-search {
+    display: table;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+
+
+/* .nav-item {
+    float: right
+} */
+
+/* #nav-login {
+    float: left;
+}
+
+#nav-register {
+    float: left;
+} */
+
+.results-view {
+    top: 10px;
+    
+}
+
+.listings-view {
+    /* display: inline-block; */
+    top: 10px;
+    height: 100%; /*50 for other way */
+    width: 50%; /*100 for other way */
+    float: left;
+}
+
+.map-view {
+    /* display: inline-block; */
+    /* top: 10px; */
+    height: 100%; /*50 for other way */
+    width: 50%; /*100 for other way */
+    float: left;
+    
+}
+
+#map {
+    height: 100%; 
+    width: 100%;
+    
+}
+
+.geocoder {
+    position: absolute;
+    z-index: 1;
+    width: 50%;
+    left: 50%;
+    margin-left: -25%;
+    top: 10px;
+}
+.mapboxgl-ctrl-geocoder {
+    min-width: 100%;
+}
+#map {
+    margin-top: 75px;
+}
+
+.mapboxgl-ctrl-geocoder--input {
+    display: inline-block;
+    width: 50px;
+}
+
+.form-inline {
+    display: flex;
+    flex-flow: row wrap;
+    align-items: center;
+}
+
+.marker {
+    background-image: url(mapbox-icon.png);
+    background-size: cover;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+
+.mapboxgl-popup {
+    max-width: 200px;
+}
+
+.mapboxgl-popup-content {
+    text-align: center;
+    font-family: 'Open Sans', sans-serif;
+}
+
+.page-view {
+    background-color: black;
+}
+/* Style the input fields */
+/* .form-inline input {
+    vertical-align: middle;
+    margin: 5px 10px 5px 0;
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+  }
+  
+  /* Style the submit button */
+  /* .form-inline button {
+    padding: 10px 20px;
+    background-color: dodgerblue;
+    border: 1px solid #ddd;
+    color: white;
+  } */
+   

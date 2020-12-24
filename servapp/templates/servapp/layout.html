@@ -1,0 +1,88 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>{% block title %}Serv{% endblock %}</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <link href="{% static 'servapp/styles.css' %}" rel="stylesheet">
+        
+        <!-- Load mapbox -->
+        <script src='https://api.mapbox.com/mapbox-gl-js/v2.0.0/mapbox-gl.js'></script>
+        <link href='https://api.mapbox.com/mapbox-gl-js/v2.0.0/mapbox-gl.css' rel='stylesheet' />
+        
+        <!-- Load mapbox geocoder (search) -->
+        <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.5.1/mapbox-gl-geocoder.min.js"></script>
+        <link
+            rel="stylesheet"
+            href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.5.1/mapbox-gl-geocoder.css"
+            type="text/css"
+        />
+        
+        <!-- Promise polyfill script required to use Mapbox GL Geocoder in IE 11 -->
+        <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js"></script>
+        <script src='https://unpkg.com/@turf/turf/turf.min.js'></script>
+
+        <!-- AJAX -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+        <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}" />
+        <style>
+            body { margin: 0; padding: 0; }
+            #map { position: absolute; top: 0px; bottom: 0; width: 50%; height: 90%;border: 3px solid white; }
+        </style>
+    </head>
+    <body>
+        <div class="nav-bar">
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <div class="brand">
+                    <a class="navbar-brand" href="{% url 'index' %}">Serv</a>
+                </div>
+                            
+                <div id="geocoder-nav" class="geocoder-nav"></div>
+
+                <div>
+                <ul class="navbar-nav mr-auto">
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="#"><strong>{{ user.username }}</strong></a>
+                        </li>
+                    {% endif %}
+                    <!-- <li class="nav-item">
+                    <a class="nav-link" href="{% url 'index' %}">All Posts</a>
+                    </li> -->
+                    
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Following</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item" id="nav-login">
+                            <a class="nav-link" href="{% url 'login' %}">Log In</a>
+                        </li>
+                        <li class="nav-item" id="nav-register">
+                            <a class="nav-link" href="{% url 'register' %}">Register</a>
+                        </li>
+                        
+                    {% endif %}
+                </ul>
+                </div>
+            </nav>            
+        </div>
+
+        <div class="body">
+            <input id='mapbox-access-token' type="hidden" value= "{{ mapbox_access_token }}">
+            {% block body %}
+            {% endblock %}
+        </div>
+    </body>
+</html>
+
+{% block script %}
+    
+    
+{% endblock %}
