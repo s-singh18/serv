@@ -48,12 +48,12 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 function load_home() {
-    // Hide results, map, listings, and nav geocode search
+    // Hide results, map, listings, brand, and nav geocode search
     document.querySelector('.results-view').style.display = "none";
     document.querySelector('.listings-view').style.display = "none";
     document.querySelector('.map-view').style.display = "none";
     document.querySelector('.geocoder-nav').style.display = "none";
-
+    document.querySelector('.navbar-brand').style.display = "none";
     // Show home view
     document.querySelector('.home-view').style.display = "block";
 
@@ -101,6 +101,8 @@ function load_search() {
     document.querySelector('.map-view').style.display = "block";
     document.querySelector('.listings-view').style.display = "block";    
     document.querySelector('.geocoder-nav').style.display = "block";
+    document.querySelector('.navbar-brand').style.display = "block";
+    
 
     let search_form = document.createElement("form");
     search_form.className = "form-inline";
@@ -158,8 +160,10 @@ function search(search_data, service_type) {
     // If either search box is empty no submit
     if (service_type !== "" && location !== "") {
         
-        // flag for first search
-        
+        // Clear listings view
+        if (document.querySelector('.listings-view').hasChildNodes()) {
+            document.querySelector('.listings-view').removeChild(document.querySelector('.listings-view').childNodes[0]);
+          }
         // console.log(listings)
         // fetch city boundaries in the form of a Polygon geometry object from Open Street Map
         fetch(`https://nominatim.openstreetmap.org/search.php?q=${location}&polygon_geojson=1&format=json`)
@@ -353,8 +357,8 @@ function service_page(properties) {
     document.querySelector('.properties-rate').innerHTML = `Rate: ${properties.rate}/hr`;  
     document.querySelector('.properties-description').innerHTML = properties.description;
 
-    geocoder_nav.on('result', (search_data) => {
-        let st = document.querySelector('#search-field').value;
-        search(search_data, st);
-    });
+    // geocoder_nav.on('result', (search_data) => {
+    //     let st = document.querySelector('#search-field').value;
+    //     search(search_data, st);
+    // });
 }

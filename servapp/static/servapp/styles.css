@@ -1,32 +1,64 @@
 body {
-    background-color : #552583;
+    background-color : #430281;
 }
 
-.navbar navbar-expand-lg navbar-light bg-light {
-    background-color: #552583;
+.nav-bar {
+    background-color: #430281;
 
     /* background-color: #FDB927; */
 }
 
+a.btn btn-primary {
+    color: white;
+    background-color: #430281;
+    /* margin: auto; */
+}
+
+
 .title-search {
-    display: table;
-    margin-right: auto;
-    margin-left: auto;
+    width: 100px;
+	height: 100px;
+	background-color: #430281;
+	
+	position: absolute;
+	top:0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+  	
+	margin: auto;
+}
+
+.title {
+    color: white;
+    right: 10px;
+}
+
+/* li.nav-item {
+    margin: 2px;
+} */
+
+/* li#nav-login.nav-item {
+    right: 2px;
+} */
+
+a.navbar-brand {
+    color: white;
+}
+
+a.btn.btn-primary {
+    background-color: #430281;
+    color: white;
+    border: 1px solid white;
+    transition-duration: 0.3s;
+    
 }
 
 
-
-/* .nav-item {
-    float: right
-} */
-
-/* #nav-login {
-    float: left;
-}
-
-#nav-register {
-    float: left;
-} */
+a.btn.btn-primary:hover {
+    background-color: white; 
+    color: grey;
+  }
 
 .results-view {
     top: 10px;
@@ -72,6 +104,7 @@ body {
 }
 
 .mapboxgl-ctrl-geocoder--input {
+    background-color: white;
     display: inline-block;
     width: 50px;
 }
@@ -84,10 +117,12 @@ body {
 
 .marker {
     background-image: url(mapbox-icon.png);
-    background-size: cover;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
+    background-size: 100% 100%;
+    background-position: center;
+    width: 30px;
+    height: 30px;
+
+    border-radius: 75%;
     cursor: pointer;
   }
 
@@ -101,8 +136,9 @@ body {
 }
 
 .page-view {
-    background-color: black;
+    color: white;
 }
+
 /* Style the input fields */
 /* .form-inline input {
     vertical-align: middle;
