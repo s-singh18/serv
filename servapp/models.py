@@ -11,7 +11,7 @@ class User(AbstractUser):
     name = models.CharField(max_length=300, unique=True, blank=False, default=False)
     email = models.EmailField(unique=True, blank=False, default=False)
     password = models.CharField(max_length=300, blank=False, default=False)
-
+    
     def serialize(self):
         return {
             "name": self.name,

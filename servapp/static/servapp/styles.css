@@ -46,6 +46,28 @@ a.navbar-brand {
     color: white;
 }
 
+a.nav-link {
+    color: white;
+}
+
+svg.mapboxgl-ctrl-geocoder--icon.mapboxgl-ctrl-geocoder--icon-search {
+    display: none;
+}
+
+input#search-field.mapboxgl-ctrl-geocoder--input {
+    background-color: white;
+    border-radius: 75%;
+    height: 36px;
+    width: 240px;
+    
+}
+
+input.mapboxgl-ctrl-geocoder--input {
+    background-color: white;
+    /* border-radius: 75%; */
+    
+}
+
 a.btn.btn-primary {
     background-color: #430281;
     color: white;
@@ -121,8 +143,6 @@ a.btn.btn-primary:hover {
     background-position: center;
     width: 30px;
     height: 30px;
-
-    border-radius: 75%;
     cursor: pointer;
   }
 

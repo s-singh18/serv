@@ -11,6 +11,7 @@ from django.http import JsonResponse
 from geopy.geocoders import MapBox
 from django.contrib.gis.geos import Point
 from django.views.decorators.csrf import csrf_exempt
+from django.core.exceptions import ObjectDoesNotExist
 
 from .models import User, Service
 
@@ -18,9 +19,14 @@ from .models import User, Service
 MAPBOX_ACCESS_TOKEN = 'pk.eyJ1Ijoic3MzMCIsImEiOiJja2lodWh1OGcwNXMxMnhtOGMxa2djNWpxIn0.K5Gczarar9kbxmAKw0gxgg'
 mapbox = MapBox(MAPBOX_ACCESS_TOKEN)
 
+current_user = None
+
 def index(request):
-    return render(request, "servapp/index.html",
-                    { 'mapbox_access_token': MAPBOX_ACCESS_TOKEN })
+
+    return render(request, "servapp/index.html", {
+                    'mapbox_access_token': MAPBOX_ACCESS_TOKEN,
+                    })
+        
 
 
 def login_view(request):
@@ -34,6 +40,7 @@ def login_view(request):
         # Check if authentication successful
         if user is not None:
             login(request, user)
+            current_user = user
             return HttpResponseRedirect(reverse("index"))
         else:
             return render(request, "servapp/login.html", {
@@ -45,6 +52,7 @@ def login_view(request):
 
 def logout_view(request):
     logout(request)
+    current_user = None
     return HttpResponseRedirect(reverse("index"))
 
 
@@ -70,12 +78,13 @@ def register(request):
                 "message": "Username already taken."
             })
         login(request, user)
+        current_user = user
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "servapp/register.html")
 
 
-# @login_required
+@login_required
 def createservice(request):
     if request.method == "POST":
         title = request.POST["title"]
