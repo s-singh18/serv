@@ -13,6 +13,7 @@ var geocoder_nav = new MapboxGeocoder({
     flyTo: false,
     countries: 'us',
     types: "place",
+    placeholder: "City",
 }); 
 
 var geocoder_home = new MapboxGeocoder({
@@ -22,6 +23,7 @@ var geocoder_home = new MapboxGeocoder({
     flyTo: false,
     countries: 'us',
     types: "place",
+    placeholder: "City",
 }); 
 
 // const csrfToken = getCookie('CSRF-TOKEN');
@@ -34,6 +36,8 @@ var geocoder_home = new MapboxGeocoder({
 var listings;
 var poly;
 var search_count = 0;
+var currentPage = 1;
+
 // var first = true;
 
 function removeElements(elms) {
@@ -60,28 +64,33 @@ function load_home() {
     let search_form = document.createElement("form");
     search_form.className = "form-inline";
 
+    let input_div = document.createElement("div");
+    input_div.className = "mapbox-ctrl-geocoder mapbox-ctrl"
+
     let search_field = document.createElement("input");
     search_field.className = "mapboxgl-ctrl-geocoder--input"
     search_field.id = "search-field"
     search_field.type = "text";
-    search_field.placeholder = "Service";
+    search_field.placeholder = "Service Type";
 
     let search_button = document.createElement("input");
     search_button.className = "btn btn-primary"
     search_button.type = "submit";
     search_button.value = "Search";
 
-    search_form.appendChild(search_field);
-    // search_form.appendChild(geocoder_home.onAdd(map));
 
-    document.querySelector('.search-form').appendChild(search_form);
+    input_div.appendChild(search_field)
+    document.querySelector('.search-form').appendChild(input_div);
+    // document.querySelector('.search-form').appendChild(search_form);
     geocoder_home.addTo('.search-form');
     search_count = 0;
+
     // search_form.addEventListener("submit", (event) => {
     geocoder_home.on('result', (search_data) => {
         var service_type = document.querySelector('#search-field').value;
         if (service_type !== "") {
             // Renders search.html page
+            currentPage = 1;
             load_search();
             search(search_data, service_type);
                 
@@ -104,8 +113,11 @@ function load_search() {
     document.querySelector('.navbar-brand').style.display = "block";
     
 
-    let search_form = document.createElement("form");
-    search_form.className = "form-inline";
+    // let search_form = document.createElement("form");
+    // search_form.className = "form-inline";
+    
+    let input_div = document.createElement("div");
+    input_div.className = "mapbox-ctrl-geocoder mapbox-ctrl"
 
     let search_field = document.createElement("input");
     search_field.className = "mapboxgl-ctrl-geocoder--input"
@@ -118,14 +130,17 @@ function load_search() {
     search_button.type = "submit";
     search_button.value = "Search";
 
-    search_form.appendChild(search_field);
-    search_form.appendChild(geocoder_nav.onAdd(map));
+    // search_form.appendChild(search_field);
+    input_div.appendChild(search_field)
+    // search_form.appendChild(geocoder_nav.onAdd(map));
     // search_form.appendChild(search_button);
     
-    document.querySelector('#geocoder-nav').appendChild(search_form);
+    document.querySelector('#geocoder-nav').appendChild(input_div);
+    document.querySelector('#geocoder-nav').appendChild(geocoder_nav.onAdd(map));
     // card_body.appendChild(edit_form);
     // search_form.addEventListener("submit", (event) => {
     geocoder_nav.on('result', (search_data) => {
+        
         let st = document.querySelector('#search-field').value;
         search(search_data, st);
     });
@@ -135,7 +150,7 @@ function load_search() {
 function search(search_data, service_type) {
     // event.preventDefault();
     // event.stopPropagation();
- 
+    currentPage = 1;
 
     console.log(search_data)
     let bbox = search_data.result.bbox;
@@ -178,9 +193,9 @@ function search(search_data, service_type) {
             .then(response => response.json())
             .then(data => {       
                 // ...use `response.json`, `response.text`, etc. here
-            
-                listings = JSON.parse(data.geojson);
-                console.log(listings)
+                console.log(data)
+                listings = JSON.parse(data);
+                
                 // console.log(listings.features[1].geometry.coordinates);
         
                 
@@ -227,68 +242,73 @@ function search(search_data, service_type) {
                     el.className = 'marker';
                     let coordinates = [listing.geometry.coordinates[1], listing.geometry.coordinates[0]]
                     pt = turf.point(coordinates)
-                    console.log(listing.geometry)
+                    console.log(listing)
                     // Check if point is in the polygon
                     if (turf.booleanPointInPolygon(pt, poly)) {
                         flag = true;
-                        // make a marker for each feature and add to the map
-                        let popup_div = document.createElement('div');
-                        let popup_title = document.createElement('a');
-                        let popup_para = document.createElement('p');
+                        fetch(`/get_user/${listing.properties.owner}`)
+                        .then(response => response.json())
+                        .then(user_data => { 
+                            
+                            // make a marker for each feature and add to the map
+                            let popup_div = document.createElement('div');
+                            let popup_title = document.createElement('a');
+                            let popup_para = document.createElement('p');
 
-                        popup_title.innerHTML = `<h4>${listing.properties.title}</h4>`;
-                        popup_para.innerHTML = listing.properties.service_type;
+                            popup_title.innerHTML = `<h4>${listing.properties.title}</h4>`;
+                            popup_para.innerHTML = listing.properties.service_type;
 
-                        popup_div.appendChild(popup_title);
-                        popup_div.appendChild(popup_para);
-                        
+                            popup_div.appendChild(popup_title);
+                            popup_div.appendChild(popup_para);
+                            
 
-                        new mapboxgl.Marker(el)
-                        .setLngLat(coordinates)
-                        .setPopup(new mapboxgl.Popup({ offset: 25 }) // add popups
-                        .setDOMContent(popup_div))
-                        .addTo(map);
+                            new mapboxgl.Marker(el)
+                            .setLngLat(coordinates)
+                            .setPopup(new mapboxgl.Popup({ offset: 25 }) // add popups
+                            .setDOMContent(popup_div))
+                            .addTo(map);
 
-                        popup_title.addEventListener("click", (marker) => {
-                            service_page(listing.properties);
-                        })
+                            popup_title.addEventListener("click", (marker) => {
+                                service_page(listing.properties, user_data.username);
+                            })
 
-                        let card_border = document.createElement("div");
-                        card_border.className = "card border-dark mb-3";
-                        card_border.id = "card-border";
+                            let card_border = document.createElement("div");
+                            card_border.className = "card border-dark mb-3";
+                            card_border.id = "card-border";
 
-                        let card = document.createElement("div");
-                        card.className = "card";
-                        
-                        let card_body = document.createElement("div");
-                        card_body.className = "card-body";
-                        card_body.id = "card_body";
-                        
-                        let card_title = document.createElement("h5");
-                        card_title.className = "card-title";
-                        card_title.innerHTML = listing.properties.title;
-                        card_title.addEventListener("click", () => {
-                            service_page(listing.properties);
+                            let card = document.createElement("div");
+                            card.className = "card";
+                            
+                            let card_body = document.createElement("div");
+                            card_body.className = "card-body";
+                            card_body.id = "card_body";
+                            
+                            let card_title = document.createElement("h5");
+                            card_title.className = "card-title";
+                            card_title.innerHTML = listing.properties.title;
+                            card_title.addEventListener("click", () => {
+                                service_page(listing.properties, user_data.username);
+                            });
+
+                            let card_subtitle = document.createElement("h6");
+                            card_subtitle.className = "card-subtitle";
+                            card_subtitle.innerHTML = user_data.username;
+
+                            let card_text = document.createElement("p");
+                            card_text.className = "card-text";
+                            card_text.innerHTML = listing.properties.description;
+
+                            card_body.appendChild(card_title);
+                            card_body.appendChild(card_subtitle);
+                            card_body.appendChild(card_text);
+                            
+                            card.appendChild(card_body);
+
+                            card_border.appendChild(card);
+                
+                            // Add to view
+                            document.querySelector(".listings-view").appendChild(card_border);
                         });
-
-                        let card_subtitle = document.createElement("h6");
-                        card_subtitle.className = "card-subtitle";
-                        card_subtitle.innerHTML = listing.properties.owner;
-
-                        let card_text = document.createElement("p");
-                        card_text.className = "card-text";
-                        card_text.innerHTML = listing.properties.description;
-
-                        card_body.appendChild(card_title);
-                        card_body.appendChild(card_subtitle);
-                        card_body.appendChild(card_text);
-                        
-                        card.appendChild(card_body);
-
-                        card_border.appendChild(card);
-            
-                        // Add to view
-                        document.querySelector(".listings-view").appendChild(card_border);
                     }
                 });
 
@@ -303,20 +323,6 @@ function search(search_data, service_type) {
             
             });
 
-        // async function poly_request() {
-        //     let response = await fetch(`https://nominatim.openstreetmap.org/search.php?q=${location}&polygon_geojson=1&format=json`);
-            
-        //     if (!response.ok) {
-        //         throw new Error(`HTTP error! status: ${response.status}`);
-        //     } else {
-        //         let myBlob = await response.json();   
-        //         console.log(myBlob);         
-        //         poly = turf.polygon(myBlob[0].geojson.coordinates);
-                
-        //     }
-        // }
-
-        // poly_request();
 
         
     }
@@ -339,7 +345,7 @@ function load_map() {
 
 
 
-function service_page(properties) {
+function service_page(properties, owner) {
     document.querySelector('.results-view').style.display = "none";
     document.querySelector('.listings-view').style.display = "none"; 
     document.querySelector('.map-view').style.display = "none";
@@ -352,7 +358,7 @@ function service_page(properties) {
 
     // Display property elements
     document.querySelector('.properties-title').innerHTML = properties.title;
-    document.querySelector('.properties-owner').innerHTML = `Owner: ${properties.owner}`;
+    document.querySelector('.properties-owner').innerHTML = `Owner: ${owner}`;
     document.querySelector('.properties-service-type').innerHTML = properties.service_type;
     document.querySelector('.properties-rate').innerHTML = `Rate: ${properties.rate}/hr`;  
     document.querySelector('.properties-description').innerHTML = properties.description;

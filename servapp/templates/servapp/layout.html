@@ -55,7 +55,10 @@
                 <ul class="navbar-nav me-auto>
                     {% if user.is_authenticated %}
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Create Service</a>
+                            <a class="nav-link" href="#">{{ user.username }}</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'createservice' %}">Create Service</a>
                         </li>
                         <li class="nav-item">
                             <a class="btn btn-primary" href="{% url 'logout' %}">Log Out</a>

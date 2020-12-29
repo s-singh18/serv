@@ -8,16 +8,7 @@ from django.contrib.gis.geos import Polygon as GeosPolygon
 
 # Create your models here.
 class User(AbstractUser):
-    name = models.CharField(max_length=300, unique=True, blank=False, default=False)
-    email = models.EmailField(unique=True, blank=False, default=False)
-    password = models.CharField(max_length=300, blank=False, default=False)
-    
-    def serialize(self):
-        return {
-            "name": self.name,
-            "email": self.email,
-            "password": self.password,
-        }
+    pass
 
 
 # class ServiceManager(models.Manager):
@@ -77,3 +68,9 @@ class Service(models.Model):
             "rate" : self.rate,
             "timestamp": self.timestamp.strftime("%b %d %Y, %I:%M %p"),
         }
+
+class Review(models.Model): 
+    stars = models.CharField(max_length=300, blank=False)
+    description = models.TextField(blank=True)
+    writer = models.ForeignKey(User, on_delete=models.CASCADE, related_name="writer")
+    listing = models.ForeignKey(Service, on_delete=models.CASCADE, related_name="listing")

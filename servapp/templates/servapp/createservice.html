@@ -8,13 +8,17 @@
 <form action="{% url 'createservice' %}" method="post">
     {% csrf_token %}
     <div class="form-group">
-        <input autofocus class="form-control" type="text" name="service_name" placeholder="Service Name">
+        <input autofocus class="form-control" type="text" name="title" placeholder="Title">
     </div>
+    
+    <input class="form-control" type="hidden" name="username" value="{{ user.username }}">
+    <input class="form-control" type="hidden" id="mapbox-access-token" value="{{ mapbox_access_token }}">
+    
     <div class="form-group">
-        <input class="form-control" type="hidden" name="user_name" value="{{ user.name }}">
+        <input class="form-control" type="text" name="service_type" placeholder="Type">
     </div>
-    <div class="form-group">
-        <input class="form-control" type="text" name="address" placeholder="Address">
+    <div class="form-group" id="geocoder-address">
+        <input class="form-control" type="hidden" name="geocoder_result" id="geocoder-result" value="">
     </div>
     <div class="form-group">
         <textarea name="description" placeholder="Description"></textarea>
@@ -24,5 +28,12 @@
     </div>
     <input class="btn btn-primary" type="submit" value="Submit">
 </form>
+    
+{% endblock %}
+
+
+{% block script %}
+    <script src="{% static 'servapp/createservice.js' %}"></script>
+    <!-- Promise polyfill script required to use Mapbox GL Geocoder in IE 11 -->
     
 {% endblock %}

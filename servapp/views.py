@@ -12,6 +12,8 @@ from geopy.geocoders import MapBox
 from django.contrib.gis.geos import Point
 from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.serializers import serialize
+from django.core.paginator import Paginator
 
 from .models import User, Service
 
@@ -87,34 +89,53 @@ def register(request):
 @login_required
 def createservice(request):
     if request.method == "POST":
-        title = request.POST["title"]
-        user_name = request.POST["user_name"]
-        address = request.POST["address"]
-        description = request.POST["description"]
-        rate = request.POST["rate"]
+        if request.POST["title"] and request.POST["username"] and request.POST["service_type"].lower() and request.POST["geocoder_result"] and request.POST["description"] and request.POST["rate"] is not None:
+            title = request.POST["title"]
+            username = request.POST["username"]
+            service_type = request.POST["service_type"].lower()
+            address = request.POST["geocoder_result"]
+            description = request.POST["description"]
+            rate = request.POST["rate"]
 
-        user = User.objects.get(name=user_name)
+            user = User.objects.get(username=username)
+            point = mapbox.geocode(address)
+            geos_point = Point(point.latitude, point.longitude)
 
-        service = Service.objects.create(title, user, address, description, rate)
-        service.save()
+            service = Service.objects.create(title=title, owner=user, service_type=service_type, location=geos_point, address=address, description=description, rate=rate)
+            service.save()
 
-        return HttpResponseRedirect(reverse("index"))
+            return HttpResponseRedirect(reverse("index"))
+        else:
+            return render(request, "servapp/createservice.html", {
+                    'mapbox_access_token': MAPBOX_ACCESS_TOKEN,
+                    })
     else:
-        return render(request, "servapp/createservice.html")
+        return render(request, "servapp/createservice.html",  {
+                    'mapbox_access_token': MAPBOX_ACCESS_TOKEN,
+                    })
 
 @csrf_exempt
 def search(request, service_type):
-    # Currently checking to see if the address contains zip code or state/country name
-    # Expand later
 
     service_type = service_type.lower()
     
-    # Call ServiceManager defined in models
+    # Return all matching services regardless of location
     services = Service.objects.filter(service_type=service_type).all()
 
     geojson = serialize('geojson', services,
           fields=('title', 'owner', 'service_type', 'location', 'address', 'description', 'rate', 'timestamp'))
+    # print(geojson["features"])
+    
+    # currentPage = paginator.page(page_number).object_list
+    return JsonResponse(data=geojson
+    , status=200,
+    safe=False)
 
-    return JsonResponse(data={"geojson": geojson},
+
+@csrf_exempt
+def get_user(request, id):
+
+    user = User.objects.get(id=id)
+    return JsonResponse(data={'username': user.username},
     status=200,
     safe=False)
