@@ -71,6 +71,14 @@ class Service(models.Model):
 
 class Review(models.Model): 
     stars = models.CharField(max_length=300, blank=False)
-    description = models.TextField(blank=True)
+    text = models.TextField(blank=True)
     writer = models.ForeignKey(User, on_delete=models.CASCADE, related_name="writer")
     listing = models.ForeignKey(Service, on_delete=models.CASCADE, related_name="listing")
+
+    def serialize(self):
+        return {
+            "stars": self.stars,
+            "text": self.text,
+            "writer": self.writer.username,
+            "listing": self.listing.title,
+        }

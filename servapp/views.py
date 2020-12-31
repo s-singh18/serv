@@ -15,7 +15,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.serializers import serialize
 from django.core.paginator import Paginator
 
-from .models import User, Service
+from .models import User, Service, Review
 
 # ADD mapbox token to settings.py
 MAPBOX_ACCESS_TOKEN = 'pk.eyJ1Ijoic3MzMCIsImEiOiJja2lodWh1OGcwNXMxMnhtOGMxa2djNWpxIn0.K5Gczarar9kbxmAKw0gxgg'
@@ -139,3 +139,26 @@ def get_user(request, id):
     return JsonResponse(data={'username': user.username},
     status=200,
     safe=False)
+
+def create_review(request):
+    if request.method == "POST":
+        stars = request.POST["stars"]
+        text = request.POST["text"]
+        username = request.POST["username"]
+        user = User.objects.get(username=username)
+        title = request.POST["service_title"]
+        service = Service.objects.get(title=title)
+        Review.objects.create(stars=stars, text=text, writer=user, listing=service)
+    return HttpResponseRedirect(reverse("index"))
+
+def get_reviews(request, title):
+    service = Service.objects.get(title=title)
+
+    reviews = Review.objects.filter(listing=service).all()
+    
+    return JsonResponse([review.serialize() for review in reviews],
+    status=200,
+    safe=False)
+
+        
+

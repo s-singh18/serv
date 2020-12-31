@@ -4,7 +4,7 @@
 
 {% block body %}
 
-
+<input class="form-control" type="hidden" name="username" id="username" value="{{ user.username }}">
 <input id='mapbox-access-token' type="hidden" value= "{{ mapbox_access_token }}">
 <!-- Put in results.html -->
 <div class="home-view">
@@ -25,14 +25,6 @@
         <div id='map'></div>
 
         <!-- <div id='map' style='width: 100%; height: 100%;'></div>  -->
-        
-        <script>
-            
-        
-            
-
-            // 
-        </script>
     </div>
     <div class="buttons"></div>
 </div>
@@ -43,7 +35,29 @@
     <hr>
     <h6 class="properties-rate"></h6>
     <p class="properties-description"></p>
-    
+    <div class="create-review">
+        <hr>
+        {% if user.is_authenticated %}
+            <form id='review-form' method="POST" action="{% url 'create_review' %}">
+                {% csrf_token %}
+                <label for="stars">Stars:</label>
+                <select name="stars" id="stars">
+                    <option value="5">5</option>
+                    <option value="4">4</option>
+                    <option value="3">3</option>
+                    <option value="2">2</option>
+                    <option value="1">1</option>
+                </select>
+                <textarea class="form-control" id="review-text" name="text" placeholder="Write a review..."></textarea>
+                <input class="form-control" type="hidden" name="username" id="username" value="{{ user.username }}">
+                <input class="btn btn-primary" type="submit" value="Submit">
+
+            </form>
+        {% endif %}
+    </div>
+    <hr>
+    <div class="reviews">
+    </div>
 </div>
 <!-- Put in results.html -->
 
