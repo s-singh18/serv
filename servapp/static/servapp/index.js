@@ -369,7 +369,7 @@ function service_page(properties, owner) {
     let create_review = document.querySelector('.create-review');
     console.log(username)
     console.log(owner)
-    if (username !== owner ) {
+    if (username != undefined && username != "") {
         create_review.style.display = 'block';
         let service_title = document.createElement('input');
         service_title.type = 'hidden';
