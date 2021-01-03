@@ -111,5 +111,3 @@ $ python manage.py runserver
 
 The app should run and direct you to its home page.
 
-## License
-[MIT](https://choosealicense.com/licenses/mit/)
