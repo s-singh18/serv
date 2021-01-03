@@ -115,27 +115,39 @@ def createservice(request):
                     })
 
 @csrf_exempt
-def search(request, service_type):
+def search(request):
+    data = json.loads(request.body)
+    if data.get("service_type") is not None and data.get("polygon_coordinates") is not None:
+        service_type = data["service_type"].lower()
+        polygon_coordinates = data["polygon_coordinates"]
+        
+        # Return all matching services regardless of location
+        # services = Service.objects.filter(service_type=service_type).all()
+        services = Service.objects.filter_service(service_type, polygon_coordinates)
+        geojson = serialize('geojson', services,
+            fields=('title', 'owner'.__dict__, 'service_type', 'location', 'address', 'description', 'rate', 'timestamp'))
+        
+        
+        
+        # Replace owner id with entire user object in geojson string
+        # for feature in geojson["features"]:
+        #     properties = feature["properties"]
+        #     id = properties["owner"]
+        #     user = User.objects.get(id=id)
+        #     json_string = json.dumps(user.__dict__)
+        #     properties["owner"] = json_string
 
-    service_type = service_type.lower()
-    
-    # Return all matching services regardless of location
-    services = Service.objects.filter(service_type=service_type).all()
-
-    geojson = serialize('geojson', services,
-          fields=('title', 'owner', 'service_type', 'location', 'address', 'description', 'rate', 'timestamp'))
-    # print(geojson["features"])
-    
-    # currentPage = paginator.page(page_number).object_list
-    return JsonResponse(data=geojson
-    , status=200,
-    safe=False)
+        # print(geojson)
+        # currentPage = paginator.page(page_number).object_list
+        return JsonResponse(data=geojson,
+        status=200,
+        safe=False)
 
 
 @csrf_exempt
 def get_user(request, id):
-
     user = User.objects.get(id=id)
+
     return JsonResponse(data={'username': user.username},
     status=200,
     safe=False)
@@ -149,6 +161,7 @@ def create_review(request):
         title = request.POST["service_title"]
         service = Service.objects.get(title=title)
         Review.objects.create(stars=stars, text=text, writer=user, listing=service)
+
     return HttpResponseRedirect(reverse("index"))
 
 def get_reviews(request, title):

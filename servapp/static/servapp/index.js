@@ -191,16 +191,21 @@ function search(search_data, service_type) {
             console.log(poly);
         
             // Get listings from database based on service type and location
-            fetch(`/search/${service_type}`)
+            // fetch(`/search/${service_type}`)
+            fetch("/search", {
+            method: "PUT",
+            body: JSON.stringify({
+                service_type: service_type,
+                polygon_coordinates: poly.coordinates,
+                }),
+            })
             .then(response => response.json())
-            .then(data => {       
+            .then(geojson_data => {       
                 // ...use `response.json`, `response.text`, etc. here
-                console.log(data)
-                listings = JSON.parse(data);
+                console.log(geojson_data)
+                listings = JSON.parse(geojson_data);
                 
-                // console.log(listings.features[1].geometry.coordinates);
-        
-                
+                // console.log(listings.features[1].geometry.coordinates);      
                 // map fly to location
                 map.flyTo({
                     center: search_data.result.geometry.coordinates,
@@ -237,17 +242,22 @@ function search(search_data, service_type) {
                 let flag = false;
                 var pt;
                 // add markers to map
-                
-                listings.features.forEach(listing => {
-                    // create a HTML element for each feature
-                    let el = document.createElement('div');
-                    el.className = 'marker';
-                    let coordinates = [listing.geometry.coordinates[1], listing.geometry.coordinates[0]]
-                    pt = turf.point(coordinates)
-                    console.log(listing)
-                    // Check if point is in the polygon
-                    if (turf.booleanPointInPolygon(pt, poly)) {
-                        flag = true;
+                if (listings == undefined) {
+                    let result = document.createElement('h3');
+                    result.id = "card-border";
+                    result.innerHTML = `No results for ${service_type} at ${location}`;
+                    document.querySelector(".listings-view").appendChild(result);
+                } else {
+                    listings.features.forEach(listing => {
+                        // create a HTML element for each feature
+                        let el = document.createElement('div');
+                        el.className = 'marker';
+                        let coordinates = [listing.geometry.coordinates[1], listing.geometry.coordinates[0]]
+                        // pt = turf.point(coordinates)
+                        console.log(listing)
+                        // Check if point is in the polygon
+                        // if (turf.booleanPointInPolygon(pt, poly)) {
+                            flag = true;
                         fetch(`/get_user/${listing.properties.owner}`)
                         .then(response => response.json())
                         .then(user_data => { 
@@ -311,22 +321,10 @@ function search(search_data, service_type) {
                             // Add to view
                             document.querySelector(".listings-view").appendChild(card_border);
                         });
-                    }
-                });
-
-                    if (flag == false) {
-                        let result = document.createElement('h3');
-                        result.id = "card-border";
-                        result.innerHTML = `No results for ${service_type} at ${location}`;
-                        document.querySelector(".listings-view").appendChild(result);
-                    }
-                });
-                
-            
-            });
-
-
-        
+                    });
+                }   
+            });     
+        });
     }
 }
 
