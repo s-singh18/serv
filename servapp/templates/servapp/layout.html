@@ -59,7 +59,7 @@
                             <a class="nav-link" href="#">{{ user.username }}</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'createservice' %}">Create Service</a>
+                            <a class="nav-link" href="{% url 'create_service' %}">Create Service</a>
                         </li>
                         <li class="nav-item">
                             <a class="btn btn-primary" href="{% url 'logout' %}">Log Out</a>
@@ -76,9 +76,12 @@
             </div>
             </div>
         </nav>
-
-        <div class="body">
+        <div class="user-map">
+            <input class="form-control" type="hidden" name="username" id="username" value="{{ user.username }}">
             <input id='mapbox-access-token' type="hidden" value= "{{ mapbox_access_token }}">
+        </div>
+        
+        <div class="body">
             {% block body %}
             {% endblock %}
         </div>

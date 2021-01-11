@@ -1,11 +1,86 @@
-from rest_framework import permissions
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from servapp.permissions import IsOwnerOrReadOnly
 from rest_framework.viewsets import ModelViewSet
 from servapp.models import User, Service, Review
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from servapp.serializers import UserSerializer, ServiceSerializer, ReviewSerializer
 from rest_framework.response import Response
+from geopy.geocoders import MapBox
+from rest_framework.decorators import action
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework import filters, status
+from rest_framework_gis.pagination import GeoJsonPagination
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse, HttpResponseRedirect
+from django.urls import reverse
+from rest_framework_gis.filters import GeometryFilter
+from rest_framework_gis.filterset import GeoFilterSet
+import urllib.request, json 
 
-# class GeneralViewset(ModelViewSet):
+from django.contrib.gis.geos import Point
+
+from .models import Service
+
+
+from serv.settings import MAPBOX_ACCESS_TOKEN
+
+mapbox = MapBox(MAPBOX_ACCESS_TOKEN)
+
+class UserViewSet(ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+
+class ServiceViewSet(ModelViewSet):
+    queryset = Service.objects.all()
+    serializer_class = ServiceSerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['service_type']
+    pagination_class = GeoJsonPagination
+
+
+    # url: http://127.0.0.1:8000/api/services/create-service
+    @action(methods=['post'], detail=False, permission_classes=[IsAuthenticated],
+    url_path='create-service', url_name='create-service')
+    def create_service(self, request, pk=None):
+        # check if not none
+        title = request.data["title"]
+        username = request.data["username"]
+        service_type = request.data["service_type"].lower()
+        address = request.data["geocoder_result"]
+        description = request.data["description"]
+        rate = request.data["rate"]
+        if title is not None and username is not None and service_type is not None and address is not None and description is not None and rate is not None:
+            user = User.objects.get(username=username)
+            point = mapbox.geocode(address)
+            geos_point = Point(point.longitude, point.latitude)
+
+            service = Service.objects.create(title=title, user=user, service_type=service_type, location=geos_point, address=address, description=description, rate=rate)
+            service.save()
+            return HttpResponseRedirect(reverse("index"))
+        else:
+            return render(request, "servapp/create_service.html", {
+                    'mapbox_access_token': MAPBOX_ACCESS_TOKEN,
+                    })
+
+# class ServiceSearchFilter(filters.SearchFilter):
+#     # return objects based on service type filtered by location
+#     def get_search_fields(self, view, request):
+#         if request.query_params.get('title_only'):
+#             return ['title']
+#         return super(ServiceSearchFilter, self).get_search_fields(view, request)
+
+
+
+class ReviewViewSet(ModelViewSet):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['service__id']
+
+    # CRUD operations already defined
+
+# class GeneralViewSet(ModelViewSet):
 
 #     def get_queryset(self):
 #         model = self.kwargs.get('model')
@@ -14,85 +89,3 @@ from rest_framework.response import Response
 #     def get_serializer_class(self):
 #         serializers.GeneralSerializer.Meta.model = self.kwargs.get('model')
 #         return serializers.GeneralSerializer
-
-class UserViewset(ModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
-    # permission_class = [IsAccountAdminOrReadOnly]
-
-    def get_queryset(self):
-        return self.request.user.accounts.all()
-
-    # CRUD operations
-    def list(self, request):
-        pass
-
-    def create(self, request):
-        pass
-
-    def retrieve(self, request, pk=None):
-        pass
-
-    def update(self, request, pk=None):
-        pass
-
-    def partial_update(self, request, pk=None):
-        pass
-
-    def destroy(self, request, pk=None):
-        pass
-
-
-class ServiceViewset(ModelViewSet):
-    queryset = Service.objects.all()
-    serializer_class = ServiceSerializer
-
-    def list(self, request):
-        pass
-
-    def create(self, request):
-        pass
-
-    def retrieve(self, request, pk=None):
-        pass
-
-    def update(self, request, pk=None):
-        pass
-
-    def partial_update(self, request, pk=None):
-        pass
-
-    def destroy(self, request, pk=None):
-        pass
-
-
-
-
-
-class ReviewViewset(ModelViewSet):
-    queryset = Review.objects.all()
-    serializer_class = ReviewSerializer
-
-    def list(self, request):
-        queryset = Review.objects.all()
-        serializer = ReviewSerializer(queryset, many=True)
-        return Response(serializer.data)
-
-    def create(self, request):
-        pass
-
-    def retrieve(self, request, pk=None):
-        queryset = Review.objects.all()
-        user = get_object_or_404(queryset, pk=pk)
-        serializer = ReviewSerializer(user)
-        return Response(serializer.data)
-
-    def update(self, request, pk=None):
-        pass
-
-    def partial_update(self, request, pk=None):
-        pass
-
-    def destroy(self, request, pk=None):
-        pass

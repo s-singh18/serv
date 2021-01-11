@@ -14,11 +14,20 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.serializers import serialize
 from django.core.paginator import Paginator
-
+import urllib.request, json 
+from django.contrib.gis.geos import Point
+from django.contrib.gis.geos import Polygon
+from .serializers import ServiceSerializer
 from .models import User, Service, Review
+from .viewsets import UserViewSet, ServiceViewSet, ReviewViewSet
+from serv.settings import MAPBOX_ACCESS_TOKEN
+from rest_framework.response import Response
+from rest_framework.decorators import api_view, renderer_classes
+from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
+from django.contrib.gis.geos import GEOSGeometry
+
 
 # ADD mapbox token to settings.py
-MAPBOX_ACCESS_TOKEN = 'pk.eyJ1Ijoic3MzMCIsImEiOiJja2lodWh1OGcwNXMxMnhtOGMxa2djNWpxIn0.K5Gczarar9kbxmAKw0gxgg'
 mapbox = MapBox(MAPBOX_ACCESS_TOKEN)
 
 current_user = None
@@ -87,61 +96,27 @@ def register(request):
 
 
 @login_required
-def createservice(request):
-    if request.method == "POST":
-        if request.POST["title"] and request.POST["username"] and request.POST["service_type"].lower() and request.POST["geocoder_result"] and request.POST["description"] and request.POST["rate"] is not None:
-            title = request.POST["title"]
-            username = request.POST["username"]
-            service_type = request.POST["service_type"].lower()
-            address = request.POST["geocoder_result"]
-            description = request.POST["description"]
-            rate = request.POST["rate"]
-
-            user = User.objects.get(username=username)
-            point = mapbox.geocode(address)
-            geos_point = Point(point.latitude, point.longitude)
-
-            service = Service.objects.create(title=title, owner=user, service_type=service_type, location=geos_point, address=address, description=description, rate=rate)
-            service.save()
-
-            return HttpResponseRedirect(reverse("index"))
-        else:
-            return render(request, "servapp/createservice.html", {
-                    'mapbox_access_token': MAPBOX_ACCESS_TOKEN,
-                    })
-    else:
-        return render(request, "servapp/createservice.html",  {
+def create_service_view(request):
+    return render(request, "servapp/create_service.html",  {
                     'mapbox_access_token': MAPBOX_ACCESS_TOKEN,
                     })
 
+
+# @api_view(('GET',))
+# @renderer_classes((TemplateHTMLRenderer, JSONRenderer))
 @csrf_exempt
-def search(request):
-    data = json.loads(request.body)
-    if data.get("service_type") is not None and data.get("polygon_coordinates") is not None:
-        service_type = data["service_type"].lower()
-        polygon_coordinates = data["polygon_coordinates"]
-        
-        # Return all matching services regardless of location
-        # services = Service.objects.filter(service_type=service_type).all()
-        services = Service.objects.filter_service(service_type, polygon_coordinates)
-        geojson = serialize('geojson', services,
-            fields=('title', 'owner'.__dict__, 'service_type', 'location', 'address', 'description', 'rate', 'timestamp'))
-        
-        
-        
-        # Replace owner id with entire user object in geojson string
-        # for feature in geojson["features"]:
-        #     properties = feature["properties"]
-        #     id = properties["owner"]
-        #     user = User.objects.get(id=id)
-        #     json_string = json.dumps(user.__dict__)
-        #     properties["owner"] = json_string
+def search(request, service_type, location):
+    with urllib.request.urlopen("https://nominatim.openstreetmap.org/search.php?q=" + location + "&polygon_geojson=1&format=json") as url:
+        data = json.loads(url.read().decode())
+        print(data[0]['geojson'])
+        polygon = GEOSGeometry(json.dumps(data[0]['geojson']))
+        services = Service.objects.filter(service_type=service_type, location__within=polygon)
+        print(services)
+        geojson_services = serialize('geojson', services,
+            fields=('title', 'user', 'service_type', 'location', 'address', 'description', 'rate', 'timestamp'))
 
-        # print(geojson)
-        # currentPage = paginator.page(page_number).object_list
-        return JsonResponse(data=geojson,
-        status=200,
-        safe=False)
+        return JsonResponse(data={'services': geojson_services, 'polygon': data[0]['geojson']}, status=200, safe=False)
+
 
 
 @csrf_exempt

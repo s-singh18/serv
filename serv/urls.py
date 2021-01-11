@@ -15,10 +15,31 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from serv.api import router
+from rest_framework import routers
+from servapp import views, viewsets
+
+# Router provides URL access to APIs
+# Get entire list of objects
+# http://127.0.0.1:8000/api/services/
+
+# Get filtered list of objects
+# http://127.0.0.1:8000/api/services/?search=barber
+
+# Get one object (detail)
+# http://127.0.0.1:8000/api/reviews/1
+
+router = routers.DefaultRouter()
+# router.register(r'users', myapp_views.GeneralViewset)
+router.register(r'users', viewsets.UserViewSet)
+router.register(r'services', viewsets.ServiceViewSet)
+router.register(r'reviews', viewsets.ReviewViewSet)
+# from serv.api import router
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include("servapp.urls")),
-    path('api/v1/', include(router.urls)),
+    path('api/', include(router.urls)),
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
+
 ]

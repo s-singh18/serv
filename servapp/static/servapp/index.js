@@ -183,28 +183,29 @@ function search(search_data, service_type) {
           }
         // console.log(listings)
         // fetch city boundaries in the form of a Polygon geometry object from Open Street Map
-        fetch(`https://nominatim.openstreetmap.org/search.php?q=${location}&polygon_geojson=1&format=json`)
-        .then(response => response.json())
-        .then(location_data => {
-            // poly = turf.polygon(location_data[0].geojson.coordinates);
-            poly = location_data[0].geojson
-            console.log(poly);
+        // fetch(`https://nominatim.openstreetmap.org/search.php?q=${location}&polygon_geojson=1&format=json`)
+        // .then(response => response.json())
+        // .then(location_data => {
+        //     // poly = turf.polygon(location_data[0].geojson.coordinates);
+        //     poly = location_data[0].geojson
+        //     console.log(poly);
         
             // Get listings from database based on service type and location
-            // fetch(`/search/${service_type}`)
-            fetch("/search", {
-            method: "PUT",
-            body: JSON.stringify({
-                service_type: service_type,
-                polygon_coordinates: poly.coordinates,
-                }),
-            })
+            fetch(`search/${service_type}/${location}`)
+            // fetch("/search", {
+            // method: "POST",
+            // body: JSON.stringify({
+            //     service_type: service_type,
+            //     polygon_coordinates: poly.coordinates,
+            //     }),
+            // })
             .then(response => response.json())
             .then(geojson_data => {       
                 // ...use `response.json`, `response.text`, etc. here
                 console.log(geojson_data)
-                listings = JSON.parse(geojson_data);
-                
+                let listings = JSON.parse(geojson_data.services);
+                let polygon = geojson_data.polygon;
+
                 // console.log(listings.features[1].geometry.coordinates);      
                 // map fly to location
                 map.flyTo({
@@ -225,7 +226,7 @@ function search(search_data, service_type) {
 
                 map.addSource('polygon', {
                     type: 'geojson',
-                    data: poly
+                    data: polygon
                 })
 
                 map.addLayer({
@@ -252,13 +253,13 @@ function search(search_data, service_type) {
                         // create a HTML element for each feature
                         let el = document.createElement('div');
                         el.className = 'marker';
-                        let coordinates = [listing.geometry.coordinates[1], listing.geometry.coordinates[0]]
+                        // let coordinates = [listing.geometry.coordinates[1], listing.geometry.coordinates[0]]
                         // pt = turf.point(coordinates)
                         console.log(listing)
                         // Check if point is in the polygon
                         // if (turf.booleanPointInPolygon(pt, poly)) {
-                            flag = true;
-                        fetch(`/get_user/${listing.properties.owner}`)
+                        flag = true;
+                        fetch(`/api/users/${listing.properties.user}/`)
                         .then(response => response.json())
                         .then(user_data => { 
                             
@@ -275,7 +276,7 @@ function search(search_data, service_type) {
                             
 
                             new mapboxgl.Marker(el)
-                            .setLngLat(coordinates)
+                            .setLngLat(listing.geometry.coordinates)
                             .setPopup(new mapboxgl.Popup({ offset: 25 }) // add popups
                             .setDOMContent(popup_div))
                             .addTo(map);
@@ -324,7 +325,7 @@ function search(search_data, service_type) {
                     });
                 }   
             });     
-        });
+        // });
     }
 }
 
