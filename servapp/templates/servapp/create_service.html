@@ -1,4 +1,4 @@
-{% extends "servapp/layout.html" %}
+{% extends "servapp/nav.html" %}
 
 {% load static %}
 
@@ -17,7 +17,7 @@
         <input class="form-control" type="text" name="service_type" placeholder="Type">
     </div>
     <div class="form-group" id="geocoder-address">
-        <input class="form-control" type="hidden" name="geocoder_result" id="geocoder-result" >
+        <input class="form-control" type="text" name="geocoder_result" id="geocoder-result" placeholder="Address" >
     </div>
     <div class="form-group">
         <textarea name="description" placeholder="Description"></textarea>

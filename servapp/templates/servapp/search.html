@@ -1,0 +1,34 @@
+{% extends "servapp/nav.html" %}
+
+{% load static %}
+
+{% block body %}
+
+    <div class="listings-view">
+        {% for service in services %}
+            <div class="card border-dark mb-3">
+                <div class="card-body">
+                    <div class="card-title"> 
+                        <a href="{% url 'service' service.title %}">{{ service.title }}</a> 
+                    </div>
+                    <div class="card-subtitle">{{ service.user }}</div>
+                    <div class="card-text">{{ service.description }}</div>
+                </div>
+            </div>
+
+        {% empty %}
+            <h3 class="no-results">No results found for "{{ service_type }}" in {{ location }}.</h3>
+        
+        {% endfor %}
+    </div>
+
+    <div class="map-view">
+        <div id='map'></div>
+    </div>
+
+
+{% endblock %}
+
+<!-- {% block script %}
+    <script src="{% static 'servapp/search.js' %}"></script>
+{% endblock %} -->

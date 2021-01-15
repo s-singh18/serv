@@ -46,7 +46,7 @@ class ServiceViewSet(ModelViewSet):
         # check if not none
         title = request.data["title"]
         username = request.data["username"]
-        service_type = request.data["service_type"].lower()
+        service_type = request.data["service_type"]
         address = request.data["geocoder_result"]
         description = request.data["description"]
         rate = request.data["rate"]
@@ -57,7 +57,7 @@ class ServiceViewSet(ModelViewSet):
 
             service = Service.objects.create(title=title, user=user, service_type=service_type, location=geos_point, address=address, description=description, rate=rate)
             service.save()
-            return HttpResponseRedirect(reverse("index"))
+            return HttpResponseRedirect(reverse("home"))
         else:
             return render(request, "servapp/create_service.html", {
                     'mapbox_access_token': MAPBOX_ACCESS_TOKEN,

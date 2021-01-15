@@ -1,0 +1,28 @@
+{% extends "servapp/nav-home.html" %}
+
+{% load static %}
+
+{% block body %}
+
+<div class="home-view">
+    <div class="title-search">
+        <h1 class="title">Serv</h1>
+        <div class="search-form">
+            <form class="form-inline" method="GET" action="{% url 'search' %}">
+                <div class="form-group">
+                    <input class="mapbox-ctrl-geocoder mapbox-ctrl" id="service-input" type="text" name="service_type" placeholder="Service Type">
+                </div>
+                <div class="form-group">
+                    <input class="mapbox-ctrl-geocoder mapbox-ctrl" id="location-input" type="text" name="location" placeholder="Location">
+                </div>
+                <input class="form-control" type="hidden" name="username" id="username" value="{{ user.username }}">
+                    <input class="btn btn-primary" type="submit" value="Submit">
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script src="{% static 'servapp/home.js' %}"></script>
+{% endblock %}

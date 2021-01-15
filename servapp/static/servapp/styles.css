@@ -34,6 +34,10 @@ a.btn btn-primary {
     right: 10px;
 }
 
+.navbar-nav.me-auto {
+    
+}
+
 /* li.nav-item {
     margin: 2px;
 } */

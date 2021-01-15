@@ -17,24 +17,24 @@ from django.core.paginator import Paginator
 import urllib.request, json 
 from django.contrib.gis.geos import Point
 from django.contrib.gis.geos import Polygon
-from .serializers import ServiceSerializer
-from .models import User, Service, Review
-from .viewsets import UserViewSet, ServiceViewSet, ReviewViewSet
-from serv.settings import MAPBOX_ACCESS_TOKEN
+
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, renderer_classes
 from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from django.contrib.gis.geos import GEOSGeometry
 
+from .serializers import ServiceSerializer
+from .models import User, Service, Review
+from .viewsets import UserViewSet, ServiceViewSet, ReviewViewSet
+from serv.settings import MAPBOX_ACCESS_TOKEN
 
 # ADD mapbox token to settings.py
 mapbox = MapBox(MAPBOX_ACCESS_TOKEN)
 
 current_user = None
 
-def index(request):
-
-    return render(request, "servapp/index.html", {
+def home(request):
+    return render(request, "servapp/home.html", {
                     'mapbox_access_token': MAPBOX_ACCESS_TOKEN,
                     })
         
@@ -52,7 +52,7 @@ def login_view(request):
         if user is not None:
             login(request, user)
             current_user = user
-            return HttpResponseRedirect(reverse("index"))
+            return HttpResponseRedirect(reverse("home"))
         else:
             return render(request, "servapp/login.html", {
                 "message": "Invalid name and/or password."
@@ -64,7 +64,7 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     current_user = None
-    return HttpResponseRedirect(reverse("index"))
+    return HttpResponseRedirect(reverse("home"))
 
 
 def register(request):
@@ -90,7 +90,7 @@ def register(request):
             })
         login(request, user)
         current_user = user
-        return HttpResponseRedirect(reverse("index"))
+        return HttpResponseRedirect(reverse("home"))
     else:
         return render(request, "servapp/register.html")
 
@@ -102,22 +102,49 @@ def create_service_view(request):
                     })
 
 
-# @api_view(('GET',))
-# @renderer_classes((TemplateHTMLRenderer, JSONRenderer))
 @csrf_exempt
-def search(request, service_type, location):
-    with urllib.request.urlopen("https://nominatim.openstreetmap.org/search.php?q=" + location + "&polygon_geojson=1&format=json") as url:
-        data = json.loads(url.read().decode())
-        print(data[0]['geojson'])
-        polygon = GEOSGeometry(json.dumps(data[0]['geojson']))
-        services = Service.objects.filter(service_type=service_type, location__within=polygon)
-        print(services)
-        geojson_services = serialize('geojson', services,
-            fields=('title', 'user', 'service_type', 'location', 'address', 'description', 'rate', 'timestamp'))
+def search(request):
+    if request.method == "GET":
+        service_type = request.GET["service_type"]
+        location = request.GET["location"]
+        with urllib.request.urlopen("https://nominatim.openstreetmap.org/search.php?q=" + location + "&polygon_geojson=1&format=json") as url:
+            data = json.loads(url.read().decode())
+            print(data[0]['geojson'])
+            polygon = GEOSGeometry(json.dumps(data[0]['geojson']))
+            services = Service.objects.filter(service_type__icontains=service_type, location__within=polygon)
+            
+            geojson_services = serialize('geojson', services,
+                fields=('title', 'user', 'service_type', 'location', 'address', 'description', 'rate', 'timestamp'))
+            print(geojson_services)
+            return render(request, "servapp/search.html", 
+                {'services': services, 
+                'geojson_services': geojson_services,
+                'polygon': data[0]['geojson'],
+                'service_type': service_type, 'location': location, 
+                'mapbox_access_token': MAPBOX_ACCESS_TOKEN},
+                status=200)
 
-        return JsonResponse(data={'services': geojson_services, 'polygon': data[0]['geojson']}, status=200, safe=False)
-
-
+@csrf_exempt
+def service(request, title):
+    try:
+        listing = Service.objects.get(title=title)
+        reviews = Review.objects.order_by('-timestamp').filter(service=listing).all()
+        if request.method == "POST":
+            stars = request.POST["stars"]
+            text = request.POST["text"]
+            username = request.POST["username"]
+            user = User.objects.get(username=username)
+            listing = Service.objects.get(title=title)
+            
+            Review.objects.create(stars=stars, text=text, user=user, service=listing)
+            reviews = Review.objects.order_by('-timestamp').filter(service=listing).all()
+    except Service.DoesNotExist:
+        listing = None
+        reviews = None
+    return render(request, "servapp/service.html",
+        {'listing': listing, 'reviews': reviews,
+        'mapbox_access_token': MAPBOX_ACCESS_TOKEN}, 
+        status=200)
 
 @csrf_exempt
 def get_user(request, id):
@@ -126,18 +153,6 @@ def get_user(request, id):
     return JsonResponse(data={'username': user.username},
     status=200,
     safe=False)
-
-def create_review(request):
-    if request.method == "POST":
-        stars = request.POST["stars"]
-        text = request.POST["text"]
-        username = request.POST["username"]
-        user = User.objects.get(username=username)
-        title = request.POST["service_title"]
-        service = Service.objects.get(title=title)
-        Review.objects.create(stars=stars, text=text, writer=user, listing=service)
-
-    return HttpResponseRedirect(reverse("index"))
 
 def get_reviews(request, title):
     service = Service.objects.get(title=title)

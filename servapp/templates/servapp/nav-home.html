@@ -1,0 +1,46 @@
+{% extends "servapp/layout.html" %}
+
+{% load static %}
+
+{% block nav %}
+<nav class="navbar navbar-expand-md navbar-custom" style="background-color: #430280;">
+    <a class="navbar-brand"></a>
+    <!-- <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+    </button> -->
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav mx-auto">
+            <li class="nav-item active"></li>
+        </ul>
+    <div>
+        <ul class="navbar-nav me-auto>
+            {% if user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link" href="#">{{ user.username }}</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'create_service' %}">Create Service</a>
+                </li>
+                <li class="nav-item">
+                    <a class="btn btn-primary" href="{% url 'logout' %}">Log Out</a>
+                </li>
+            {% else %}
+                <li class="nav-item" id="nav-login">
+                    <a class="btn btn-primary" nav-link" href="{% url 'login' %}">Log In</a>
+                </li>
+                <li class="nav-item" id="nav-register">
+                    <a class="btn btn-primary" href="{% url 'register' %}">Register</a>
+                </li>
+            {% endif %}
+        </ul>
+    </div>
+    </div>
+</nav>
+    {% block body %}
+    {% endblock %}
+
+{% endblock %}
+
+{% block script %}
+    <!-- <script src="{% static 'servapp/service.js' %}"></script> -->
+{% endblock %}
