@@ -15,7 +15,7 @@ class UserSerializer(HyperlinkedModelSerializer):
         # fields = "__all__"
 
 class ServiceSerializer(GeoFeatureModelSerializer):
-    # user = UserSerializer(read_only=True, many=False) # you need to do this
+    user = UserSerializer(read_only=True, many=False) # you need to do this
 
     class Meta:
         model = Service
@@ -23,8 +23,8 @@ class ServiceSerializer(GeoFeatureModelSerializer):
         fields = ('id', 'title', 'user', 'service_type', 'location', 'address', 'description', 'rate')
 
 class ReviewSerializer(HyperlinkedModelSerializer):
-    # user = UserSerializer(read_only=True, many=False) # you need to do this
-    # service = ServiceSerializer(read_only=True, many=False) # you need to do this
+    user = UserSerializer(read_only=True, many=False) # you need to do this
+    service = ServiceSerializer(read_only=True, many=False) # you need to do this
     
     class Meta:
         model = Review

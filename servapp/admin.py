@@ -1,4 +1,5 @@
 from django.contrib.gis.admin import OSMGeoAdmin
+from leaflet.admin import LeafletGeoAdmin
 from django.contrib import admin
 
 # Register your models here.
@@ -10,7 +11,7 @@ admin.site.register(User)
 
 
 @admin.register(Service)
-class ServiceAdmin(OSMGeoAdmin):
+class ServiceAdmin(LeafletGeoAdmin):
     list_display = ('title', 'location')
 
     # search_fields = ('service_type','location')

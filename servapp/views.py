@@ -17,6 +17,7 @@ from django.core.paginator import Paginator
 import urllib.request, json 
 from django.contrib.gis.geos import Point
 from django.contrib.gis.geos import Polygon
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, renderer_classes
@@ -97,6 +98,26 @@ def register(request):
 
 @login_required
 def create_service_view(request):
+    if request.method == "POST":
+        title = request.POST["title"]
+        username = request.POST["username"]
+        service_type = request.POST["service_type"]
+        address = request.POST["geocoder_result"]
+        description = request.POST["description"]
+        rate = request.POST["rate"]
+        if title is not None and username is not None and service_type is not None and address is not None and description is not None and rate is not None:
+            user = User.objects.get(username=username)
+            point = mapbox.geocode(address)
+            geos_point = Point(point.longitude, point.latitude)
+
+            service = Service.objects.create(title=title, user=user, service_type=service_type, location=geos_point, address=address, description=description, rate=rate)
+            service.save()
+            return HttpResponseRedirect(reverse("home"))
+        else:
+            return render(request, "servapp/create_service.html", {
+                    'mapbox_access_token': MAPBOX_ACCESS_TOKEN,
+                    })
+
     return render(request, "servapp/create_service.html",  {
                     'mapbox_access_token': MAPBOX_ACCESS_TOKEN,
                     })
@@ -107,15 +128,27 @@ def search(request):
     if request.method == "GET":
         service_type = request.GET["service_type"]
         location = request.GET["location"]
+        page = request.GET["page"]
         with urllib.request.urlopen("https://nominatim.openstreetmap.org/search.php?q=" + location + "&polygon_geojson=1&format=json") as url:
             data = json.loads(url.read().decode())
             print(data[0]['geojson'])
             polygon = GEOSGeometry(json.dumps(data[0]['geojson']))
             services = Service.objects.filter(service_type__icontains=service_type, location__within=polygon)
             
+            
+            paginator = Paginator(services, 10)
+
+            try:
+                services = paginator.page(page)
+            except PageNotAnInteger:
+                services = paginator.page(1)
+            except EmptyPage:
+                services = paginator.page(paginator.num_pages)
+
             geojson_services = serialize('geojson', services,
                 fields=('title', 'user', 'service_type', 'location', 'address', 'description', 'rate', 'timestamp'))
-            print(geojson_services)
+            print(services)
+
             return render(request, "servapp/search.html", 
                 {'services': services, 
                 'geojson_services': geojson_services,
