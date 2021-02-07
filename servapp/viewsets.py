@@ -36,8 +36,24 @@ class ServiceViewSet(ModelViewSet):
     serializer_class = ServiceSerializer
     filter_backends = [filters.SearchFilter]
     search_fields = ['service_type']
+    lookup_field = 'title__iexact'
     pagination_class = GeoJsonPagination
 
+
+class ReviewViewSet(ModelViewSet):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+    filter_backends = [filters.SearchFilter]
+    lookup_field = 'service__title__iexact'
+    # lookup_value_regex = '[0-9a-z]{32}'
+    # search_fields = ['service__id']
+
+
+    # @action(detail=True, methods=['GET'], name='Get Title')
+    # def title(self, request, title=None):
+    #     service = Service.objects.get(title=title)
+    #     serializer = self.get_serializer(service)
+    #     return Response(serializer.data)
 
     # url: http://127.0.0.1:8000/api/services/create-service
     # @action(methods=['post'], detail=False, permission_classes=[IsAuthenticated],
@@ -72,11 +88,7 @@ class ServiceViewSet(ModelViewSet):
 
 
 
-class ReviewViewSet(ModelViewSet):
-    queryset = Review.objects.all()
-    serializer_class = ReviewSerializer
-    filter_backends = [filters.SearchFilter]
-    search_fields = ['service__id']
+
 
     # CRUD operations already defined
 
