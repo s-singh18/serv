@@ -60,9 +60,12 @@ class Service(models.Model):
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     def __str__(self):
         return self.title
 =======
+=======
+>>>>>>> parent of 1474656... App works without javascript.  Now creating ReactJS frontend.
 =======
 >>>>>>> parent of 1474656... App works without javascript.  Now creating ReactJS frontend.
     # def serialize(self):
@@ -78,6 +81,9 @@ class Service(models.Model):
 
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> parent of 1474656... App works without javascript.  Now creating ReactJS frontend.
+=======
 >>>>>>> parent of 1474656... App works without javascript.  Now creating ReactJS frontend.
 =======
 >>>>>>> parent of 1474656... App works without javascript.  Now creating ReactJS frontend.

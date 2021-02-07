@@ -19,9 +19,12 @@ from django.contrib.gis.geos import Point
 from django.contrib.gis.geos import Polygon
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 =======
+=======
+>>>>>>> parent of 1474656... App works without javascript.  Now creating ReactJS frontend.
 =======
 >>>>>>> parent of 1474656... App works without javascript.  Now creating ReactJS frontend.
 from .serializers import ServiceSerializer
@@ -29,6 +32,9 @@ from .models import User, Service, Review
 from .viewsets import UserViewSet, ServiceViewSet, ReviewViewSet
 from serv.settings import MAPBOX_ACCESS_TOKEN
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> parent of 1474656... App works without javascript.  Now creating ReactJS frontend.
+=======
 >>>>>>> parent of 1474656... App works without javascript.  Now creating ReactJS frontend.
 =======
 >>>>>>> parent of 1474656... App works without javascript.  Now creating ReactJS frontend.
@@ -138,6 +144,7 @@ def create_service_view(request):
 @csrf_exempt
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 def search(request):
     if request.method == "GET":
         service_type = request.GET["service_type"]
@@ -173,6 +180,8 @@ def search(request):
 =======
 =======
 >>>>>>> parent of 1474656... App works without javascript.  Now creating ReactJS frontend.
+=======
+>>>>>>> parent of 1474656... App works without javascript.  Now creating ReactJS frontend.
 def search(request, service_type, location):
     with urllib.request.urlopen("https://nominatim.openstreetmap.org/search.php?q=" + location + "&polygon_geojson=1&format=json") as url:
         data = json.loads(url.read().decode())
@@ -186,6 +195,9 @@ def search(request, service_type, location):
         return JsonResponse(data={'services': geojson_services, 'polygon': data[0]['geojson']}, status=200, safe=False)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> parent of 1474656... App works without javascript.  Now creating ReactJS frontend.
+=======
 >>>>>>> parent of 1474656... App works without javascript.  Now creating ReactJS frontend.
 =======
 >>>>>>> parent of 1474656... App works without javascript.  Now creating ReactJS frontend.
