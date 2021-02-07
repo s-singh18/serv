@@ -59,9 +59,12 @@ class Service(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     def __str__(self):
         return self.title
 =======
+=======
+>>>>>>> parent of 1474656... App works without javascript.  Now creating ReactJS frontend.
     # def serialize(self):
     #     return {
     #         "title": self.title,
@@ -74,6 +77,9 @@ class Service(models.Model):
     #     }
 
 
+<<<<<<< HEAD
+>>>>>>> parent of 1474656... App works without javascript.  Now creating ReactJS frontend.
+=======
 >>>>>>> parent of 1474656... App works without javascript.  Now creating ReactJS frontend.
 
 class Review(models.Model): 

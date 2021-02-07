@@ -18,13 +18,19 @@ import urllib.request, json
 from django.contrib.gis.geos import Point
 from django.contrib.gis.geos import Polygon
 <<<<<<< HEAD
+<<<<<<< HEAD
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 =======
+=======
+>>>>>>> parent of 1474656... App works without javascript.  Now creating ReactJS frontend.
 from .serializers import ServiceSerializer
 from .models import User, Service, Review
 from .viewsets import UserViewSet, ServiceViewSet, ReviewViewSet
 from serv.settings import MAPBOX_ACCESS_TOKEN
+<<<<<<< HEAD
+>>>>>>> parent of 1474656... App works without javascript.  Now creating ReactJS frontend.
+=======
 >>>>>>> parent of 1474656... App works without javascript.  Now creating ReactJS frontend.
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, renderer_classes
@@ -131,6 +137,7 @@ def create_service_view(request):
 # @renderer_classes((TemplateHTMLRenderer, JSONRenderer))
 @csrf_exempt
 <<<<<<< HEAD
+<<<<<<< HEAD
 def search(request):
     if request.method == "GET":
         service_type = request.GET["service_type"]
@@ -164,6 +171,8 @@ def search(request):
                 'mapbox_access_token': MAPBOX_ACCESS_TOKEN},
                 status=200)
 =======
+=======
+>>>>>>> parent of 1474656... App works without javascript.  Now creating ReactJS frontend.
 def search(request, service_type, location):
     with urllib.request.urlopen("https://nominatim.openstreetmap.org/search.php?q=" + location + "&polygon_geojson=1&format=json") as url:
         data = json.loads(url.read().decode())
@@ -176,6 +185,9 @@ def search(request, service_type, location):
 
         return JsonResponse(data={'services': geojson_services, 'polygon': data[0]['geojson']}, status=200, safe=False)
 
+<<<<<<< HEAD
+>>>>>>> parent of 1474656... App works without javascript.  Now creating ReactJS frontend.
+=======
 >>>>>>> parent of 1474656... App works without javascript.  Now creating ReactJS frontend.
 
 
