@@ -1,0 +1,69 @@
+{% extends "servapp/layout.html" %}
+
+{% load static %}
+
+{% block body %}
+
+
+<!-- Put in results.html -->
+<div class="home-view">
+    <div class="title-search">
+        <h1 class="title">Serv</h1>
+        <div class="search-form"></div>
+    </div>
+</div>
+<!-- Put in results.html -->
+<div class="results-view">
+    <div class="listings-view">
+    </div>
+
+    <div class="map-view">
+        
+
+        <!-- <div id='map' style='width: 400px; height: 300px;'></div> -->
+        <div id='map'></div>
+
+        <!-- <div id='map' style='width: 100%; height: 100%;'></div>  -->
+    </div>
+    <div class="buttons"></div>
+</div>
+<div class="page-view">
+    <h1 class="properties-title"></h1>
+    <h3 class="properties-owner"></h3>
+    <h4 class="properties-service-type"></h4>
+    <hr>
+    <h6 class="properties-rate"></h6>
+    <p class="properties-description"></p>
+    <div class="create-review">
+        <hr>
+        {% if user.is_authenticated %}
+            <form id='review-form' method="POST" action="{% url 'create_review' %}">
+                {% csrf_token %}
+                <label for="stars">Stars:</label>
+                <select name="stars" id="stars">
+                    <option value="5">5</option>
+                    <option value="4">4</option>
+                    <option value="3">3</option>
+                    <option value="2">2</option>
+                    <option value="1">1</option>
+                </select>
+                <textarea class="form-control" id="review-text" name="text" placeholder="Write a review..."></textarea>
+                <input class="form-control" type="hidden" name="username" id="username" value="{{ user.username }}">
+                <input class="btn btn-primary" type="submit" value="Submit">
+
+            </form>
+        {% endif %}
+    </div>
+    <hr>
+    <div class="reviews">
+    </div>
+</div>
+<!-- Put in results.html -->
+
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'servapp/index.js' %}"></script>
+    <!-- Promise polyfill script required to use Mapbox GL Geocoder in IE 11 -->
+    
+{% endblock %}

@@ -88,6 +88,11 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'serv.wsgi.application'
 
+REACT_APP_DIR = os.path.join(BASE_DIR, 'frontend')
+
+STATICFILES_DIRS = [
+    os.path.join(REACT_APP_DIR, 'build', 'static')
+]
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases

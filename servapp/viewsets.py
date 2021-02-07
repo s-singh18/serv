@@ -56,6 +56,7 @@ class ReviewViewSet(ModelViewSet):
     #     return Response(serializer.data)
 
     # url: http://127.0.0.1:8000/api/services/create-service
+<<<<<<< HEAD
     # @action(methods=['post'], detail=False, permission_classes=[IsAuthenticated],
     # url_path='create-service', url_name='create-service')
     # def create_service(self, request, pk=None):
@@ -78,6 +79,30 @@ class ReviewViewSet(ModelViewSet):
     #         return render(request, "servapp/create_service.html", {
     #                 'mapbox_access_token': MAPBOX_ACCESS_TOKEN,
     #                 })
+=======
+    @action(methods=['post'], detail=False, permission_classes=[IsAuthenticated],
+    url_path='create-service', url_name='create-service')
+    def create_service(self, request, pk=None):
+        # check if not none
+        title = request.data["title"]
+        username = request.data["username"]
+        service_type = request.data["service_type"].lower()
+        address = request.data["geocoder_result"]
+        description = request.data["description"]
+        rate = request.data["rate"]
+        if title is not None and username is not None and service_type is not None and address is not None and description is not None and rate is not None:
+            user = User.objects.get(username=username)
+            point = mapbox.geocode(address)
+            geos_point = Point(point.longitude, point.latitude)
+
+            service = Service.objects.create(title=title, user=user, service_type=service_type, location=geos_point, address=address, description=description, rate=rate)
+            service.save()
+            return HttpResponseRedirect(reverse("index"))
+        else:
+            return render(request, "servapp/create_service.html", {
+                    'mapbox_access_token': MAPBOX_ACCESS_TOKEN,
+                    })
+>>>>>>> parent of 1474656... App works without javascript.  Now creating ReactJS frontend.
 
 # class ServiceSearchFilter(filters.SearchFilter):
 #     # return objects based on service type filtered by location

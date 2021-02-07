@@ -27,9 +27,6 @@
         <!-- AJAX -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
-        <!-- Servapp js files -->
-  
-
         <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}" />
         <style>
             body { margin: 0; padding: 0; }
@@ -37,12 +34,57 @@
         </style>
     </head>
     <body>
+        <nav class="navbar navbar-expand-md navbar-custom" style="background-color: #430280;">
+            <a class="navbar-brand" href="{% url 'index' %}">Serv</a>
+            <!-- <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button> -->
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item active">
+                        <div id="geocoder-nav" class="geocoder-nav"></div>
+                    </li>
+                    <!-- <li class="nav-item">
+                        <a class="nav-link" href="#">Features</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Pricing</a>
+                    </li> -->
+                </ul>
+            <div>
+                <ul class="navbar-nav me-auto>
+                    
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">{{ user.username }}</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'create_service' %}">Create Service</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="btn btn-primary" href="{% url 'logout' %}">Log Out</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item" id="nav-login">
+                            <a class="btn btn-primary" nav-link" href="{% url 'login' %}">Log In</a>
+                        </li>
+                        <li class="nav-item" id="nav-register">
+                            <a class="btn btn-primary" href="{% url 'register' %}">Register</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+            </div>
+        </nav>
         <div class="user-map">
             <input class="form-control" type="hidden" name="username" id="username" value="{{ user.username }}">
             <input id='mapbox-access-token' type="hidden" value= "{{ mapbox_access_token }}">
         </div>
-        {% block nav %}
-        {% endblock %}
+        
+        <div class="body">
+            {% block body %}
+            {% endblock %}
+        </div>
     </body>
 </html>
 
