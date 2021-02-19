@@ -13,7 +13,7 @@ from django.contrib.gis.geos import Point
 from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.serializers import serialize
-from django.core.paginator import Paginator
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import urllib.request, json 
 from django.contrib.gis.geos import Point
 from django.contrib.gis.geos import Polygon
@@ -111,11 +111,19 @@ def search(request):
             data = json.loads(url.read().decode())
             print(data[0]['geojson'])
             polygon = GEOSGeometry(json.dumps(data[0]['geojson']))
-            services = Service.objects.filter(service_type__icontains=service_type, location__within=polygon)
-            
+            service_list = Service.objects.filter(service_type__icontains=service_type, location__within=polygon)
+            page = request.GET.get('page', 1)
+            paginator = Paginator(service_list, 10)
+            try:
+                services = paginator.page(page)
+            except PageNotAnInteger:
+                services = paginator.page(1)
+            except EmptyPage:
+                services = paginator.page(paginator.num_pages)
+
             geojson_services = serialize('geojson', services,
                 fields=('title', 'user', 'service_type', 'location', 'address', 'description', 'rate', 'timestamp'))
-            print(geojson_services)
+            
             return render(request, "servapp/search.html", 
                 {'services': services, 
                 'geojson_services': geojson_services,

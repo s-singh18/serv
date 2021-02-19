@@ -20,6 +20,27 @@
             <h3 class="no-results">No results found for "{{ service_type }}" in {{ location }}.</h3>
         
         {% endfor %}
+        {% if services.has_other_pages %}
+            <ul class="pagination">
+                {% if services.has_previous %}
+                    <li><a href="?service_type={{ service_type }}&location={{ location }}&page={{ services.previous_page_number }}">&laquo;</a></li>
+                {% else %}
+                    <li class="disabled"><span>&laquo;</span></li>
+                {% endif %}
+                {% for i in services.paginator.page_range %}
+                    {% if services.number == i %}
+                        <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+                    {% else %}
+                        <li><a href="?page={{ i }}">{{ i }}</a></li>
+                    {% endif %}
+                {% endfor %}
+                {% if services.has_next %}
+                    <li><a href="?service_type={{ service_type }}&location={{ location }}&page={{ services.next_page_number }}">&raquo;</a></li>
+                {% else %}
+                    <li class="disabled"><span>&raquo;</span></li>
+                {% endif %}            
+            </ul>
+        {% endif %}
     </div>
 
     <div class="map-view">
