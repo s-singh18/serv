@@ -21,25 +21,37 @@
         
         {% endfor %}
         {% if services.has_other_pages %}
-            <ul class="pagination">
-                {% if services.has_previous %}
-                    <li><a href="?service_type={{ service_type }}&location={{ location }}&page={{ services.previous_page_number }}">&laquo;</a></li>
-                {% else %}
-                    <li class="disabled"><span>&laquo;</span></li>
-                {% endif %}
-                {% for i in services.paginator.page_range %}
-                    {% if services.number == i %}
-                        <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+            <div class="text-center">
+                <ul class="pagination">
+                    {% if services.has_previous %}
+                        <li><a href="?service_type={{ service_type }}&location={{ location }}&page={{ services.previous_page_number }}">&laquo;</a></li>
                     {% else %}
-                        <li><a href="?page={{ i }}">{{ i }}</a></li>
+                        <li class="disabled"><span></span></li>
                     {% endif %}
-                {% endfor %}
-                {% if services.has_next %}
-                    <li><a href="?service_type={{ service_type }}&location={{ location }}&page={{ services.next_page_number }}">&raquo;</a></li>
-                {% else %}
-                    <li class="disabled"><span>&raquo;</span></li>
-                {% endif %}            
-            </ul>
+
+                    {% if services.number|add:'-4' > 1 %}
+                        <li>...</li>
+                    {% endif %}
+
+                    {% for i in services.paginator.page_range %}
+                        {% if services.number == i %}
+                            <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+                        {% elif i > services.number|add:'-5' and i < services.number|add:'10' %}
+                            <li><a href="?service_type={{ service_type }}&location={{ location }}&page={{ i }}">{{ i }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if services.paginator.num_pages > services.number|add:'4' %}
+                        <li>...</li>
+                    {% endif %}
+
+                    {% if services.has_next %}
+                        <li><a href="?service_type={{ service_type }}&location={{ location }}&page={{ services.next_page_number }}">&raquo;</a></li>
+                    {% else %}
+                        <li class="disabled"><span></span></li>
+                    {% endif %}            
+                </ul>
+            </div>
         {% endif %}
     </div>
 

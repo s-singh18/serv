@@ -107,30 +107,34 @@ def search(request):
     if request.method == "GET":
         service_type = request.GET["service_type"]
         location = request.GET["location"]
-        with urllib.request.urlopen("https://nominatim.openstreetmap.org/search.php?q=" + location + "&polygon_geojson=1&format=json") as url:
-            data = json.loads(url.read().decode())
-            print(data[0]['geojson'])
-            polygon = GEOSGeometry(json.dumps(data[0]['geojson']))
-            service_list = Service.objects.filter(service_type__icontains=service_type, location__within=polygon)
-            page = request.GET.get('page', 1)
-            paginator = Paginator(service_list, 10)
-            try:
-                services = paginator.page(page)
-            except PageNotAnInteger:
-                services = paginator.page(1)
-            except EmptyPage:
-                services = paginator.page(paginator.num_pages)
+        if location is not '':
+            with urllib.request.urlopen("https://nominatim.openstreetmap.org/search.php?q=" + location + "&polygon_geojson=1&format=json") as url:
+                data = json.loads(url.read().decode())
+                print(data[0]['geojson'])
+                geojson = data[0]['geojson']
+                polygon = GEOSGeometry(json.dumps(data[0]['geojson']))
+                service_list = Service.objects.filter(service_type__icontains=service_type, location__within=polygon)
+                page = request.GET.get('page', 1)
+                paginator = Paginator(service_list, 10)
+                try:
+                    services = paginator.page(page)
+                except PageNotAnInteger:
+                    services = paginator.page(1)
+                except EmptyPage:
+                    services = paginator.page(paginator.num_pages)
 
-            geojson_services = serialize('geojson', services,
-                fields=('title', 'user', 'service_type', 'location', 'address', 'description', 'rate', 'timestamp'))
-            
-            return render(request, "servapp/search.html", 
-                {'services': services, 
-                'geojson_services': geojson_services,
-                'polygon': data[0]['geojson'],
-                'service_type': service_type, 'location': location, 
-                'mapbox_access_token': MAPBOX_ACCESS_TOKEN},
-                status=200)
+                geojson_services = serialize('geojson', services,
+                    fields=('title', 'user', 'service_type', 'location', 'address', 'description', 'rate', 'timestamp'))
+
+                return render(request, "servapp/search.html", 
+                    {'services': services, 
+                    'geojson_services': geojson_services,
+                    'polygon': geojson,
+                    'service_type': service_type, 'location': location, 
+                    'mapbox_access_token': MAPBOX_ACCESS_TOKEN},
+                    status=200) 
+        else:
+            return HttpResponseRedirect(reverse("home"))
 
 @csrf_exempt
 def service(request, title):
