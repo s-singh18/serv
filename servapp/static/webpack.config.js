@@ -29,4 +29,5 @@ module.exports = {
             '.js'
         ]
     },
+    plugins: [new webpack.HotModuleReplacementPlugin()]
 }

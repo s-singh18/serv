@@ -1,4 +1,4 @@
-mapboxgl.accessToken = document.querySelector('#mapbox-access-token').value;
+// mapboxgl.accessToken = document.querySelector('#mapbox-access-token').value;
 // var map = new mapboxgl.Map({
 //     container: 'map',
 //     style: 'mapbox://styles/mapbox/dark-v10',
@@ -16,36 +16,36 @@ mapboxgl.accessToken = document.querySelector('#mapbox-access-token').value;
 //     placeholder: "City",
 // }); 
 
-var geocoder_index = new MapboxGeocoder({
-    accessToken: mapboxgl.accessToken,
-    marker: false,
-    mapboxgl: mapboxgl,
-    flyTo: false,
-    countries: 'us',
-    types: "place",
-    placeholder: "City",
-}); 
+// var geocoder_index = new MapboxGeocoder({
+//     accessToken: mapboxgl.accessToken,
+//     marker: false,
+//     mapboxgl: mapboxgl,
+//     flyTo: false,
+//     countries: 'us',
+//     types: "place",
+//     placeholder: "City",
+// }); 
 
 
-var listings;
-var poly;
-var search_count = 0;
-var currentPage = 1;
+// var listings;
+// var poly;
+// var search_count = 0;
+// var currentPage = 1;
 
-// var first = true;
+// // var first = true;
 
-function removeElements(elms) {
-    elms.forEach(el => el.remove());
-}
+// function removeElements(elms) {
+//     elms.forEach(el => el.remove());
+// }
 
-document.addEventListener("DOMContentLoaded", function () {
+// document.addEventListener("DOMContentLoaded", function () {
     
-    load_home();
+//     load_home();
     
 
-});
+// });
 
-function load_home() {
+// function load_home() {
     // Show index view
     // document.querySelector('.home-view').style.display = "block";
 
@@ -84,7 +84,7 @@ function load_home() {
 
     //     }
     // })
-}
+// }
 
 
 // function load_result() {

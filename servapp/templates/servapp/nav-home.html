@@ -16,20 +16,27 @@
         <ul class="navbar-nav me-auto>
             {% if user.is_authenticated %}
                 <li class="nav-item">
-                    <a class="nav-link" href="#">{{ user.username }}</a>
+                    <a class="nav-link" href="{% url 'profile' %}">{{ user.username }}</a>
                 </li>
+                <li class="nav-item">
+                    {% if request.session.service == None %}
+                        <a class="nav-link" href="{% url 'create_service' %}">Create Service</a>
+                    {% else %}
+                        <a class="nav-link" href="{% url 'service' request.session.service %}">{{ request.session.service }}</a>
+                    {% endif %}
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
+                </li>
+            {% else %}
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'create_service' %}">Create Service</a>
                 </li>
-                <li class="nav-item">
-                    <a class="btn btn-primary" href="{% url 'logout' %}">Log Out</a>
-                </li>
-            {% else %}
                 <li class="nav-item" id="nav-login">
-                    <a class="btn btn-primary" nav-link" href="{% url 'login' %}">Log In</a>
+                    <a class="nav-link" nav-link" href="{% url 'login' %}">Log In</a>
                 </li>
                 <li class="nav-item" id="nav-register">
-                    <a class="btn btn-primary" href="{% url 'register' %}">Register</a>
+                    <a class="nav-link" href="{% url 'register' %}">Register</a>
                 </li>
             {% endif %}
         </ul>

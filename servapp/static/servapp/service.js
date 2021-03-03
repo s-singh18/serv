@@ -1,78 +1,91 @@
 document.addEventListener("DOMContentLoaded", function () {
     
     service_page();
+    edit_review();
     
 
 });
 
 
 function service_page(properties, owner) {
-    document.querySelector('.service-view').style.display = "block"; 
- 
-    // let page_view = document.querySelector(".page-view");
-
-    // console.log(properties);
-
-    // // Display property elements
-    // document.querySelector('.properties-title').innerHTML = properties.title;
-    // document.querySelector('.properties-owner').innerHTML = `Owner: ${owner}`;
-    // document.querySelector('.properties-service-type').innerHTML = properties.service_type;
-    // document.querySelector('.properties-rate').innerHTML = `Rate: ${properties.rate}/hr`;  
-    // document.querySelector('.properties-description').innerHTML = properties.description;
+    let mapbox_access_token = document.querySelector('#mapbox-access-token').value;
+    let listing_geojson = JSON.parse(document.querySelector('#listing-geojson').value);
+    console.log(listing_geojson)
+    let coordinates = listing_geojson.features[0].geometry.coordinates;
+    let icon_url = document.querySelector('#map-icon').value;
+    console.log(icon_url)
+    // console.log(coordinates)
+    // var mapboxClient = mapboxSdk({ accessToken: mapbox_access_token });
+    // var request = mapboxClient.static
+    //   .getStaticImage({
+    //     ownerId: 'mapbox',
+    //     styleId: 'streets-v11',
+    //     width: 500,
+    //     height: 350,
+    //     position: {
+    //       coordinates: [lon, lat],
+    //       zoom: 12
+    //     },
     
-    // let username = document.querySelector('#username').value;
-    // let create_review = document.querySelector('.create-review');
-    // console.log(username)
-    // console.log(owner)
-    // if (username != undefined && username != "") {
-    //     create_review.style.display = 'block';
-    //     let service_title = document.createElement('input');
-    //     service_title.type = 'hidden';
-    //     service_title.name = 'service_title';
-    //     service_title.id = 'service-title';
-    //     service_title.value = properties.title;
-    //     document.querySelector('#review-form').appendChild(service_title)
+    // //     addlayer: addLayerStyle,
+    // //   before_layer: 'road-label',
+    //   });
+    // var staticImageUrl = request.url();
+    // document.querySelector('.location-map').src = staticImageUrl;
+    document.querySelector('.static-map').innerHTML = `<img src='https://api.mapbox.com/styles/v1/mapbox/streets-v11/static/pin-s-s+430281(${coordinates[0]},${coordinates[1]})/${coordinates[0]},${coordinates[1]},15,0.00,0.00/500x300?access_token=${mapbox_access_token}'>`;
 
-    // } else {
-    //     create_review.style.display = 'none';
+    // document.querySelector('.static-map').innerHTML = `<img src='https://api.mapbox.com/styles/v1/mapbox/light-v10/static/url-https%3A%2F%2Fdocs.mapbox.com%2Fapi%2Fimg%2Fcustom-marker.png(${lon},${lat})/${lon},${lat},15/500x300?access_token=${mapbox_access_token}>';`
 
-    // }
-
-    // fetch(`/get_reviews/${properties.title}`)
-    // .then(response => response.json())
-    // .then(result => {
-    //     let reviews = document.querySelector('.reviews');
-    //     if (reviews.hasChildNodes()) {
-    //         reviews.removeChild(reviews.childNodes[0]);
-    //     }
-
-    //     if (result === undefined) {
-            
-    //         let no_reviews = document.createElement('h3');
-    //         no_reviews.innerHTML = "No reviews for this listing"
-    //         reviews.appendChild(no_reviews)
-    //     } else {
-
-    //         result.forEach((element) => {
-    //             let review_writer = document.createElement("h3");    
-    //             review_writer.innerHTML = element.writer;
-    //             let review_stars = document.createElement("h6"); 
-    //             review_stars.innerHTML = `${element.stars} Stars`;
-    //             let review_text = document.createElement("p");
-    //             review_text.innerHTML = element.text;
-
-                
-    //             reviews.appendChild(review_writer);
-    //             reviews.appendChild(review_stars);
-    //             reviews.appendChild(review_text);
-    //             reviews.appendChild(document.createElement("hr"));
-                
-    //         })
-    //     }
-    //     });
-
-    // geocoder_nav.on('result', (search_data) => {
-    //     let st = document.querySelector('#search-field').value;
-    //     search(search_data, st);
-    // });
 }
+
+// function edit_review() {
+//     let review_link = document.querySelector('#edit-review');
+//     review_link.on('click', () => {
+//         // Get review elements from page
+//         let review = document.querySelector('#review');
+//         let review_stars = document.querySelector('#review-stars');
+//         let review_text = document.querySelector('#review-text');
+//         review_stars.style.display = none;
+//         review_text.style.display = none;
+        
+//         // Create review form
+//         let review_form = document.createElement('form');
+//         review_form.className = "form-inline";
+//         review_form.method = "POST";
+
+//         // Stars
+//         let stars = document.createElement('select');
+//         stars.name = "stars";
+//         stars.id = "stars"
+//         for (let i = 1; i<=3; i++){
+//             let opt = document.createElement('option');
+//             opt.value = i;
+//             opt.innerHTML = i;
+//             stars.appendChild(opt);
+//         }
+
+//         // Review text
+//         let text = document.createElement('textarea');
+//         text.name = "text";
+//         text.id = "review-text";
+//         text.className = "form-control";
+//         text.value = review_text.value;
+
+//         let search_button = document.createElement("input");
+//         search_button.className = "btn btn-primary"
+//         search_button.type = "submit";
+//         search_button.value = "Search";
+
+//         review_form.addEventListener("submit", (event) => {
+//             fetch("/edit_review", {
+//             method: "POST",
+//             body: JSON.stringify({
+//                 username: document.querySelector('#listing-title').value,
+//                 service_title: service_title,
+//                 stars: stars,
+//                 text: text,
+//                 }),
+//             });
+//         });
+//     });
+// }

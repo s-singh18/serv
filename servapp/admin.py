@@ -4,7 +4,7 @@ from django.contrib import admin
 
 # Register your models here.
 
-from .models import User, Service
+from .models import User, Service, Review
 
 # Register your models here.
 admin.site.register(User)
@@ -25,3 +25,5 @@ class ServiceAdmin(LeafletGeoAdmin):
     #     else:
     #         queryset |= self.model.objects.filter(age=search_term_as_int)
     #     return queryset, use_distinct
+
+admin.site.register(Review)

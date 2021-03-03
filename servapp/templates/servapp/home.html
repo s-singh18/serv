@@ -3,23 +3,20 @@
 {% load static %}
 
 {% block body %}
-
-<div class="home-view">
     <div class="title-search">
         <h1 class="title">Ace</h1>
+        <h3 class="subtitle">Find A Local Service!</h3>
         <div class="search-form">
             <form class="form-inline" method="GET" action="{% url 'search' %}">
-                <div class="form-group">
-                    <input class="mapbox-ctrl-geocoder mapbox-ctrl" id="service-input" type="text" name="service_type" placeholder="Service Type">
-                </div>
-                <div class="form-group">
-                    <input class="mapbox-ctrl-geocoder mapbox-ctrl" id="location-input" type="text" name="location" placeholder="Location">
-                </div>
+                <div class="form-inline">
+                    <input class="form-control" id="service-input" type="text" name="service_type" placeholder="Service Type">
+                    <input class="form-control" id="location-input" type="text" name="location" placeholder="Location">
                     <input class="btn btn-primary" type="submit" value="Submit">
+                </div>
             </form>
         </div>
     </div>
-</div>
+
 {% endblock %}
 
 {% block script %}

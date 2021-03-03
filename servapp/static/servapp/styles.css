@@ -8,36 +8,44 @@ body {
     /* background-color: #FDB927; */
 }
 
-a.btn btn-primary {
+a.btn.btn-primary {
     color: white;
     background-color: #430281;
-    /* margin: auto; */
+    margin-right: 2px; 
 }
 
+input.btn.btn-primary {
+    margin-top: 2px;
+}
 
 .title-search {
-    width: 100px;
-	height: 100px;
+
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
 	background-color: #430281;
-	
-	position: absolute;
-	top:0;
-	bottom: 0;
-	left: 0;
-	right: 0;
-  	
 	margin: auto;
 }
 
 .title {
     color: white;
-    right: 10px;
+    width: 84%;
+    /* right: 5px; */
+    margin: 0;
 }
 
-.navbar-nav.me-auto {
-    
+.subtitle {
+    color: white;
+    width: 90%;
+    margin-top: 0;
+    margin-bottom: 6px;
 }
 
+a.title {
+    color: black;
+}
 /* li.nav-item {
     margin: 2px;
 } */
@@ -95,6 +103,18 @@ a.btn.btn-primary {
     
 }
 
+input.btn.btn-primary {
+    color: white;
+    background-color: #430281;
+    border: 1px solid white;
+    transition-duration: 0.3s;
+}
+
+input.btn.btn-primary:hover {
+    background-color: white; 
+    color: grey;
+}
+
 
 a.btn.btn-primary:hover {
     background-color: white; 
@@ -106,6 +126,18 @@ a.btn.btn-primary:hover {
     
 }
 
+.left-div {
+    height: 100%;
+    width: 50%;
+    float: left;
+}
+
+.right-div {
+    height: 100%;
+    width: 50%;
+    float: left;
+}
+
 .listings-view {
     /* display: inline-block; */
     top: 10px;
@@ -114,19 +146,115 @@ a.btn.btn-primary:hover {
     float: left;
 }
 
+.title-view {
+    float: left;
+    width: 50%;
+    height: 126px;
+    position: relative;
+}
+
+
+.edit-view {
+    float: left;
+    width: 50%;
+    height: 666px;
+    position: relative;
+}
+
+.description-view {
+    float: left;
+    width: 50%;
+    height: 420px;
+    position: relative;
+}
+
+.listing-address {
+    float: left;
+    
+}
+
+.static-view {
+    float: left;
+    width: 50%;
+    height: 612px;
+    position: relative;
+}
+
+.static-map {
+    float: left;
+    margin-top: 0px;
+    margin-left: 6px;
+    margin-bottom: 15px;
+}
+.review-view {
+    float: left;
+    position: relative;
+}
+
+.listing-title {
+    color: white;
+}
+
+.listing-owner {
+    color: white;
+}
+
+.listing-service-type {
+    color: white;
+}
+
+.listing-address {
+    color: white;
+}
+
+.listing-description {
+    color: white;
+    width: 100%;
+    word-wrap: break-word;
+}
+
+.review-user {
+    color: white;
+}
+
+.review-stars {
+    color: white;
+}
+
+.review-text {
+    color: white;
+}
+
+.edit-link {
+    float: right;
+    margin-right: 18px;
+    margin-top: 9px;
+    color: white;
+}
 .map-view {
     /* display: inline-block; */
-    /* top: 10px; */
+    top: 10px;
     height: 100%; /*50 for other way */
     width: 50%; /*100 for other way */
     float: left;
     
 }
 
+.leaflet-map {
+    height: 100%;
+    width: 100%;
+}
+
 #map {
+    margin-top: 57px;
     height: 100%; 
     width: 100%;
     
+}
+
+#leaflet-map { 
+    height: 360px; 
+    width: 420px
 }
 
 .geocoder {
@@ -140,9 +268,7 @@ a.btn.btn-primary:hover {
 .mapboxgl-ctrl-geocoder {
     min-width: 100%;
 }
-#map {
-    margin-top: 75px;
-}
+
 
 .mapboxgl-ctrl-geocoder--input {
     background-color: white;
@@ -177,6 +303,32 @@ a.btn.btn-primary:hover {
 .page-view {
     color: white;
 }
+
+.page-item {
+    color: white;
+}
+
+
+.page-link {
+    color: black;
+    background-color: white;
+}
+
+.page-item.active.page-link {
+    color: black;
+    background-color:  #430281;
+}
+
+.error {
+    color: red;
+}
+
+
+.form-control {
+    width: 690px;
+    margin-right: 1px;
+}
+
 
 /* Style the input fields */
 /* .form-inline input {

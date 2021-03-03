@@ -1,0 +1,18 @@
+{% extends "servapp/nav.html" %}
+
+{% load static %}
+
+{% block body %}
+
+<h2>Profile</h2>
+<p>Name: {{ user.username }} </p>
+<p>Email: {{ user.email }} </p>
+
+{% endblock %}
+
+
+{% block script %}
+    <script src="{% static 'servapp/create_service.js' %}"></script>
+    <!-- Promise polyfill script required to use Mapbox GL Geocoder in IE 11 -->
+    
+{% endblock %}

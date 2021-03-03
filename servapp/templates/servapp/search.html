@@ -9,10 +9,10 @@
             <div class="card border-dark mb-3">
                 <div class="card-body">
                     <div class="card-title"> 
-                        <a href="{% url 'service' service.title %}">{{ service.title }}</a> 
+                        <a class="title" href="{% url 'service' service.title %}"><h5>{{ service.title }}</h5></a> 
                     </div>
-                    <div class="card-subtitle">{{ service.user }}</div>
-                    <div class="card-text">{{ service.description }}</div>
+                    <div class="card-subtitle"><h6>{{ service.user }}</h6></div>
+                    <p class="card-text">{{ service.description }}</p>
                 </div>
             </div>
 
@@ -24,20 +24,20 @@
             <div class="text-center">
                 <ul class="pagination">
                     {% if services.has_previous %}
-                        <li><a href="?service_type={{ service_type }}&location={{ location }}&page={{ services.previous_page_number }}">&laquo;</a></li>
+                        <li class="page-item"><a class="page-link" href="?service_type={{ service_type }}&location={{ location }}&page={{ services.previous_page_number }}">&laquo;</a></li>
                     {% else %}
                         <li class="disabled"><span></span></li>
                     {% endif %}
 
                     {% if services.number|add:'-4' > 1 %}
-                        <li>...</li>
+                        <li class="page-item">...</li>
                     {% endif %}
 
                     {% for i in services.paginator.page_range %}
                         {% if services.number == i %}
-                            <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+                            <li class="page-item active"><span class="page-link">{{ i }} <span class="sr-only">(current)</span></span></li>
                         {% elif i > services.number|add:'-5' and i < services.number|add:'10' %}
-                            <li><a href="?service_type={{ service_type }}&location={{ location }}&page={{ i }}">{{ i }}</a></li>
+                            <li class="page-item"><a class="page-link" href="?service_type={{ service_type }}&location={{ location }}&page={{ i }}">{{ i }}</a></li>
                         {% endif %}
                     {% endfor %}
 
@@ -46,7 +46,7 @@
                     {% endif %}
 
                     {% if services.has_next %}
-                        <li><a href="?service_type={{ service_type }}&location={{ location }}&page={{ services.next_page_number }}">&raquo;</a></li>
+                        <li class="page-item"><a class="page-link" href="?service_type={{ service_type }}&location={{ location }}&page={{ services.next_page_number }}">&raquo;</a></li>
                     {% else %}
                         <li class="disabled"><span></span></li>
                     {% endif %}            
@@ -59,9 +59,18 @@
         <div id='map'></div>
     </div>
 
+    <div id="data">
+        
+        <input class="form-control" id="services_geojson" type="hidden" value="{{ services_geojson }}"> 
+        <input class="form-control" id="polygon_geojson" type="hidden" value="{{ polygon_geojson }}"> 
+        <input class="form-control" id="center" type="hidden" value="{{ center }}"> 
+        <input class="form-control" id="bbox" type="hidden" value="{{ bbox }}"> 
+        <input class="form-control" id="service_type" type="hidden" value="{{ service_type }}"> 
+        <input class="form-control" id="location" type="hidden" value="{{ location }}">
+    </div>
 
 {% endblock %}
 
-<!-- {% block script %}
+{% block script %}
     <script src="{% static 'servapp/search.js' %}"></script>
-{% endblock %} -->
+{% endblock %}
