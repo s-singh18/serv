@@ -85,7 +85,7 @@ WSGI_APPLICATION = 'serv.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'serv',
+        'NAME': 'reserv',
         'USER': 'sss',
     }
 }

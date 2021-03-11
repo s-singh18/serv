@@ -28,10 +28,10 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 function setMonth() {
-    let services_header = document.getElementById('services-header');
-    services_header.style.cursor = "pointer";
-    services_header.addEventListener('click', () => {
-        document.getElementById('services-button').click();
+    let listings_header = document.getElementById('listings-header');
+    listings_header.style.cursor = "pointer";
+    listings_header.addEventListener('click', () => {
+        document.getElementById('listings-button').click();
     })
 
     let month = document.getElementById('month');

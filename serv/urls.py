@@ -20,10 +20,10 @@ from servapp import views, viewsets
 
 # Router provides URL access to APIs
 # Get entire list of objects
-# http://127.0.0.1:8000/api/services/
+# http://127.0.0.1:8000/api/listings/
 
 # Get filtered list of objects
-# http://127.0.0.1:8000/api/services/?search=barber
+# http://127.0.0.1:8000/api/listings/?search=barber
 
 # Get one object (detail)
 # http://127.0.0.1:8000/api/reviews/1
@@ -31,7 +31,7 @@ from servapp import views, viewsets
 router = routers.DefaultRouter()
 # router.register(r'users', myapp_views.GeneralViewset)
 router.register(r'users', viewsets.UserViewSet)
-router.register(r'services', viewsets.ServiceViewSet)
+router.register(r'listings', viewsets.ListingViewSet)
 router.register(r'reviews', viewsets.ReviewViewSet)
 # from serv.api import router
 

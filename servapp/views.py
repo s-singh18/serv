@@ -25,10 +25,10 @@ from rest_framework.decorators import api_view, renderer_classes
 from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from django.contrib.gis.geos import GEOSGeometry
 
-from .serializers import ServiceSerializer
-from .models import User, Service, Review
-from .viewsets import UserViewSet, ServiceViewSet, ReviewViewSet
-from .validations import ServiceValidation, ReviewValidation
+from .serializers import ListingSerializer
+from .models import User, Listing, Review
+from .viewsets import UserViewSet, ListingViewSet, ReviewViewSet
+from .validations import ListingValidation, ReviewValidation
 
 
 from serv.settings import MAPBOX_ACCESS_TOKEN
@@ -38,7 +38,7 @@ mapbox = MapBox(MAPBOX_ACCESS_TOKEN)
 
 current_user = None
 
-service_validation = ServiceValidation()
+listing_validation = ListingValidation()
 review_validation = ReviewValidation()
 
 def home(request):
@@ -59,11 +59,11 @@ def login_view(request):
         if user is not None:
             login(request, user)
             current_user = user
-            if Service.objects.filter(user=user).exists():
-                service = Service.objects.filter(user=user).first().title
+            if Listing.objects.filter(user=user).exists():
+                listing = Listing.objects.filter(user=user).first().title
             else:
-                service = None
-            request.session['service'] = service
+                listing = None
+            request.session['listing'] = listing
             return HttpResponseRedirect(reverse("home"))
         else:
             return render(request, "servapp/login.html", {
@@ -75,7 +75,7 @@ def login_view(request):
 
 def logout_view(request):
     logout(request)
-    # del request.session['services']
+    # del request.session['listings']
     request.session.flush()
     return HttpResponseRedirect(reverse("home"))
 
@@ -108,17 +108,17 @@ def register(request):
         return render(request, "servapp/register.html")
 
 @login_required
-def create_service(request):
+def create_listing(request):
     if request.user.is_authenticated:
         errors = []
         if request.method == "POST":
             title = request.POST["title"]
             username = request.POST["username"]
-            service_type = request.POST["service_type"]
+            listing_type = request.POST["listing_type"]
             address = request.POST["address"]
             description = request.POST["description"]
             location = request.POST["location"]
-            errors = service_validation.check_create_service(title, service_type, address, description, username)
+            errors = listing_validation.check_create_listing(title, listing_type, address, description, username)
             if not errors:    
                 user = User.objects.get(username=username)
                 if location == "":
@@ -130,23 +130,24 @@ def create_service(request):
                     lon = float(lon)
                     geos_point = Point(lon, lat)
 
-                service = Service.objects.create(title=title, user=user, service_type=service_type, location=geos_point, address=address, description=description)
-                service.save()
-                return HttpResponseRedirect(reverse('service', args=[title]))
+                listing = Listing.objects.create(title=title, user=user, listing_type=listing_type, location=geos_point, address=address, description=description)
+                listing.save()
+                request.session['listing'] = title;
+                return HttpResponseRedirect(reverse('listing', args=[title]))
 
             else:
-                return render(request, "servapp/create_service.html", {
+                return render(request, "servapp/create_listing.html", {
                         'mapbox_access_token': MAPBOX_ACCESS_TOKEN, 'errors': errors, 
                         })
-        return render(request, "servapp/create_service.html",  {
+        return render(request, "servapp/create_listing.html",  {
                         'mapbox_access_token': MAPBOX_ACCESS_TOKEN, 'errors': errors,
                     })
     else:
         return HttpResponseRedirect(reverse("login"))
 
 @login_required
-def edit_service(request, title):
-    listing = Service.objects.get(title=title)
+def edit_listing(request, title):
+    listing = Listing.objects.get(title=title)
     data = serializers.serialize('geojson', [listing,])
     struct = json.loads(data)
     data = json.dumps(struct)
@@ -155,12 +156,12 @@ def edit_service(request, title):
         if request.method == "POST":
             title = request.POST["title"]
             username = request.POST["username"]
-            service_type = request.POST["service_type"]
+            listing_type = request.POST["listing_type"]
             address = request.POST["address"]
             description = request.POST["description"]
             location = request.POST["location"]
             print(location)
-            errors = service_validation.check_edit_service(title, service_type, address, description)
+            errors = listing_validation.check_edit_listing(title, listing_type, address, description)
             if not errors:
                 user = User.objects.get(username=username)
                 if location == "":
@@ -176,22 +177,22 @@ def edit_service(request, title):
 
                 listing.title = title
                 listing.user = user
-                listing.service_type = service_type
+                listing.listing_type = listing_type
                 listing.location = geos_point
                 listing.address = address
                 listing.description = description
                 listing.save()
-                return HttpResponseRedirect(reverse('service', args=[title]))
+                return HttpResponseRedirect(reverse('listing', args=[title]))
             else:
-                return render(request, "servapp/edit_service.html", {
-                'service': listing, 'service_geojson': data, 'errors': errors,
+                return render(request, "servapp/edit_listing.html", {
+                'listing': listing, 'listing_geojson': data, 'errors': errors,
                 'mapbox_access_token': MAPBOX_ACCESS_TOKEN,
             })
                 
         else:
-            print("Return to edit service")
-            return render(request, "servapp/edit_service.html", {
-                'service': listing, 'service_geojson': data,
+            print("Return to edit listing")
+            return render(request, "servapp/edit_listing.html", {
+                'listing': listing, 'listing_geojson': data,
                 'mapbox_access_token': MAPBOX_ACCESS_TOKEN, 'errors': errors,
             })
     else:
@@ -202,11 +203,11 @@ def edit_service(request, title):
 def search(request):
     # Get form fields
     if request.method == "GET":
-        service_type = request.GET["service_type"]
+        listing_type = request.GET["listing_type"]
         location = request.GET["location"]
     
-        # if location and service type field not filled
-        if location is not "" and service_type is not "":
+        # if location and listing type field not filled
+        if location is not "" and listing_type is not "":
             # Get data from Open Street Maps
             with urllib.request.urlopen("https://nominatim.openstreetmap.org/search.php?q=" + location + "&polygon_geojson=1&format=json") as url:
                 # Convert to JSON object
@@ -218,48 +219,48 @@ def search(request):
                 
                 # Convert JSON object to GEO Django object
                 polygon = GEOSGeometry(json.dumps(data[0]['geojson']))
-                # Query services filtering results within searched location
-                service_list = Service.objects.filter(service_type__icontains=service_type, location__within=polygon)
+                # Query listings filtering results within searched location
+                listing_list = Listing.objects.filter(listing_type__icontains=listing_type, location__within=polygon)
                 # Paginate results
                 page = request.GET.get('page', 1)
-                paginator = Paginator(service_list, 6)
+                paginator = Paginator(listing_list, 6)
                 try:
-                    services = paginator.page(page)
+                    listings = paginator.page(page)
                 except PageNotAnInteger:
-                    services = paginator.page(1)
+                    listings = paginator.page(1)
                 except EmptyPage:
-                    services = paginator.page(paginator.num_pages)
-                # Serialize service results into geojson object
-                services_geojson = serialize('geojson', services,
-                    fields=('title', 'user', 'service_type', 'location', 'address', 'description', 'rate', 'timestamp'))
+                    listings = paginator.page(paginator.num_pages)
+                # Serialize listing results into geojson object
+                listings_geojson = serialize('geojson', listings,
+                    fields=('title', 'user', 'listing_type', 'location', 'address', 'description', 'rate', 'timestamp'))
                 
                 # Return objects to search.html
                 return render(request, "servapp/search.html", 
-                    {'services': services, 
-                    'services_geojson': services_geojson,
+                    {'listings': listings, 
+                    'listings_geojson': listings_geojson,
                     'polygon_geojson': polygon_geojson,
                     'center': center, 'bbox': bbox,
-                    'service_type': service_type, 'location': location, 
+                    'listing_type': listing_type, 'location': location, 
                     'mapbox_access_token': MAPBOX_ACCESS_TOKEN},
                     status=200) 
         else:
             return HttpResponseRedirect(reverse("home"))
 
 @csrf_exempt
-def service(request, title):
+def listing(request, title):
     errors = []
     print(request.user.username)
     try:
-        listing = Service.objects.get(title=title)
+        listing = Listing.objects.get(title=title)
         data = serializers.serialize('geojson', [listing,])
         struct = json.loads(data)
         data = json.dumps(struct)
-        reviews = Review.objects.order_by('-timestamp').filter(service=listing).all()
-        services = listing.services.split(',')
-        if services == ['']:
-            services = []
+        reviews = Review.objects.order_by('-timestamp').filter(listing=listing).all()
+        listings = listing.listings.split(',')
+        if listings == ['']:
+            listings = []
 
-        print(services)
+        print(listings)
         # Create review
         if request.method == "POST":
             # Check if user is logged in
@@ -269,23 +270,23 @@ def service(request, title):
                 username = request.POST["username"]
                 print(username)
                 user = User.objects.get(username=username)
-                listing = Service.objects.get(title=title)
+                listing = Listing.objects.get(title=title)
                 # Check for errors
                 errors = review_validation.check_review(text, stars, title, username)
                 if not errors and request.user != username:
-                    Review.objects.create(stars=stars, text=text, user=user, service=listing)
-                    reviews = Review.objects.order_by('-timestamp').filter(service=listing).all()
+                    Review.objects.create(stars=stars, text=text, user=user, listing=listing)
+                    reviews = Review.objects.order_by('-timestamp').filter(listing=listing).all()
             else:
                 return HttpResponseRedirect(reverse("login"))
     
-    except Service.DoesNotExist:
+    except Listing.DoesNotExist:
         listing = None
         reviews = None
 
-    return render(request, "servapp/service.html",
+    return render(request, "servapp/listing.html",
         {'listing': listing, 'reviews': reviews,
         'listing_geojson': data, 'errors': errors,
-        'services': services,
+        'listings': listings,
         'mapbox_access_token': MAPBOX_ACCESS_TOKEN}, 
         status=200)
 
@@ -293,11 +294,11 @@ def service(request, title):
 # def edit_review(request):
 #     if request.method == "POST":
 #         username = request.POST["username"]
-#         service_title = request.POST["title"]
+#         listing_title = request.POST["title"]
 #         stars = request.POST["stars"]
 #         text = request.POST["text"]
 
-#         return HttpResponseRedirect(reverse('service', args=[service_title]))
+#         return HttpResponseRedirect(reverse('listing', args=[listing_title]))
 #     else:
 #             return HttpResponseRedirect(reverse("home"))
 
@@ -316,9 +317,9 @@ def get_user(request, id):
     safe=False)
 
 def get_reviews(request, title):
-    service = Service.objects.get(title=title)
+    listing = Listing.objects.get(title=title)
 
-    reviews = Review.objects.filter(listing=service).all()
+    reviews = Review.objects.filter(listing=listing).all()
     
     return JsonResponse([review.serialize() for review in reviews],
     status=200,

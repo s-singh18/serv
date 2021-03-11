@@ -52,7 +52,7 @@ Refer to the docs for detailed instructions on installing these dependencies on 
 
 ### Setup Database
 
-To access the database, two options can be used, either install the database on your computer or run a docker instance.  I personally installed the database on the computer, so I have detailed some of that process below, however following this [tutorial](https://realpython.com/location-based-app-with-geodjango-tutorial/#creating-a-django-application), a docker image can provide a container with PostgreSQL and PostGis pre-installed.  
+To access the database, two options can be used, either install the database on your computer or run a docker instance.  Detailed below is the process to install the database on your computer, however following this [tutorial](https://realpython.com/location-based-app-with-geodjango-tutorial/#creating-a-django-application), a docker image can provide a container with PostgreSQL and PostGis pre-installed.  
 
 To run this program, install a [PostgreSQL database](https://www.postgresql.org/download/).
 
@@ -69,7 +69,7 @@ In the settings.py file, configure the database to your settings.
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'gis',
+        'NAME': '<database-name-here>',
         'USER': '<your-username-here>',
 
     }

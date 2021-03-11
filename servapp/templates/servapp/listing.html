@@ -44,7 +44,7 @@
                         <hr>
                     </div>
                 {% empty %}
-                    <h3 class="review-user">No reviews for {{ listing.title|title }}</h3>
+                    <h3 class="review-user">No reviews for {{ listing.title }}</h3>
                 {% endfor %}
             </div>
             <input id='mapbox-access-token' type="hidden" value= "{{ mapbox_access_token }}">
@@ -69,9 +69,9 @@
                     <div class="card">
                         <div class="card-header" id="listings-header">
                                 <button class="btn btn-link text-left" id="listings-button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                                    Listings</button>
+                                    Services</button>
                         </div>
-                        <div id="collapseOne" class="panel-collapse show card-body" aria-labelledby="headingOne" data-parent="#accordion">
+                        <div id="collapseOne" class="panel-collapse show card-body" aria-labelledby="headingOne">
                             {% for listing in listings %}
                                 <button type="button" class="btn btn-primary btn-sm">{{ listing }}</button>
                             {% empty %}
@@ -106,7 +106,7 @@
                         </h5>
                     </div>
               
-                    <div id="collapseTwo" class="panel-collapse collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+                    <div id="collapseTwo" class="panel-collapse collapse" aria-labelledby="headingTwo">
                         <table class="table table-bordered table-responsive-md" id="calendar">
                             <thead>
                             <tr>

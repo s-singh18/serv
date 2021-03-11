@@ -59,7 +59,7 @@
     // search_field.className = "mapboxgl-ctrl-geocoder--input"
     // search_field.id = "search-field"
     // search_field.type = "text";
-    // search_field.placeholder = "Service Type";
+    // search_field.placeholder = "Listing Type";
 
     // let search_button = document.createElement("input");
     // search_button.className = "btn btn-primary"
@@ -75,10 +75,10 @@
     
     // // search_form.addEventListener("submit", (event) => {
     // geocoder_index.on('result', (search_data) => {
-    //     let service_type = document.querySelector('#search-field').value;
+    //     let listing_type = document.querySelector('#search-field').value;
     //     let location = search_data.result.place_name;
-    //     if (service_type !== "") {
-    //         fetch(`search/${service_type}/${location}`)
+    //     if (listing_type !== "") {
+    //         fetch(`search/${listing_type}/${location}`)
     //         .then(response => response.json())
     //         // .then(result => console.log(result))
 
@@ -110,7 +110,7 @@
 //     search_field.className = "mapboxgl-ctrl-geocoder--input"
 //     search_field.id = "search-field"
 //     search_field.type = "text";
-//     search_field.placeholder = "Service";
+//     search_field.placeholder = "Listing";
 
 //     let search_button = document.createElement("input");
 //     search_button.className = "btn btn-primary"
@@ -134,7 +134,7 @@
 
 // }
 
-// function search(search_data, service_type) {
+// function search(search_data, listing_type) {
 //     // event.preventDefault();
 //     // event.stopPropagation();
 //     currentPage = 1;
@@ -156,11 +156,11 @@
 
 
 
-//     // let service_type = document.querySelector("#search-field").value;
+//     // let listing_type = document.querySelector("#search-field").value;
 //     let location = search_data.result.place_name;
 
 //     // If either search box is empty no submit
-//     if (service_type !== "" && location !== "") {
+//     if (listing_type !== "" && location !== "") {
         
 //         // Clear listings view
 //         if (document.querySelector('.listings-view').hasChildNodes()) {
@@ -175,12 +175,12 @@
 //         //     poly = location_data[0].geojson
 //         //     console.log(poly);
         
-//             // Get listings from database based on service type and location
-//             fetch(`search/${service_type}/${location}`)
+//             // Get listings from database based on listing type and location
+//             fetch(`search/${listing_type}/${location}`)
 //             // fetch("/search", {
 //             // method: "POST",
 //             // body: JSON.stringify({
-//             //     service_type: service_type,
+//             //     listing_type: listing_type,
 //             //     polygon_coordinates: poly.coordinates,
 //             //     }),
 //             // })
@@ -188,7 +188,7 @@
 //             .then(geojson_data => {       
 //                 // ...use `response.json`, `response.text`, etc. here
 //                 console.log(geojson_data)
-//                 let listings = JSON.parse(geojson_data.services);
+//                 let listings = JSON.parse(geojson_data.listings);
 //                 let polygon = geojson_data.polygon;
 
 //                 // console.log(listings.features[1].geometry.coordinates);      
@@ -231,7 +231,7 @@
 //                 if (listings == undefined) {
 //                     let result = document.createElement('h3');
 //                     result.id = "card-border";
-//                     result.innerHTML = `No results for ${service_type} at ${location}`;
+//                     result.innerHTML = `No results for ${listing_type} at ${location}`;
 //                     document.querySelector(".listings-view").appendChild(result);
 //                 } else {
 //                     listings.features.forEach(listing => {
@@ -254,7 +254,7 @@
 //                             let popup_para = document.createElement('p');
 
 //                             popup_title.innerHTML = `<h4>${listing.properties.title}</h4>`;
-//                             popup_para.innerHTML = listing.properties.service_type;
+//                             popup_para.innerHTML = listing.properties.listing_type;
 
 //                             popup_div.appendChild(popup_title);
 //                             popup_div.appendChild(popup_para);
@@ -267,7 +267,7 @@
 //                             .addTo(map);
 
 //                             popup_title.addEventListener("click", (marker) => {
-//                                 service_page(listing.properties, user_data.username);
+//                                 listing_page(listing.properties, user_data.username);
 //                             })
 
 //                             let card_border = document.createElement("div");
@@ -285,7 +285,7 @@
 //                             card_title.className = "card-title";
 //                             card_title.innerHTML = listing.properties.title;
 //                             card_title.addEventListener("click", () => {
-//                                 service_page(listing.properties, user_data.username);
+//                                 listing_page(listing.properties, user_data.username);
 //                             });
 
 //                             let card_subtitle = document.createElement("h6");
@@ -331,7 +331,7 @@
 
 
 
-// function service_page(properties, owner) {
+// function listing_page(properties, owner) {
 //     document.querySelector('.results-view').style.display = "none";
 //     document.querySelector('.listings-view').style.display = "none"; 
 //     document.querySelector('.map-view').style.display = "none";
@@ -345,7 +345,7 @@
 //     // Display property elements
 //     document.querySelector('.properties-title').innerHTML = properties.title;
 //     document.querySelector('.properties-owner').innerHTML = `Owner: ${owner}`;
-//     document.querySelector('.properties-service-type').innerHTML = properties.service_type;
+//     document.querySelector('.properties-listing-type').innerHTML = properties.listing_type;
 //     document.querySelector('.properties-rate').innerHTML = `Rate: ${properties.rate}/hr`;  
 //     document.querySelector('.properties-description').innerHTML = properties.description;
     
@@ -355,12 +355,12 @@
 //     console.log(owner)
 //     if (username != undefined && username != "") {
 //         create_review.style.display = 'block';
-//         let service_title = document.createElement('input');
-//         service_title.type = 'hidden';
-//         service_title.name = 'service_title';
-//         service_title.id = 'service-title';
-//         service_title.value = properties.title;
-//         document.querySelector('#review-form').appendChild(service_title)
+//         let listing_title = document.createElement('input');
+//         listing_title.type = 'hidden';
+//         listing_title.name = 'listing_title';
+//         listing_title.id = 'listing-title';
+//         listing_title.value = properties.title;
+//         document.querySelector('#review-form').appendChild(listing_title)
 
 //     } else {
 //         create_review.style.display = 'none';

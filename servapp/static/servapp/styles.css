@@ -161,7 +161,7 @@ a.btn.btn-primary:hover {
     position: relative;
 }
 
-.service-view {
+.listing-view {
     float: right;
     width: 100%;
     margin-bottom: 6px;
@@ -336,7 +336,7 @@ a.btn.btn-primary:hover {
     color: white;
 }
 
-.listing-service-type {
+.listing-listing-type {
     color: white;
 }
 

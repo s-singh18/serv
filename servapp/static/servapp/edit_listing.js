@@ -25,9 +25,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
 function load_map() {
     var accessToken = document.querySelector('#mapbox-access-token').value;
-    let service_geojson = JSON.parse(document.querySelector('#service-geojson').value);
+    let listing_geojson = JSON.parse(document.querySelector('#listing-geojson').value);
     let address = document.querySelector('#address').value;
-    let coordinates = [service_geojson.features[0].geometry.coordinates[1], service_geojson.features[0].geometry.coordinates[0]];
+    let coordinates = [listing_geojson.features[0].geometry.coordinates[1], listing_geojson.features[0].geometry.coordinates[0]];
     console.log(coordinates);
     // [lat, lon]
     document.querySelector('#location').value = coordinates;

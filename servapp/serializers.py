@@ -1,7 +1,7 @@
 from rest_framework.serializers import HyperlinkedModelSerializer
 from rest_framework_gis.serializers import GeoFeatureModelSerializer, GeometrySerializerMethodField
 from django.contrib.gis.geos import Point
-from servapp.models import User, Service, Review
+from servapp.models import User, Listing, Review
 
 
 # class GeneralSerializer(serializers.ModelSerializer):
@@ -14,19 +14,19 @@ class UserSerializer(HyperlinkedModelSerializer):
         fields = ('id', 'username')
         # fields = "__all__"
 
-class ServiceSerializer(GeoFeatureModelSerializer):
+class ListingSerializer(GeoFeatureModelSerializer):
     # user = UserSerializer(read_only=True, many=False) # you need to do this
 
     class Meta:
-        model = Service
+        model = Listing
         geo_field = "location"
-        fields = ('id', 'title', 'user', 'service_type', 'location', 'address', 'description', 'rate')
+        fields = ('id', 'title', 'user', 'listing_type', 'location', 'address', 'description', 'rate')
 
 class ReviewSerializer(HyperlinkedModelSerializer):
     # user = UserSerializer(read_only=True, many=False) # you need to do this
-    # service = ServiceSerializer(read_only=True, many=False) # you need to do this
+    # listing = ListingSerializer(read_only=True, many=False) # you need to do this
     
     class Meta:
         model = Review
-        fields = ('id', 'stars', 'text', 'user', 'service')
+        fields = ('id', 'stars', 'text', 'user', 'listing')
         # fields = "__all__"

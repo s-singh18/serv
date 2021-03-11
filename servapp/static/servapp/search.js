@@ -6,11 +6,11 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 function search() {
-    let services_geojson = JSON.parse(document.querySelector('#services_geojson').value);
+    let listings_geojson = JSON.parse(document.querySelector('#listings_geojson').value);
     let polygon_geojson = JSON.parse(document.querySelector('#polygon_geojson').value);
     let center = JSON.parse(document.querySelector('#center').value);
     let bbox = JSON.parse(document.querySelector('#bbox').value);
-    let service_type = document.querySelector('#service_type').value;
+    let listing_type = document.querySelector('#listing_type').value;
     let location = document.querySelector('#location').value;
     mapboxgl.accessToken = document.querySelector('#mapbox-access-token').value;
 
@@ -24,7 +24,7 @@ function search() {
     let titles = document.getElementsByClassName("card-title");
     var counter = 0;
 
-    services_geojson.features.forEach(listing => {                    
+    listings_geojson.features.forEach(listing => {                    
         // make a marker for each feature and add to the map
         let popup_div = document.createElement('div');
         let popup_title = document.createElement('a');
@@ -35,7 +35,7 @@ function search() {
 
         // popup_title.innerHTML = `<h4>${listing.properties.title}</h4>`;
         popup_title.innerHTML = `<h5>${url}</h5>`;
-        popup_para.innerHTML = listing.properties.service_type;
+        popup_para.innerHTML = listing.properties.listing_type;
 
         popup_div.appendChild(popup_title);
         popup_div.appendChild(popup_para);

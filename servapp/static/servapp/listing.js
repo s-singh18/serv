@@ -1,13 +1,13 @@
 document.addEventListener("DOMContentLoaded", function () {
     
-    service_page();
+    listing_page();
     // edit_review();
     
 
 });
 
 
-function service_page(properties, owner) {
+function listing_page(properties, owner) {
     let mapbox_access_token = document.querySelector('#mapbox-access-token').value;
     let listing_geojson = JSON.parse(document.querySelector('#listing-geojson').value);
     console.log(listing_geojson)
@@ -81,7 +81,7 @@ function service_page(properties, owner) {
 //             method: "POST",
 //             body: JSON.stringify({
 //                 username: document.querySelector('#listing-title').value,
-//                 service_title: service_title,
+//                 listing_title: listing_title,
 //                 stars: stars,
 //                 text: text,
 //                 }),

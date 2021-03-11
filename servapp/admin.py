@@ -4,17 +4,17 @@ from django.contrib import admin
 
 # Register your models here.
 
-from .models import User, Service, Review
+from .models import User, Listing, Review
 
 # Register your models here.
 admin.site.register(User)
 
 
-@admin.register(Service)
-class ServiceAdmin(LeafletGeoAdmin):
+@admin.register(Listing)
+class ListingAdmin(LeafletGeoAdmin):
     list_display = ('title', 'location')
 
-    # search_fields = ('service_type','location')
+    # search_fields = ('listing_type','location')
 
     # def get_search_results(self, request, queryset, search_term):
     #     queryset, use_distinct = super().get_search_results(request, queryset, search_term)

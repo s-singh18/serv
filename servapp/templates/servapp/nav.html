@@ -14,7 +14,7 @@
                     <div id="geocoder-nav" class="geocoder-nav">
                         <form class="form-inline" method="GET" action="{% url 'search' %}">
                             <div class="form-group">
-                                <input class="form-control" id="service-input" type="text" name="service_type" placeholder="Service Type">
+                                <input class="form-control" id="listing-input" type="text" name="listing_type" placeholder="Listing Type">
                             </div>
                             <div class="form-group">
                                 <input class="form-control" id="location-input" type="text" name="location" placeholder="Location">
@@ -32,10 +32,10 @@
                         <a class="nav-link" href="{% url 'profile' %}">{{ user.username }}</a>
                     </li>
                     <li class="nav-item">
-                        {% if request.session.service == None %}
-                            <a class="nav-link" href="{% url 'create_service' %}">Create Service</a>
+                        {% if request.session.listing == None %}
+                            <a class="nav-link" href="{% url 'create_listing' %}">Create Listing</a>
                         {% else %}
-                            <a class="nav-link" href="{% url 'service' request.session.service %}">{{ request.session.service }}</a>
+                            <a class="nav-link" href="{% url 'listing' request.session.listing %}">{{ request.session.listing }}</a>
                         {% endif %}
                     </li>
                     <li class="nav-item">
@@ -43,7 +43,7 @@
                     </li>
                 {% else %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'create_service' %}">Create Service</a>
+                        <a class="nav-link" href="{% url 'create_listing' %}">Create Listing</a>
                     </li>
                     <li class="nav-item" id="nav-login">
                         <a class="nav-link" nav-link" href="{% url 'login' %}">Log In</a>
@@ -62,5 +62,5 @@
 {% endblock %}
 
 {% block script %}
-    <!-- <script src="{% static 'servapp/service.js' %}"></script> -->
+    <!-- <script src="{% static 'servapp/listing.js' %}"></script> -->
 {% endblock %}

@@ -1,15 +1,15 @@
 import re
 
-from .models import User, Service, Review
+from .models import User, Listing, Review
 
-class ServiceValidation():
+class ListingValidation():
 
-    def check_create_service(self, title, service_type, address, description, username):
+    def check_create_listing(self, title, listing_type, address, description, username):
         error = []
         if self.check_title(title) is not None:
             error.append(self.check_title(title))
-        if self.check_type(service_type) is not None:
-            error.append(self.check_type(service_type))
+        if self.check_type(listing_type) is not None:
+            error.append(self.check_type(listing_type))
         if self.check_address(address) is not None:
             error.append(self.check_address(address))
         if self.check_description(description) is not None:
@@ -20,12 +20,12 @@ class ServiceValidation():
 
         return error
 
-    def check_edit_service(self, title, service_type, address, description):
+    def check_edit_listing(self, title, listing_type, address, description):
         error = []
         if self.check_title(title) is not None:
             error.append(self.check_title(title))
-        if self.check_type(service_type) is not None:
-            error.append(self.check_type(service_type))
+        if self.check_type(listing_type) is not None:
+            error.append(self.check_type(listing_type))
         if self.check_address(address) is not None:
             error.append(self.check_address(address))
         if self.check_description(description) is not None:
@@ -46,15 +46,15 @@ class ServiceValidation():
             error = None
         return error
 
-    def check_type(self, service_type):
-        if service_type is "":
+    def check_type(self, listing_type):
+        if listing_type is "":
             error = "No type given"
-        elif len(service_type) > 114:
-            error = "Invalid service type"
-        elif re.match("^\w+$", service_type) is False:
-            error = "Invalid service type"
-        elif service_type.isspace():
-            error = "Invalid service type"
+        elif len(listing_type) > 114:
+            error = "Invalid listing type"
+        elif re.match("^\w+$", listing_type) is False:
+            error = "Invalid listing type"
+        elif listing_type.isspace():
+            error = "Invalid listing type"
         else:
             error = None
         return error
@@ -83,8 +83,8 @@ class ServiceValidation():
 
     def check_unique(self, username):
         user = User.objects.get(username=username)
-        if Service.objects.filter(user=user).exists():
-            error = "Limit one service per user"
+        if Listing.objects.filter(user=user).exists():
+            error = "Limit one listing per user"
         else:
             error = None
         return error
@@ -124,9 +124,9 @@ class ReviewValidation():
 
     def check_unique(self, title, username):
         user = User.objects.get(username=username)
-        service = Service.objects.get(title=title)
-        if Review.objects.filter(user=user, service=service).exists():
-            error = "Review for this service already exists"
+        listing = Listing.objects.get(title=title)
+        if Review.objects.filter(user=user, listing=listing).exists():
+            error = "Review for this listing already exists"
         else:
             error = None
         return error
