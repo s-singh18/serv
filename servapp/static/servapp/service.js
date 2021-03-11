@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
     
     service_page();
-    edit_review();
+    // edit_review();
     
 
 });

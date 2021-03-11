@@ -255,7 +255,11 @@ def service(request, title):
         struct = json.loads(data)
         data = json.dumps(struct)
         reviews = Review.objects.order_by('-timestamp').filter(service=listing).all()
-        
+        services = listing.services.split(',')
+        if services == ['']:
+            services = []
+
+        print(services)
         # Create review
         if request.method == "POST":
             # Check if user is logged in
@@ -281,6 +285,7 @@ def service(request, title):
     return render(request, "servapp/service.html",
         {'listing': listing, 'reviews': reviews,
         'listing_geojson': data, 'errors': errors,
+        'services': services,
         'mapbox_access_token': MAPBOX_ACCESS_TOKEN}, 
         status=200)
 

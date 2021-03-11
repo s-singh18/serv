@@ -16,6 +16,7 @@ class Service(models.Model):
     location = models.PointField()
     address = models.CharField(max_length=300, blank=False)
     description = models.TextField(blank=True)
+    services = models.TextField(blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 
 class Review(models.Model): 
@@ -27,10 +28,9 @@ class Review(models.Model):
 
 class Booking(models.Model):
     service = models.ForeignKey(Service, on_delete=models.CASCADE, related_name="service")
-    booking_type = models.CharField(max_length=300, blank=False, default=False)
+    booking_service = models.TextField(max_length=300, blank=False, default=False)
     client = models.ForeignKey(User, on_delete=models.CASCADE, related_name="client")
     provider = models.ForeignKey(User, on_delete=models.CASCADE, related_name="provider")
     booking_time = models.DateField(auto_now_add=True)
     booking_start = models.DateTimeField()
-    booking_end = models.DateTimeField()
     rate = models.CharField(max_length=300)

@@ -49,21 +49,102 @@
             </div>
             <input id='mapbox-access-token' type="hidden" value= "{{ mapbox_access_token }}">
             <input id='map-icon' type="hidden" value="{% static 'servapp/mapbox-icon.png' %}">
-            {% endblock %}
+            
         </div>
     </div>
 
     <div class="left-div">
-        {% if listing.user.username == user.username %}
-            <a class="edit-link" id="edit-service" href="{% url 'edit_service' listing.title %}">Edit</a>
-        {% endif %}
-    </div>
+        <!-- <div class="edit-view">
+            
+        </div> -->
+
         
+
+        <div class="calendar-view">
+            {% if listing.user.username == user.username %}
+                <a class="edit-link" id="edit-service" href="{% url 'edit_service' listing.title %}">Edit</a>
+            {% endif %}
+            <div id="accordion">
+                <div class="service-view">
+                    <div class="card">
+                        <div class="card-header" id="services-header">
+                                <button class="btn btn-link text-left" id="services-button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                    Services</button>
+                        </div>
+                        <div id="collapseOne" class="panel-collapse show card-body" aria-labelledby="headingOne" data-parent="#accordion">
+                            {% for service in services %}
+                                <button type="button" class="btn btn-primary btn-sm">{{ service }}</button>
+                            {% empty %}
+                                <p>None specified</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header" id="headingTwo">
+                        <h5 class="mb-0">
+                            <div id="header-box">
+                                <button id="monthAndYear" class="btn btn-link text-left" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+                                </button>
+                                
+                                <form class="form-inline d-flex flex-nowrap" id="month-year">
+                                    <select class="form-control col-sm-6" name="month" id="month" onchange="jump()">
+                                    </select>
+
+                                    <label for="year"></label>
+                                    <select class="form-control col-sm-6" name="year" id="year" onchange="jump()">                                
+                                    </select>
+                                </form>
+                                <div id="arrow-buttons">
+                                    <button class="btn btn-sm btn-outline-primary py-0" id="previous-button" onclick="previous()"><</button>
+                                    <button class="btn btn-sm btn-outline-primary py-0" id="next-button" onclick="next()">></button>
+                                </div>
+                                   
+                            </div>
+                            
+                        </h5>
+                    </div>
+              
+                    <div id="collapseTwo" class="panel-collapse collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+                        <table class="table table-bordered table-responsive-md" id="calendar">
+                            <thead>
+                            <tr>
+                                <th>Sun</th>
+                                <th>Mon</th>
+                                <th>Tue</th>
+                                <th>Wed</th>
+                                <th>Thu</th>
+                                <th>Fri</th>
+                                <th>Sat</th>
+                            </tr>
+                            </thead>
+                
+                            <tbody id="calendar-body">
+                
+                            </tbody>
+                        </table>
+                        <br/>
+                    </div>
+                    <table class="table table-bordered table-responsive-md" id="week-calendar">
+                        <thead class="week-head">
+
+                        </thead>
+                    </table>
+                    <div class="card-body">
+                        Appointments:
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     
     
+{% endblock %}
     
     
 
 {% block script %}
-    <script src="{% static 'servapp/service.js' %}"></script>
+    <!-- <script src="{% static 'servapp/service.js' %}"></script> -->
+    <script src="{% static 'servapp/calendar.js' %}"></script>
 {% endblock %}
