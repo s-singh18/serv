@@ -16,15 +16,24 @@ class Listing(models.Model):
     location = models.PointField()
     address = models.CharField(max_length=300, blank=False)
     description = models.TextField(blank=True)
-    listings = models.TextField(blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 
 class Review(models.Model): 
     stars = models.CharField(max_length=300, blank=False)
     text = models.TextField(blank=True, default=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="writer")
-    listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name="listing")
+    listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name="review_listing")
     timestamp = models.DateTimeField(auto_now_add=True)
 
-# class Service(models.Model):
+class Service(models.Model):
+    name = models.CharField(max_length=300, blank=False)
+    rate = models.CharField(max_length=300, blank=False)
+    times = models.TextField();
+    days = models.TextField();
+    listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name="service_listing")
+
+
+
+
+    
 

@@ -126,16 +126,48 @@ a.btn.btn-primary:hover {
     
 }
 
-.left-div {
+.listing-page-right {
     height: 100%;
     width: 50%;
     float: left;
 }
 
-.right-div {
+.listing-page-left {
     height: 100%;
     width: 50%;
     float: left;
+}
+
+.left-div {
+    height: 100%;
+    width: 51%;
+    float: left;
+}
+
+
+.right-div {
+    height: 100%;
+    width: 49%;
+    float: left;
+}
+
+
+#appointment-body {
+    height: 100%;
+    padding-bottom: 0px;   
+}
+
+.vertical-line {
+    margin-top: 30px;
+    width: 1px;
+    min-height: 60px;
+    height: 100%;
+    border: 1px solid black; 
+}
+
+.centered-paragraph {
+    text-align: center;
+
 }
 
 .listings-view {
@@ -188,6 +220,10 @@ a.btn.btn-primary:hover {
     position: relative;
 }
 
+@media only screen and (max-device-width: 480px) {
+    .left_div{display:none;}
+}
+
 .calendar-view {
     margin-top: 0px;
     padding-top: 0px;
@@ -200,6 +236,7 @@ a.btn.btn-primary:hover {
     float: left;
     width: 100%;
 }
+
 
 #header-box {
     display: flex;
@@ -267,7 +304,53 @@ a.btn.btn-primary:hover {
     text-align: center;
 }
 
+.appointment-div {
+    text-align: left;
+}
 
+.card-div {
+    border-right: 1px solid black;
+}
+
+#appointment-pm {
+    padding-left: 20px;
+}
+
+.service-button {
+    color: white;
+    background-color: #430281;
+    margin-right: 6px;
+}
+
+.invisible-button:disabled {
+    background: transparent;
+    border: none !important;
+    color: transparent;
+    pointer-events: none;
+    
+}
+/* .invisible-button:hover {
+    background: transparent;
+    border: none !important;
+    color: transparent;
+    
+} */
+
+.appointment-button {
+    margin: 3px;
+    color: white;
+    background-color: #430281;
+}
+
+.book-container {
+    padding: 6px;
+}
+
+.book-button {
+    color: white;
+    background-color: #430281;
+    font-size: x-large;
+}
 #week-calendar {
     border-color: black;
 }
@@ -303,10 +386,12 @@ a.btn.btn-primary:hover {
 
 
 .month-selected {
+    color: white;
     background-color: #430281;
 }
 
 .week-selected {
+    color: white;
     background-color: #430281;
 }
 

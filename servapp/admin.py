@@ -4,7 +4,7 @@ from django.contrib import admin
 
 # Register your models here.
 
-from .models import User, Listing, Review
+from .models import User, Listing, Review, Service
 
 # Register your models here.
 admin.site.register(User)
@@ -27,3 +27,4 @@ class ListingAdmin(LeafletGeoAdmin):
     #     return queryset, use_distinct
 
 admin.site.register(Review)
+admin.site.register(Service)

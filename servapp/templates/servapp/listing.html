@@ -3,7 +3,7 @@
 {% load static %}
 
 {% block body %}
-    <div class="right-div">
+    <div class="listing-page-right">
         <h1 class="listing-title" id="listing-title">{{ listing.title }}</h1>
         <h3 class="listing-owner">{{ listing.user }}</h3>
         <h5 class="listing-listing-type">{{ listing.listing_type }}</h4>
@@ -53,13 +53,7 @@
         </div>
     </div>
 
-    <div class="left-div">
-        <!-- <div class="edit-view">
-            
-        </div> -->
-
-        
-
+    <div class="listing-page-left">
         <div class="calendar-view">
             {% if listing.user.username == user.username %}
                 <a class="edit-link" id="edit-listing" href="{% url 'edit_listing' listing.title %}">Edit</a>
@@ -72,11 +66,13 @@
                                     Services</button>
                         </div>
                         <div id="collapseOne" class="panel-collapse show card-body" aria-labelledby="headingOne">
-                            {% for listing in listings %}
-                                <button type="button" class="btn btn-primary btn-sm">{{ listing }}</button>
-                            {% empty %}
-                                <p>None specified</p>
-                            {% endfor %}
+                            <div class="form-inline" id="service-button-container">
+                                {% for service in services %}
+                                    <button type="button" class="btn btn-primary btn-sm service-button" id="{{ service.name }}">{{ service.name }} - ${{ service.rate }}</button>
+                                {% empty %}
+                                    <p>None specified</p>
+                                {% endfor %}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -87,7 +83,6 @@
                             <div id="header-box">
                                 <button id="monthAndYear" class="btn btn-link text-left" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
                                 </button>
-                                
                                 <form class="form-inline d-flex flex-nowrap" id="month-year">
                                     <select class="form-control col-sm-6" name="month" id="month" onchange="jump()">
                                     </select>
@@ -99,10 +94,8 @@
                                 <div id="arrow-buttons">
                                     <button class="btn btn-sm btn-outline-primary py-0" id="previous-button" onclick="previous()"><</button>
                                     <button class="btn btn-sm btn-outline-primary py-0" id="next-button" onclick="next()">></button>
-                                </div>
-                                   
-                            </div>
-                            
+                                </div>   
+                            </div>    
                         </h5>
                     </div>
               
@@ -131,9 +124,26 @@
 
                         </thead>
                     </table>
-                    <div class="card-body">
-                        Appointments:
+                    <div class="card-body" id="appointment-body">
+                        <h6>Appointments:</h6>
+                        <div class="right-div card-div">
+                            <p class="centered-paragraph"><u>AM</u></p>
+                            <div class="appointment-div" id="appointment-am">
+                            </div>
+                        </div>
+                        <div class="left-div">
+                            <p class="centered-paragraph"><u>PM</u></p>
+                            <div class="appointment-div" id="appointment-pm">
+
+                            </div>
+                        </div>
+
                     </div>
+                    <hr>
+                    <div class="book-container">
+                        <button type="button" class="btn btn-primary btn-lg btn-block book-button">Book Now!</button>
+                    </div>
+                   
                 </div>
             </div>
         </div>
@@ -147,4 +157,5 @@
 {% block script %}
     <!-- <script src="{% static 'servapp/listing.js' %}"></script> -->
     <script src="{% static 'servapp/calendar.js' %}"></script>
+    <!-- <script src="{% static 'servapp/appointment.js' %}"></script> -->
 {% endblock %}

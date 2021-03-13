@@ -19,11 +19,22 @@ var month_selected_element;
 var week_selected_element;
 var future_week_selected_id;
 
+var selectedDay;
+var selectedDate;
+var selectedMonth;
+var selectedYear;
+
+// From appointment.js
+var selectedServiceButton;
+var selectedAppointmentButton;
+
 document.addEventListener("DOMContentLoaded", function () {
+    clickServiceButton();
     setMonth();
     setYear();
     showCalendar(currentMonth, currentYear);
     showWeekCalendar(currentDay, currentDate, currentMonth, currentYear);
+    
 
 });
 
@@ -226,6 +237,7 @@ function showWeekCalendar(day, date, month, year) {
     if (future_week_selected_id == undefined) {
         th.className = "week-cell week-selected";
         week_selected_element = th; 
+        setSelectedDates(day, date, month, year);
     } else {
         th.className = "week-cell";
     }
@@ -248,6 +260,7 @@ function showWeekCalendar(day, date, month, year) {
         month_element.className = "month-cell month-selected";
         month_selected_element = month_element;
         future_week_selected_id = undefined;
+        setSelectedDates(day, date, month, year);
     });
     
     row.appendChild(th);
@@ -291,6 +304,7 @@ function showWeekCalendar(day, date, month, year) {
                 td.className = "week-cell week-selected";
                 week_selected_element = td;  
                 let date_elements = week_selected_element.id.split("-");
+                let selected_date = parseInt(date_elements[0]);
                 let selected_month = parseInt(date_elements[1]);
                 let selected_year = parseInt(date_elements[2]);
                 if (selected_month != selectMonth.value || selected_year != selectYear.value) {
@@ -303,6 +317,8 @@ function showWeekCalendar(day, date, month, year) {
                 month_element.className = "month-cell month-selected";
                 month_selected_element = month_element;
                 future_week_selected_id = undefined;
+                let new_date = new Date(selected_year, selected_month, selected_date);
+                setSelectedDates(new_date.getDay(), selected_date, selected_month, selected_year);
             });
         } else {
             td.innerHTML = `<h6 class="week-date">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</h6>
@@ -325,12 +341,6 @@ function showWeekCalendar(day, date, month, year) {
     // If arrow buttons used to change week view
     if (future_week_selected_id != undefined) {
         updateSelectedElements(future_week_selected_id);
-        // week_selected_element.className = "week-cell";
-        // month_selected_element.className = "month-cell";
-        // week_selected_element = document.getElementById(future_week_selected_id);
-        // month_selected_element = document.getElementById(future_week_selected_id.concat("-month"));
-        // month_selected_element.className = "month-cell month-selected";
-        // week_selected_element.className = "week-cell week-selected";
     }
         
     row.prepend(left_button);
@@ -540,16 +550,18 @@ function showWeekCalendar(day, date, month, year) {
 function updateSelectedElements(date_string) {
     let new_week_selected_element = document.getElementById(date_string);
     let new_month_selected_element = document.getElementById(date_string.concat("-month"));
+    let date_elements = date_string.split("-");
+    let selected_date = parseInt(date_elements[0]);
+    let selected_month = parseInt(date_elements[1]);
+    let selected_year = parseInt(date_elements[2]);
     if (new_month_selected_element == null) {
-        let date_elements = date_string.split("-");
-        let selected_date = parseInt(date_elements[0]);
-        let selected_month = parseInt(date_elements[1]);
-        let selected_year = parseInt(date_elements[2]);
         selectMonth.value = selected_month;
         selectYear.value = selected_year;
         jump();
         new_month_selected_element = document.getElementById(date_string.concat("-month"));
     }
+    let new_date = new Date(selected_year, selected_month, selected_date);
+    setSelectedDates(new_date.getDay(), new_date.getDate(), new_date.getMonth(), new_date.getFullYear());
     week_selected_element.className = "week-cell";
     month_selected_element.className = "month-cell";
     new_week_selected_element.className = "week-cell week-selected";
@@ -557,4 +569,115 @@ function updateSelectedElements(date_string) {
     week_selected_element = new_week_selected_element;
     month_selected_element = new_month_selected_element;
     future_week_selected_id = undefined;
+}
+
+function setSelectedDates(day, date, month, year) {
+    selectedDay = day;
+    selectedDate = date;
+    selectedMonth = month;
+    selectedYear = year;
+    // On new selected days load appointments for that day
+    loadAppointments()
+}
+
+// From appointments.js
+
+function clickServiceButton() {
+    let service_buttons = Array.from(document.getElementsByClassName('service-button'));
+    if (service_buttons == undefined) {
+        let appointment_body = document.getElementById("appointment-body");
+        appointment_body.innerHTML = "No Appointments.";
+    } else {
+        // Load appointments for first element
+        selectedServiceButton = service_buttons[0];
+        selectedServiceButton.disabled = true;
+        selectedServiceButton.classList.add("active");
+        loadAppointments();
+        
+        // add click event listener and button presser to all elements
+        service_buttons.forEach(element => {
+            console.log(element)
+            // First element
+
+            // Listen to each button to see if it is clicked
+            element.addEventListener('click', () => {
+                selectedServiceButton.disabled = false;
+                selectedServiceButton.classList.remove("active");
+                selectedServiceButton = element;
+                selectedServiceButton.disabled = true;
+                selectedServiceButton.classList.add("active");
+                loadAppointments();
+            });
+        });
+    }
+    let index = 0;
+    
+}
+
+function loadAppointments() {
+    let listing_title = document.getElementById("listing-title").innerText;
+    fetch(`/get_appointments/${listing_title}/${selectedServiceButton.id}/${selectedDay}/${selectedDate}/${selectedMonth}/${selectedYear}`)
+    .then(response => response.json())
+    .then(result => {
+        let appointment_am = document.getElementById('appointment-am');
+        let appointment_pm = document.getElementById('appointment-pm');
+        appointment_am.innerHTML = "";
+        appointment_pm.innerHTML = "";
+        console.log(result);
+        let am_appointments = result.am_appointments;
+        let pm_appointments = result.pm_appointments;
+        let am_count = 0;
+        if (am_appointments != '') {
+            am_appointments.forEach(element => {
+                let button = document.createElement('button');
+                button.type = "button";
+                button.className = "btn btn-primary btn-sm appointment-button";
+                button.innerHTML = `${element}`;
+                appointment_am.appendChild(button);
+                button.addEventListener('click', () => {
+                    if (selectedAppointmentButton == undefined) {
+                        selectedAppointmentButton = button;
+                        selectedAppointmentButton.classList.add('active');
+                    } else {
+                        selectedAppointmentButton.classList.remove('active');
+                        selectedAppointmentButton = button;
+                        selectedAppointmentButton.classList.add('active');
+                    }
+
+                });
+                am_count++;
+            });    
+        }
+        
+        let pm_count = 0;
+        if (result.pm_appointments != '') {
+            result.pm_appointments.forEach(element => {
+                let button = document.createElement('button');
+                button.type = "button";
+                button.className = "btn btn-primary btn-sm appointment-button";
+                button.innerHTML = `${element}`;
+                appointment_pm.appendChild(button);
+                button.addEventListener('click', () => {
+                    if (selectedAppointmentButton == undefined) {
+                        selectedAppointmentButton = button;
+                        selectedAppointmentButton.classList.add('active');
+                    } else {
+                        selectedAppointmentButton.classList.remove('active');
+                        selectedAppointmentButton = button;
+                        selectedAppointmentButton.classList.add('active');
+                    }
+                });
+
+                pm_count++;
+                // add empty inputs to am to increase size of the border
+                if (pm_count > am_count) {
+                    let invisible_button = document.createElement("button");
+                    invisible_button.className = "btn btn-primary btn-sm invisible-button";
+                    invisible_button.innerHTML = element;
+                    invisible_button.disabled = true;
+                    appointment_am.appendChild(invisible_button);
+                }
+            });     
+        }
+    });
 }

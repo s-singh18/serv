@@ -13,6 +13,8 @@ urlpatterns = [
     path("search", views.search, name="search"),
     path("listing/<str:title>", views.listing, name="listing"),
     path("profile", views.profile, name="profile"),
+    path("get_appointments/<str:listing_title>/<str:service_name>/<str:day>/<str:date>/<str:month>/<str:year>", views.get_appointments, name="get_appointments"),
     path("get_user/<str:id>", views.get_user, name="get_user"),
     path("get_reviews/<str:title>", views.get_reviews, name="get_reviews"),
+
 ]

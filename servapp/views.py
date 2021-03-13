@@ -26,7 +26,7 @@ from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from django.contrib.gis.geos import GEOSGeometry
 
 from .serializers import ListingSerializer
-from .models import User, Listing, Review
+from .models import User, Listing, Review, Service
 from .viewsets import UserViewSet, ListingViewSet, ReviewViewSet
 from .validations import ListingValidation, ReviewValidation
 
@@ -34,8 +34,8 @@ from .validations import ListingValidation, ReviewValidation
 from serv.settings import MAPBOX_ACCESS_TOKEN
 
 # ADD mapbox token to settings.py
-mapbox = MapBox(MAPBOX_ACCESS_TOKEN)
-
+MAPBOX = MapBox(MAPBOX_ACCESS_TOKEN)
+DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 current_user = None
 
 listing_validation = ListingValidation()
@@ -122,7 +122,7 @@ def create_listing(request):
             if not errors:    
                 user = User.objects.get(username=username)
                 if location == "":
-                    point = mapbox.geocode(address)
+                    point = MAPBOX.geocode(address)
                     geos_point = Point(point.longitude, point.latitude)
                 else:
                     lat, lon = location.split(',')
@@ -165,7 +165,7 @@ def edit_listing(request, title):
             if not errors:
                 user = User.objects.get(username=username)
                 if location == "":
-                    point = mapbox.geocode(address)
+                    point = MAPBOX.geocode(address)
                     geos_point = Point(point.longitude, point.latitude)
                 else:
                     print(location)
@@ -256,11 +256,7 @@ def listing(request, title):
         struct = json.loads(data)
         data = json.dumps(struct)
         reviews = Review.objects.order_by('-timestamp').filter(listing=listing).all()
-        listings = listing.listings.split(',')
-        if listings == ['']:
-            listings = []
-
-        print(listings)
+        services = Service.objects.filter(listing=listing).all()
         # Create review
         if request.method == "POST":
             # Check if user is logged in
@@ -286,7 +282,7 @@ def listing(request, title):
     return render(request, "servapp/listing.html",
         {'listing': listing, 'reviews': reviews,
         'listing_geojson': data, 'errors': errors,
-        'listings': listings,
+        'services': services,
         'mapbox_access_token': MAPBOX_ACCESS_TOKEN}, 
         status=200)
 
@@ -307,6 +303,26 @@ def profile(request):
     return render(request, "servapp/profile.html", {
                     'mapbox_access_token': MAPBOX_ACCESS_TOKEN,
                     })
+
+
+@csrf_exempt
+def get_appointments(request, listing_title, service_name, day, date, month, year):
+    listing = Listing.objects.get(title=listing_title)
+    service = Service.objects.get(name=service_name, listing=listing)
+    if (DAYS[int(day)] in service.days):
+        if ("-" in service.times):
+            am, pm = service.times.split('-')
+            am_appointments = am.split(',')
+            pm_appointments = pm.split(',')
+    else:
+        am_appointments = ''
+        pm_appointments = ''
+            
+    print(am_appointments)
+    print(pm_appointments) 
+    return JsonResponse(data={'am_appointments': am_appointments, 'pm_appointments': pm_appointments},
+    status=200,
+    safe=False)
 
 @csrf_exempt
 def get_user(request, id):
