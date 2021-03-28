@@ -1,6 +1,5 @@
 from django.contrib.auth.models import AbstractUser
 from django.contrib.gis.db import models
-from shapely import wkb
 from django.contrib.gis.geos import Point as GeosPoint
 from django.contrib.gis.geos import Polygon as GeosPolygon
 
