@@ -38,14 +38,14 @@ Install GeoDjango dependencies (GEOS, GDAL, and PROJ.4) for Unix.  Information a
 
 
 ```bash
-$ sudo aptitude install gdal-bin libgdal-dev
-$ sudo aptitude install python3-gdal
+$ sudo apt-get install gdal-bin libgdal-dev
+$ sudo apt-get install python3-gdal
 ```
 
 Since a binary package is used for GEOS binutils is needed.
 
 ```bash
-$ sudo aptitude install binutils libproj-dev
+$ sudo apt-get install binutils libproj-dev
 ```
 
 Refer to the docs for detailed instructions on installing these dependencies on [macOS](https://docs.djangoproject.com/en/2.1/ref/contrib/gis/install/#macos) and [windows](https://docs.djangoproject.com/en/2.1/ref/contrib/gis/install/#windows)
