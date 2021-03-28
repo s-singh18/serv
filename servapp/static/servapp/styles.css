@@ -1,5 +1,5 @@
 body {
-    background-color : #430281;
+    background-color : whitesmoke;
 }
 
 .nav-bar {
@@ -8,10 +8,14 @@ body {
     /* background-color: #FDB927; */
 }
 
-a.btn.btn-primary {
+/* a.btn.btn-primary {
     color: white;
     background-color: #430281;
     margin-right: 2px; 
+} */
+
+.register-link {
+    color: #430281;
 }
 
 input.btn.btn-primary {
@@ -25,19 +29,19 @@ input.btn.btn-primary {
     top: 50%;
     transform: translate(-50%, -50%);
     text-align: center;
-	background-color: #430281;
+	background-color: whitesmoke;
 	margin: auto;
 }
 
 .title {
-    color: white;
+    color: black;
     width: 84%;
     /* right: 5px; */
     margin: 0;
 }
 
 .subtitle {
-    color: white;
+    color: black;
     width: 90%;
     margin-top: 0;
     margin-bottom: 6px;
@@ -103,18 +107,22 @@ a.btn.btn-primary {
     
 }
 
-input.btn.btn-primary {
+.nav-submit {
     color: white;
     background-color: #430281;
     border: 1px solid white;
     transition-duration: 0.3s;
 }
 
-input.btn.btn-primary:hover {
+.nav-submit:hover {
     background-color: white; 
     color: grey;
 }
 
+.nav-submit:focus {
+    background-color: white; 
+    color: grey;
+}
 
 a.btn.btn-primary:hover {
     background-color: white; 
@@ -133,29 +141,41 @@ a.btn.btn-primary:hover {
 }
 
 .listing-page-left {
+    padding-left: 3px;
     height: 100%;
     width: 50%;
     float: left;
 }
 
+#appointment-body {height: 100%; padding-bottom: 0px; display: flex; flex-direction: column;} 
+.appointment-header {
+    width: 100%;
+    flex: 1;
+    
+    
+}
+.appointments {
+    display: flex;
+    flex-direction: row;
+}
 .left-div {
-    height: 100%;
-    width: 51%;
+    /* /* display: flexbox; */
+    /* height: 100%; */
+    /* width: 50%; */
     float: left;
+    border: 1px solid black;
+    /* flex: 1; */
 }
-
-
 .right-div {
-    height: 100%;
-    width: 49%;
+    /* display: flexbox; */
+    /* height: 100%; */
+    /* width: 50%; */
     float: left;
+    border: 1px solid black;
+    /* flex: 1; */
 }
 
 
-#appointment-body {
-    height: 100%;
-    padding-bottom: 0px;   
-}
 
 .vertical-line {
     margin-top: 30px;
@@ -167,14 +187,17 @@ a.btn.btn-primary:hover {
 
 .centered-paragraph {
     text-align: center;
+    padding-top: 6px;
 
 }
 
 .listings-view {
     /* display: inline-block; */
+    padding-left: 3px;
+    position: relative;
     top: 10px;
     height: 100%; /*50 for other way */
-    width: 50%; /*100 for other way */
+    width: 51%; /*100 for other way */
     float: left;
 }
 
@@ -272,6 +295,16 @@ a.btn.btn-primary:hover {
     margin-top: 6px;
 }
 
+.arrow-button:hover {
+    background-color: #430281;
+    color: white;
+}
+
+.arrow-button:focus {
+    background-color: #430281;
+    color: white;
+}
+
 .table {
     padding:0; 
     margin:0;
@@ -304,22 +337,136 @@ a.btn.btn-primary:hover {
     text-align: center;
 }
 
+.table-button:hover {
+    background-color: #430281;
+    color: white;
+}
+
+.table-button:focus {
+    background-color: #430281;
+    color: white;
+}
+
 .appointment-div {
-    text-align: left;
+    text-align: center;
+    padding-left: 6px;
+    padding-right: 6px;
+    padding-bottom: 18px;
+    height: 100%;
+    width: 100%
 }
 
-.card-div {
-    border-right: 1px solid black;
+.card-title {
+    width: 50%;
 }
 
-#appointment-pm {
-    padding-left: 20px;
+/* #appointment-pm {
+    padding-left: 18px;
 }
+
+.appointment-pm {
+    padding-left: 18px;
+} */
+
 
 .service-button {
     color: white;
     background-color: #430281;
     margin-right: 6px;
+}
+
+.service-button:hover {
+    background-color: white; 
+    color: grey;
+}
+
+.service-button:focus {
+    background-color: white; 
+    color: grey;
+}
+
+.service-button:disabled {
+    background-color: white; 
+    color: grey;
+}
+
+.nav-submit:hover {
+    background-color: white; 
+    color: grey;
+}
+
+.service-tab {
+    cursor: pointer;
+    height: 100%;
+    width: 100%;
+    display: inline-block;
+}
+
+.service-row {
+    margin: 0px;
+}
+
+.name-rate {
+    width: 100%;
+}
+.service-name {
+    float: left;
+    width: 41%;
+    margin: 0px;
+}
+
+.service-rate {
+    margin-left: 30%;
+    float: right;
+    width: 24%;
+}
+
+
+.time-row {
+    margin-top: 24px;
+}
+
+.time {
+    margin: 0;
+}
+
+.hours {
+    margin-left: 24%;
+    margin-right: 6px;
+}
+
+.colon {
+    margin: 0;
+    width: 6px;
+}
+
+.minutes {
+    margin-left: 6px;
+    margin-right: 24px;
+}
+
+.days-row {
+    margin-top: 24px;
+    padding-left: 72px;
+}
+
+.day-label {
+    margin-right: 30px;
+}
+
+.check {
+    margin-left: 3px;
+}
+
+.nav-tab > li .close {
+    margin: -2px 0 0 10px;
+    font-size: 6px;
+}
+
+.create-tab {
+    cursor: pointer;
+    height: 100%;
+    width: 100%;
 }
 
 .invisible-button:disabled {
@@ -337,10 +484,30 @@ a.btn.btn-primary:hover {
 } */
 
 .appointment-button {
-    margin: 3px;
+    margin: 2%;
     color: white;
     background-color: #430281;
+    transition-duration: 0.3s;
+    border: black solid 1px;
+    width: 60%;
+    /* width: 120px; */
 }
+
+.appointment-button:hover {
+    background-color: white;
+    color: grey;
+}
+
+.appointment-button:focus {
+    background-color: white;
+    color: grey;
+}
+
+.appointment-button:disabled {
+    background-color: white;
+    color: grey;
+}
+
 
 .book-container {
     padding: 6px;
@@ -351,6 +518,52 @@ a.btn.btn-primary:hover {
     background-color: #430281;
     font-size: x-large;
 }
+
+.book-button:hover {
+    color: grey;
+    background-color: white;
+}
+
+.book-button:focus {
+    color: grey;
+    background-color: white;
+}
+
+.book-button:disabled {
+    color: grey;
+    background-color: white;
+}
+
+.review-button {
+    color: white;
+    background-color: #430281;
+}
+
+.review-button:hover {
+    background-color: white; 
+    color: grey;
+}
+
+.review-button:focus {
+    background-color: white; 
+    color: grey;
+}
+
+/* .body-button {
+    color: white;
+    background-color: #430281;
+}
+
+.body-button:hover {
+    background-color: white; 
+    color: grey;
+}
+
+.body-button:focus {
+    background-color: white; 
+    color: grey;
+} */
+
 #week-calendar {
     border-color: black;
 }
@@ -402,40 +615,47 @@ a.btn.btn-primary:hover {
     margin-top: 6px;
 } 
 
+.listing-view {
+    width: 100%;
+    float: left;
+}
+
 .static-map {
+    width: 100%;
     float: left;
     margin-top: 0px;
     margin-left: 6px;
     margin-bottom: 15px;
 }
 .review-view {
+    width:100%;
     float: left;
     position: relative;
 }
 
-.listing-title {
-    color: white;
+/* .listing-title {
+    color: black;
 }
 
 .listing-owner {
-    color: white;
+    color: black;
 }
 
 .listing-listing-type {
-    color: white;
+    color: black;
 }
 
 .listing-address {
-    color: white;
-}
+    color: black;
+} */
 
 .listing-description {
-    color: white;
+    color: black;
     width: 100%;
     word-wrap: break-word;
 }
 
-.review-user {
+/* .review-user {
     color: white;
 }
 
@@ -445,38 +665,60 @@ a.btn.btn-primary:hover {
 
 .review-text {
     color: white;
-}
+} */
+
+#review-text {
+    width: 90%;
+} 
 
 .edit-link {
     float: right;
     margin-right: 18px;
     margin-top: 9px;
-    color: white;
+    color: black;
 }
 .map-view {
     /* display: inline-block; */
-    top: 10px;
+    /* position: relative; */
+    margin-top: 50%;
     height: 100%; /*50 for other way */
-    width: 50%; /*100 for other way */
+    width: 48%; /*100 for other way */
     float: left;
-    
+}
+
+.text-center {
+    margin-left: 60%;
 }
 
 .leaflet-map {
+    top: 50%;
+    left: 50%;
     height: 100%;
     width: 100%;
 }
 
+
 #map {
-    margin-top: 57px;
+    
+    margin-top: 72px;  
+    top: 10px;
     height: 100%; 
-    width: 100%;
+    width: 96%;
     
 }
 
+#mapbox-address {
+    width: 100%;
+}
+
 #leaflet-map { 
+    margin-top: 6px;
     height: 360px; 
     width: 420px
+}
+
+.nav-item {
+    cursor: pointer;
 }
 
 .geocoder {
@@ -547,12 +789,18 @@ a.btn.btn-primary:hover {
 
 
 .form-control {
-    width: 630px;
     margin-right: 1px;
 }
 
 .card {
     margin-right: 6px;
+}
+
+input[type='checkbox']:checked {
+    background-color: #430281;
+} 
+input[type='checkbox']:checked:after {
+    background-color: #430281;
 }
 
 /* Style the input fields */

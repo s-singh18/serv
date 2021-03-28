@@ -29,8 +29,15 @@ class Service(models.Model):
     name = models.CharField(max_length=300, blank=False)
     rate = models.CharField(max_length=300, blank=False)
     times = models.TextField();
-    days = models.TextField();
     listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name="service_listing")
+
+class Booking(models.Model):
+    listing = models.ForeignKey(Listing, on_delete=models.PROTECT, related_name="booking_listing")
+    service = models.ForeignKey(Service, on_delete=models.PROTECT, related_name="booking_service")
+    appointment = models.DateTimeField(blank=False)
+    client = models.ForeignKey(User, on_delete=models.PROTECT, related_name="client")
+    provider = models.ForeignKey(User, on_delete=models.PROTECT, related_name="provider")
+    timestamp = models.DateTimeField(auto_now_add=True)
 
 
 

@@ -3,7 +3,7 @@
 {% load static %}
 
 {% block nav %}
-<nav class="navbar navbar-expand-md navbar-custom" style="background-color: #430280;">
+<nav class="navbar navbar-expand-md navbar-custom py-3" style="background-color: #430280;">
     <a class="navbar-brand"></a>
     <!-- <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
@@ -30,7 +30,7 @@
                 </li>
             {% else %}
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'create_listing' %}">Create Listing</a>
+                    <a class="nav-link" href="{% url 'login' %}">Create Listing</a>
                 </li>
                 <li class="nav-item" id="nav-login">
                     <a class="nav-link" nav-link" href="{% url 'login' %}">Log In</a>

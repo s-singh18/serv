@@ -4,15 +4,131 @@
 
 {% block body %}
 
-<h2>Profile</h2>
-<p>Name: {{ user.username }} </p>
-<p>Email: {{ user.email }} </p>
+<!-- If user has a listing, show bookings made by other users -->
+<div class="listing-page-left">
+    <h2>Profile</h2>
+    <p>Name: {{ user.username }} </p>
+    <p>Email: {{ user.email }} </p>
+    <hr>
+    <div id="accordion">
+<!-- Show service bookings in calendar -->
+{% if request.session.listing %}
+        <h4>{{ request.session.listing }} Bookings</h4>
+        <div class="card">
+            <div class="card-header" id="headingOne">
+                <h5 class="mb-0">
+                    <div id="header-box">
+                        <button id="service-month-year" class="btn btn-link text-left" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                        </button>
+                        <form class="form-inline d-flex flex-nowrap" id="month-year">
+                            <select class="form-control col-sm-6" name="month" id="service-month" onchange="serviceJump()">
+                            </select>
+
+                            <label for="year"></label>
+                            <select class="form-control col-sm-6" name="year" id="service-year" onchange="serviceJump()">                                
+                            </select>
+                        </form>
+                        <div id="arrow-buttons">
+                            <button class="btn btn-sm btn-outline-primary py-0 arrow-button" id="service-previous-button" onclick="servicePrevious()"><</button>
+                            <button class="btn btn-sm btn-outline-primary py-0 arrow-button" id="service-next-button" onclick="serviceNext()">></button>
+                        </div>   
+                    </div>    
+                </h5>
+            </div>
+
+            <div id="collapseOne" class="panel-collapse collapse" aria-labelledby="headingOne">
+                <table class="table table-bordered table-responsive-md" id="service-calendar">
+                    <thead>
+                    <tr>
+                        <th>Sun</th>
+                        <th>Mon</th>
+                        <th>Tue</th>
+                        <th>Wed</th>
+                        <th>Thu</th>
+                        <th>Fri</th>
+                        <th>Sat</th>
+                    </tr>
+                    </thead>
+
+                    <tbody id="service-calendar-body">
+
+                    </tbody>
+                </table>
+                <br/>
+            </div>
+            <table class="table table-bordered table-responsive-md" id="week-calendar">
+                <thead class="service-week-head">
+
+                </thead>
+            </table>
+            <div class="card-body" id="service-appointment-body">
+            
+            </div>
+        </div>
+        <br>
+        <script src="{% static 'servapp/service_calendar.js' %}"></script>
+{% endif %}
+<!-- Show user bookings in calendar -->
+        <h4>My Bookings</h4>
+        <div class="card">
+            <div class="card-header" id="headingTwo">
+                <h5 class="mb-0">
+                    <div id="header-box">
+                        <button id="user-month-year" class="btn btn-link text-left" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+                        </button>
+                        <form class="form-inline d-flex flex-nowrap" id="month-year">
+                            <select class="form-control col-sm-6" name="month" id="user-month" onchange="userJump()">
+                            </select>
+
+                            <label for="year"></label>
+                            <select class="form-control col-sm-6" name="year" id="user-year" onchange="userJump()">                                
+                            </select>
+                        </form>
+                        <div id="arrow-buttons">
+                            <button class="btn btn-sm btn-outline-primary py-0" id="user-previous-button" onclick="userPrevious()"><</button>
+                            <button class="btn btn-sm btn-outline-primary py-0" id="user-next-button" onclick="userNext()">></button>
+                        </div>   
+                    </div>    
+                </h5>
+            </div>
+            <div id="collapseTwo" class="panel-collapse collapse" aria-labelledby="headingTwo">
+                <table class="table table-bordered table-responsive-md" id="user-calendar">
+                    <thead>
+                    <tr>
+                        <th>Sun</th>
+                        <th>Mon</th>
+                        <th>Tue</th>
+                        <th>Wed</th>
+                        <th>Thu</th>
+                        <th>Fri</th>
+                        <th>Sat</th>
+                    </tr>
+                    </thead>
+
+                    <tbody id="user-calendar-body">
+
+                    </tbody>
+                </table>
+                <br/>
+            </div>
+            <table class="table table-bordered table-responsive-md" id="week-calendar">
+                <thead class="user-week-head">
+
+                </thead>
+            </table>
+            <div class="card-body" id="user-appointment-body">
+            
+            </div>
+        </div>
+    </div>
+</div>
+
 
 {% endblock %}
 
 
 {% block script %}
-    <script src="{% static 'servapp/create_listing.js' %}"></script>
+    <script src="{% static 'servapp/user_calendar.js' %}"></script>
     <!-- Promise polyfill script required to use Mapbox GL Geocoder in IE 11 -->
     
 {% endblock %}

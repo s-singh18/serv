@@ -80,7 +80,7 @@ function load_map() {
             location_data.address.country
             let address = house_number + road + city + state + postcode + country;
             marker.bindPopup(address).openPopup();
-            document.querySelector('#address').value = address;
+            document.querySelector('#listing-address').value = address;
             document.querySelector('#mapbox-address').value = address;
         });
     });
@@ -89,10 +89,10 @@ function load_map() {
 
 function geocode_address() {
     geocoder_address.addTo('#geocoder-address');
-    document.querySelector('#address').type = "hidden";
+    document.querySelector('#listing-address').type = "hidden";
     
     document.querySelector('.mapboxgl-ctrl-geocoder--input').id = "mapbox-address";
-    document.querySelector('.mapboxgl-ctrl-geocoder--input').className = "form-control";
+    document.querySelector('.mapboxgl-ctrl-geocoder--input').classList.add("form-control");
     
     // search_form.addEventListener("submit", (event) => {
     geocoder_address.on('result', (search_data) => {
@@ -113,7 +113,7 @@ function geocode_address() {
         
             marker = L.marker([lat, lng]).addTo(map);
             marker.bindPopup(search_data.result.place_name).openPopup();
-            document.querySelector('#address').value = search_data.result.place_name;
+            document.querySelector('#listing-address').value = search_data.result.place_name;
             document.querySelector('#mapbox-address').value = search_data.result.place_name;
         });
     });

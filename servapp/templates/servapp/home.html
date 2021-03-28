@@ -5,13 +5,13 @@
 {% block body %}
     <div class="title-search">
         <h1 class="title">Ace</h1>
-        <h3 class="subtitle">Find A Local Listing!</h3>
+        <h3 class="subtitle">Book Local Services!</h3>
         <div class="search-form">
             <form class="form-inline" method="GET" action="{% url 'search' %}">
                 <div class="form-inline">
                     <input class="form-control" id="listing-input" type="text" name="listing_type" placeholder="Listing Type">
                     <input class="form-control" id="location-input" type="text" name="location" placeholder="Location">
-                    <input class="btn btn-primary" type="submit" value="Submit">
+                    <input class="btn btn-primary review-button" type="submit" value="Submit">
                 </div>
             </form>
         </div>

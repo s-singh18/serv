@@ -8,6 +8,8 @@ class ListingValidation():
         error = []
         if self.check_title(title) is not None:
             error.append(self.check_title(title))
+        if Listing.objects.filter(title=title).exists():
+            error.append("Listing with that title already exists")
         if self.check_type(listing_type) is not None:
             error.append(self.check_type(listing_type))
         if self.check_address(address) is not None:
@@ -16,8 +18,6 @@ class ListingValidation():
             error.append(self.check_description(description))
         if self.check_unique(username) is not None:
             error.append(self.check_unique(username))
-
-
         return error
 
     def check_edit_listing(self, title, listing_type, address, description):
@@ -131,3 +131,50 @@ class ReviewValidation():
             error = None
         return error
             
+class ServiceValidation():
+
+    def check_create_service(self, name, rate, times):
+        error = []
+        if self.check_name(name) is not None:
+            error.append(self.check_name(name))
+        if self.check_rate(rate) is not None:
+            error.append(self.check_rate(rate))
+        if self.check_times(times) is not None:
+            error.append(self.check_times(times))
+        return error
+
+
+    def check_name(self, name):
+        if name is "":
+            error = "No name given"
+        elif len(name) > 114:
+            error = "Invalid name"
+        elif re.match("^\w+$", name) is False:
+            error = "Invalid name"
+        elif name.isspace():
+            error = "Invalid name"
+        else:
+            error = None
+        return error
+
+    def check_rate(self, rate):
+        if rate == "":
+            error = "No rate given"
+        elif len(rate) > 9:
+            error = "Invalid rate"
+        elif re.match("^[0-9]+$", rate) is False:
+            error = "Invalid rate"
+        else:
+            error = None
+        return error
+
+    def check_times(self, times):
+        if times == "" or times == "-;-;-;-;-;-;-":
+            error = "No times given"
+        elif len(times) > 3000:
+            error = "Invalid times"
+        elif re.match("[0-9:;-]", times) is False:
+            error = "Invalid times"
+        else:
+            error = None
+        return error

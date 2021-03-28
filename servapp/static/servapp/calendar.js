@@ -27,18 +27,21 @@ var selectedYear;
 // From appointment.js
 var selectedServiceButton;
 var selectedAppointmentButton;
+var selectedAppointment_AM_PM;
+
+var bookingButton = document.getElementById("booking-button");
 
 document.addEventListener("DOMContentLoaded", function () {
     clickServiceButton();
-    setMonth();
-    setYear();
+    setCalendarMonth();
+    setCalendarYear();
     showCalendar(currentMonth, currentYear);
     showWeekCalendar(currentDay, currentDate, currentMonth, currentYear);
-    
+    createBooking();
 
 });
 
-function setMonth() {
+function setCalendarMonth() {
     let listings_header = document.getElementById('listings-header');
     listings_header.style.cursor = "pointer";
     listings_header.addEventListener('click', () => {
@@ -59,7 +62,7 @@ function setMonth() {
     })
 }
 
-function setYear() {
+function setCalendarYear() {
     let year = document.getElementById('year');
     year.style.cursor = "pointer";
     for (let i = currentYear; i <= currentYear + 3; i++) {
@@ -117,10 +120,10 @@ function showCalendar(month, year) {
     let tbl = document.getElementById("calendar-body"); // body of the calendar
 
     // clearing all previous cells
-    tbl.innerHTML = "";
+    tbl.innerText = "";
 
     // filing data about month and in the page via DOM.
-    monthAndYear.innerHTML = months[month] + " " + year;
+    monthAndYear.innerText = months[month] + " " + year;
     selectYear.value = year;
     selectMonth.value = month;
 
@@ -132,9 +135,9 @@ function showCalendar(month, year) {
 
         //creating individual cells, filing them up with data.
         for (let j = 0; j < 7; j++) {
-            if (i === 0 && j < firstDay) {
+            if (i === 0 && j < firstDay || selectYear.value == "" || selectMonth == "") {
                 let cell = document.createElement("td");
-                let cellText = document.createTextNode("");
+                let cellText = document.createTextNode('\u00A0');
                 cell.appendChild(cellText);
                 row.appendChild(cell);
             }
@@ -208,10 +211,10 @@ function showWeekCalendar(day, date, month, year) {
     // Create next and previous, day and week buttons for left side
     let left_week_button = document.createElement("button");
     left_week_button.className = 'btn btn-outline-info table-button';
-    left_week_button.innerHTML = "<<";
+    left_week_button.innerText = "<<";
     let left_day_button = document.createElement("button");
     left_day_button.className = 'btn btn-outline-info table-button';
-    left_day_button.innerHTML = "<";
+    left_day_button.innerText = "<";
     left_button_div.appendChild(left_week_button);
     left_button_div.appendChild(left_day_button);
     left_button.appendChild(left_button_div);
@@ -221,10 +224,10 @@ function showWeekCalendar(day, date, month, year) {
     right_button.className = "table-button-header";
     let right_day_button = document.createElement("button");
     right_day_button.className = 'btn btn-outline-info table-button';
-    right_day_button.innerHTML = ">";
+    right_day_button.innerText = ">";
     let right_week_button = document.createElement("button");
     right_week_button.className = 'btn btn-outline-info table-button';
-    right_week_button.innerHTML = ">>";
+    right_week_button.innerText = ">>";
     right_button_div.appendChild(right_day_button);
     right_button_div.appendChild(right_week_button);
     right_button.appendChild(right_button_div);
@@ -336,7 +339,7 @@ function showWeekCalendar(day, date, month, year) {
     
     let week_head = document.querySelector('.week-head');
     // clear previous table
-    week_head.innerHTML = "";
+    week_head.innerText = "";
     week_head.appendChild(row);
     // If arrow buttons used to change week view
     if (future_week_selected_id != undefined) {
@@ -586,13 +589,13 @@ function clickServiceButton() {
     let service_buttons = Array.from(document.getElementsByClassName('service-button'));
     if (service_buttons == undefined) {
         let appointment_body = document.getElementById("appointment-body");
-        appointment_body.innerHTML = "No Appointments.";
+        appointment_body.innerText = "No Appointments.";
     } else {
         // Load appointments for first element
         selectedServiceButton = service_buttons[0];
         selectedServiceButton.disabled = true;
         selectedServiceButton.classList.add("active");
-        loadAppointments();
+        // loadAppointments();
         
         // add click event listener and button presser to all elements
         service_buttons.forEach(element => {
@@ -616,32 +619,42 @@ function clickServiceButton() {
 
 function loadAppointments() {
     let listing_title = document.getElementById("listing-title").innerText;
+    selectedAppointmentButton = undefined;
+    selectedAppointment_AM_PM = undefined;
+    bookingButton.disabled = true;
     fetch(`/get_appointments/${listing_title}/${selectedServiceButton.id}/${selectedDay}/${selectedDate}/${selectedMonth}/${selectedYear}`)
     .then(response => response.json())
     .then(result => {
         let appointment_am = document.getElementById('appointment-am');
         let appointment_pm = document.getElementById('appointment-pm');
-        appointment_am.innerHTML = "";
-        appointment_pm.innerHTML = "";
+        appointment_am.innerText = "";
+        appointment_pm.innerText = "";
         console.log(result);
         let am_appointments = result.am_appointments;
         let pm_appointments = result.pm_appointments;
         let am_count = 0;
         if (am_appointments != '') {
             am_appointments.forEach(element => {
-                let button = document.createElement('button');
+                let button = document.createElement('input');
                 button.type = "button";
                 button.className = "btn btn-primary btn-sm appointment-button";
-                button.innerHTML = `${element}`;
+                button.value = `${element}`;
                 appointment_am.appendChild(button);
                 button.addEventListener('click', () => {
                     if (selectedAppointmentButton == undefined) {
                         selectedAppointmentButton = button;
                         selectedAppointmentButton.classList.add('active');
+                        selectedAppointmentButton.disabled = true;
+                        selectedAppointment_AM_PM = "AM";
+                        bookingButton.disabled = false;
                     } else {
                         selectedAppointmentButton.classList.remove('active');
+                        selectedAppointmentButton.disabled = false;
                         selectedAppointmentButton = button;
                         selectedAppointmentButton.classList.add('active');
+                        selectedAppointmentButton.disabled = true;
+                        selectedAppointment_AM_PM = "AM";
+                        bookingButton.disabled = false;
                     }
 
                 });
@@ -652,32 +665,78 @@ function loadAppointments() {
         let pm_count = 0;
         if (result.pm_appointments != '') {
             result.pm_appointments.forEach(element => {
-                let button = document.createElement('button');
+                let button = document.createElement('input');
                 button.type = "button";
                 button.className = "btn btn-primary btn-sm appointment-button";
-                button.innerHTML = `${element}`;
+                button.value = `${element}`;
                 appointment_pm.appendChild(button);
                 button.addEventListener('click', () => {
                     if (selectedAppointmentButton == undefined) {
                         selectedAppointmentButton = button;
                         selectedAppointmentButton.classList.add('active');
+                        selectedAppointmentButton.disabled = true;
+                        selectedAppointment_AM_PM = "PM";
+                        bookingButton.disabled = false;
                     } else {
                         selectedAppointmentButton.classList.remove('active');
+                        selectedAppointmentButton.disabled = false;
                         selectedAppointmentButton = button;
                         selectedAppointmentButton.classList.add('active');
+                        selectedAppointmentButton.disabled = true;
+                        selectedAppointment_AM_PM = "PM";
+                        bookingButton.disabled = false;
                     }
                 });
-
-                pm_count++;
-                // add empty inputs to am to increase size of the border
-                if (pm_count > am_count) {
-                    let invisible_button = document.createElement("button");
-                    invisible_button.className = "btn btn-primary btn-sm invisible-button";
-                    invisible_button.innerHTML = element;
-                    invisible_button.disabled = true;
-                    appointment_am.appendChild(invisible_button);
-                }
+                
+                
             });     
+        }
+
+        // Dynamically set heights of appointment containers
+        // if (appointment_am.style.height > appointment_pm.style.height) {
+        //     appointment_pm.style.height = appointment_am.style.height;
+        // } else if (appointment_pm.style.height > appointment_am.style.height) {
+        //     appointment_am.style.height = appointment_pm.style.height;
+        // }
+    });
+}
+
+// Only triggered when appointment is selected and booking button is clicked
+function createBooking() {
+    bookingButton.disabled = true;
+    bookingButton.addEventListener('click', () => {
+        if (selectedAppointmentButton != undefined) {
+            let client_name = document.getElementById("username").value;
+            let listing_title = document.getElementById("listing-title").innerText;
+            if (client_name == undefined) {
+                client_name = null;
+            }
+            let provider_name = document.getElementById("listing-owner").innerText;
+            fetch("/create_booking", {
+                method: "POST",
+                body: JSON.stringify({
+                    listing_title: listing_title,
+                    service_name: selectedServiceButton.id,
+                    client_name: client_name,
+                    provider_name: provider_name,
+                    time: selectedAppointmentButton.value,
+                    am_pm: selectedAppointment_AM_PM,
+                    day: selectedDay,
+                    date: String(selectedDate),
+                    month: String(selectedMonth + 1),
+                    year: String(selectedYear),
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    document.getElementById('login').click();
+                    return false;
+                } else {
+                    location.reload();
+                    return false;
+                }
+            });
         }
     });
 }
