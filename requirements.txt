@@ -1,8 +1,9 @@
-python3 -m pip install django
-python3 -m pip install geojson
-python3 -m pip install psycopg2-binary
-python3 -m pip install djangorestframework
-python3 -m pip install djangorestframework-gis
-python3 -m pip install django-filter
-python3 -m pip install django-leaflet
+pip install django
+pip install geojson
+pip install psycopg2-binary
+pip install djangorestframework
+pip install djangorestframework-gis
+pip install django-filter
+pip install django-leaflet
+pip install geopy
 
