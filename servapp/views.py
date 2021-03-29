@@ -272,7 +272,6 @@ def search(request):
     if request.method == "GET":
         listing_type = request.GET["listing_type"]
         location = request.GET["location"]
-    	location = str(location)
         # if location and listing type field not filled
         if location != "" and listing_type != "":
             # Get data from Open Street Maps
