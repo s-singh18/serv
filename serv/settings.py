@@ -1,3 +1,4 @@
+
 """
 Django settings for serv project.
 
@@ -26,7 +27,7 @@ SECRET_KEY = 'n1h4c4uednwt4234fn%^)kyv@go^y-+w_rvx(o&884q0+441+#'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['128.199.8.199', 'localhost']
 
 MAPBOX_ACCESS_TOKEN = 'pk.eyJ1Ijoic3MzMCIsImEiOiJja2lodWh1OGcwNXMxMnhtOGMxa2djNWpxIn0.K5Gczarar9kbxmAKw0gxgg'
 
@@ -85,8 +86,11 @@ WSGI_APPLICATION = 'serv.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'reserv',
-        'USER': 'sss',
+        'NAME': 'serv',
+        'USER': 'reserv_root',
+	'PASSWORD': 'BasedBoyBringsBags369',
+	'HOST': 'localhost',
+	'PORT': '',
     }
 }
 
@@ -142,3 +146,5 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+import os
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')

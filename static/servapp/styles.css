@@ -1,0 +1,822 @@
+body {
+    background-color : whitesmoke;
+}
+
+.nav-bar {
+    background-color: #430281;
+
+    /* background-color: #FDB927; */
+}
+
+/* a.btn.btn-primary {
+    color: white;
+    background-color: #430281;
+    margin-right: 2px; 
+} */
+
+.register-link {
+    color: #430281;
+}
+
+input.btn.btn-primary {
+    margin-top: 2px;
+}
+
+.title-search {
+
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+	background-color: whitesmoke;
+	margin: auto;
+}
+
+.title {
+    color: black;
+    width: 84%;
+    /* right: 5px; */
+    margin: 0;
+}
+
+.subtitle {
+    color: black;
+    width: 90%;
+    margin-top: 0;
+    margin-bottom: 6px;
+}
+
+a.title {
+    color: black;
+}
+/* li.nav-item {
+    margin: 2px;
+} */
+
+/* li#nav-login.nav-item {
+    right: 2px;
+} */
+
+a.navbar-brand {
+    color: white;
+}
+
+a.nav-link {
+    color: white;
+}
+
+svg.mapboxgl-ctrl-geocoder--icon.mapboxgl-ctrl-geocoder--icon-search {
+    display: none;
+}
+
+div.search-form {
+    display: inline;
+}
+
+div#geocoder-nav.geocoder-nav {
+    display: inline;
+}
+
+div.mapbox-ctrl-geocoder.mapbox-ctrl { 
+    display: inline-block;
+    /* float: left; */
+}
+
+
+input#search-field.mapboxgl-ctrl-geocoder--input {
+    background-color: white;
+    width: 240px;
+    
+}
+
+input.mapboxgl-ctrl-geocoder--input {
+    background-color: white;
+    /* border-radius: 75%; */
+    
+    
+    
+}
+
+
+a.btn.btn-primary {
+    background-color: #430281;
+    color: white;
+    border: 1px solid white;
+    transition-duration: 0.3s;
+    
+}
+
+.nav-submit {
+    color: white;
+    background-color: #430281;
+    border: 1px solid white;
+    transition-duration: 0.3s;
+}
+
+.nav-submit:hover {
+    background-color: white; 
+    color: grey;
+}
+
+.nav-submit:focus {
+    background-color: white; 
+    color: grey;
+}
+
+a.btn.btn-primary:hover {
+    background-color: white; 
+    color: grey;
+  }
+
+.results-view {
+    top: 10px;
+    
+}
+
+.listing-page-right {
+    height: 100%;
+    width: 50%;
+    float: left;
+}
+
+.listing-page-left {
+    padding-left: 3px;
+    height: 100%;
+    width: 50%;
+    float: left;
+}
+
+#appointment-body {height: 100%; padding-bottom: 0px; display: flex; flex-direction: column;} 
+.appointment-header {
+    width: 100%;
+    flex: 1;
+    
+    
+}
+.appointments {
+    display: flex;
+    flex-direction: row;
+}
+.left-div {
+    /* /* display: flexbox; */
+    /* height: 100%; */
+    /* width: 50%; */
+    float: left;
+    border: 1px solid black;
+    /* flex: 1; */
+}
+.right-div {
+    /* display: flexbox; */
+    /* height: 100%; */
+    /* width: 50%; */
+    float: left;
+    border: 1px solid black;
+    /* flex: 1; */
+}
+
+
+
+.vertical-line {
+    margin-top: 30px;
+    width: 1px;
+    min-height: 60px;
+    height: 100%;
+    border: 1px solid black; 
+}
+
+.centered-paragraph {
+    text-align: center;
+    padding-top: 6px;
+
+}
+
+.listings-view {
+    /* display: inline-block; */
+    padding-left: 3px;
+    position: relative;
+    top: 10px;
+    height: 100%; /*50 for other way */
+    width: 51%; /*100 for other way */
+    float: left;
+}
+
+.title-view {
+    float: left;
+    width: 50%;
+    height: 126px;
+    position: relative;
+}
+
+
+.edit-view {
+    float: right;
+    width: 100%;
+    height: 36px;
+    position: relative;
+}
+
+.listing-view {
+    float: right;
+    width: 100%;
+    margin-bottom: 6px;
+    /* height: 24px; */
+    position: relative;
+}
+
+.description-view {
+    float: left;
+    width: 50%;
+    height: 420px;
+    position: relative;
+}
+
+.listing-address {
+    float: left;
+    
+}
+
+.static-view {
+    float: left;
+    width: 50%;
+    height: 612px;
+    position: relative;
+}
+
+@media only screen and (max-device-width: 480px) {
+    .left_div{display:none;}
+}
+
+.calendar-view {
+    margin-top: 0px;
+    padding-top: 0px;
+    float: left;
+    width: 100%;
+    position: relative;
+}
+
+#calendar-container {
+    float: left;
+    width: 100%;
+}
+
+
+#header-box {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+}
+
+#monthAndYear {
+    height: 100%;
+    width: 25%;
+
+}
+
+#month-year {
+    text-align: center;
+    margin-right: 90px;
+}
+
+.week-date {
+    text-align: center;
+    margin: 0px;
+}
+
+.week-day {
+    text-align: center;
+    margin: 0px;
+}
+
+#arrow-buttons{
+    text-align: right;
+    float: right;
+    margin-top: 6px;
+}
+
+.arrow-button:hover {
+    background-color: #430281;
+    color: white;
+}
+
+.arrow-button:focus {
+    background-color: #430281;
+    color: white;
+}
+
+.table {
+    padding:0; 
+    margin:0;
+    border-collapse: collapse;
+    table-layout: fixed;
+    width: 100%;
+}
+
+.table-button-header {
+    padding: none;
+}
+
+.table-button-container {
+    width: 100%;
+    height: 100%;
+    margin: none;
+    padding: none;
+    display: inline-block;
+}
+
+.table-button {
+    width: 48%;
+    height: 100%;
+    white-space: nowrap;
+    /* float: left; */
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    font-size: medium;
+    text-align: center;
+}
+
+.table-button:hover {
+    background-color: #430281;
+    color: white;
+}
+
+.table-button:focus {
+    background-color: #430281;
+    color: white;
+}
+
+.appointment-div {
+    text-align: center;
+    padding-left: 6px;
+    padding-right: 6px;
+    padding-bottom: 18px;
+    height: 100%;
+    width: 100%
+}
+
+.card-title {
+    width: 50%;
+}
+
+/* #appointment-pm {
+    padding-left: 18px;
+}
+
+.appointment-pm {
+    padding-left: 18px;
+} */
+
+
+.service-button {
+    color: white;
+    background-color: #430281;
+    margin-right: 6px;
+}
+
+.service-button:hover {
+    background-color: white; 
+    color: grey;
+}
+
+.service-button:focus {
+    background-color: white; 
+    color: grey;
+}
+
+.service-button:disabled {
+    background-color: white; 
+    color: grey;
+}
+
+.nav-submit:hover {
+    background-color: white; 
+    color: grey;
+}
+
+.service-tab {
+    cursor: pointer;
+    height: 100%;
+    width: 100%;
+    display: inline-block;
+}
+
+.service-row {
+    margin: 0px;
+}
+
+.name-rate {
+    width: 100%;
+}
+.service-name {
+    float: left;
+    width: 41%;
+    margin: 0px;
+}
+
+.service-rate {
+    margin-left: 30%;
+    float: right;
+    width: 24%;
+}
+
+
+.time-row {
+    margin-top: 24px;
+}
+
+.time {
+    margin: 0;
+}
+
+.hours {
+    margin-left: 24%;
+    margin-right: 6px;
+}
+
+.colon {
+    margin: 0;
+    width: 6px;
+}
+
+.minutes {
+    margin-left: 6px;
+    margin-right: 24px;
+}
+
+.days-row {
+    margin-top: 24px;
+    padding-left: 72px;
+}
+
+.day-label {
+    margin-right: 30px;
+}
+
+.check {
+    margin-left: 3px;
+}
+
+.nav-tab > li .close {
+    margin: -2px 0 0 10px;
+    font-size: 6px;
+}
+
+.create-tab {
+    cursor: pointer;
+    height: 100%;
+    width: 100%;
+}
+
+.invisible-button:disabled {
+    background: transparent;
+    border: none !important;
+    color: transparent;
+    pointer-events: none;
+    
+}
+/* .invisible-button:hover {
+    background: transparent;
+    border: none !important;
+    color: transparent;
+    
+} */
+
+.appointment-button {
+    margin: 2%;
+    color: white;
+    background-color: #430281;
+    transition-duration: 0.3s;
+    border: black solid 1px;
+    width: 60%;
+    /* width: 120px; */
+}
+
+.appointment-button:hover {
+    background-color: white;
+    color: grey;
+}
+
+.appointment-button:focus {
+    background-color: white;
+    color: grey;
+}
+
+.appointment-button:disabled {
+    background-color: white;
+    color: grey;
+}
+
+
+.book-container {
+    padding: 6px;
+}
+
+.book-button {
+    color: white;
+    background-color: #430281;
+    font-size: x-large;
+}
+
+.book-button:hover {
+    color: grey;
+    background-color: white;
+}
+
+.book-button:focus {
+    color: grey;
+    background-color: white;
+}
+
+.book-button:disabled {
+    color: grey;
+    background-color: white;
+}
+
+.review-button {
+    color: white;
+    background-color: #430281;
+}
+
+.review-button:hover {
+    background-color: white; 
+    color: grey;
+}
+
+.review-button:focus {
+    background-color: white; 
+    color: grey;
+}
+
+/* .body-button {
+    color: white;
+    background-color: #430281;
+}
+
+.body-button:hover {
+    background-color: white; 
+    color: grey;
+}
+
+.body-button:focus {
+    background-color: white; 
+    color: grey;
+} */
+
+#week-calendar {
+    border-color: black;
+}
+
+
+.week-button {
+    width: 100%;
+    height: 100%;
+
+}
+
+#headingTwo {
+    position: relative;
+    z-index: 1;
+}
+#month {
+    position: relative;
+    z-index: 3;
+}
+
+#year {
+    position: relative;
+    z-index: 3;
+}
+
+.month-cell {
+    cursor: pointer;
+}
+
+.week-cell {
+    cursor: pointer;
+}
+
+
+.month-selected {
+    color: white;
+    background-color: #430281;
+}
+
+.week-selected {
+    color: white;
+    background-color: #430281;
+}
+
+#left-button {
+    float: right;
+}
+#accordion {
+    margin-top: 6px;
+} 
+
+.listing-view {
+    width: 100%;
+    float: left;
+}
+
+.static-map {
+    width: 100%;
+    float: left;
+    margin-top: 0px;
+    margin-left: 6px;
+    margin-bottom: 15px;
+}
+.review-view {
+    width:100%;
+    float: left;
+    position: relative;
+}
+
+/* .listing-title {
+    color: black;
+}
+
+.listing-owner {
+    color: black;
+}
+
+.listing-listing-type {
+    color: black;
+}
+
+.listing-address {
+    color: black;
+} */
+
+.listing-description {
+    color: black;
+    width: 100%;
+    word-wrap: break-word;
+}
+
+/* .review-user {
+    color: white;
+}
+
+.review-stars {
+    color: white;
+}
+
+.review-text {
+    color: white;
+} */
+
+#review-text {
+    width: 90%;
+} 
+
+.edit-link {
+    float: right;
+    margin-right: 18px;
+    margin-top: 9px;
+    color: black;
+}
+.map-view {
+    /* display: inline-block; */
+    /* position: relative; */
+    margin-top: 50%;
+    height: 100%; /*50 for other way */
+    width: 48%; /*100 for other way */
+    float: left;
+}
+
+.text-center {
+    margin-left: 60%;
+}
+
+.leaflet-map {
+    top: 50%;
+    left: 50%;
+    height: 100%;
+    width: 100%;
+}
+
+
+#map {
+    
+    margin-top: 72px;  
+    top: 10px;
+    height: 100%; 
+    width: 96%;
+    
+}
+
+#mapbox-address {
+    width: 100%;
+}
+
+#leaflet-map { 
+    margin-top: 6px;
+    height: 360px; 
+    width: 420px
+}
+
+.nav-item {
+    cursor: pointer;
+}
+
+.geocoder {
+    position: absolute;
+    z-index: 1;
+    width: 50%;
+    left: 50%;
+    margin-left: -25%;
+    top: 10px;
+}
+.mapboxgl-ctrl-geocoder {
+    min-width: 100%;
+}
+
+
+.mapboxgl-ctrl-geocoder--input {
+    background-color: white;
+    display: inline-block;
+    width: 50px;
+}
+
+.form-inline {
+    display: flex;
+    flex-flow: row wrap;
+    align-items: center;
+}
+
+.marker {
+    background-image: url(mapbox-icon.png);
+    background-size: 100% 100%;
+    background-position: center;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+  }
+
+.mapboxgl-popup {
+    max-width: 200px;
+}
+
+.mapboxgl-popup-content {
+    text-align: center;
+    font-family: 'Open Sans', sans-serif;
+}
+
+.page-view {
+    color: white;
+}
+
+.page-item {
+    color: white;
+}
+
+
+.page-link {
+    color: black;
+    background-color: white;
+}
+
+.page-item.active.page-link {
+    color: black;
+    background-color:  #430281;
+}
+
+.error {
+    color: red;
+}
+
+
+.form-control {
+    margin-right: 1px;
+}
+
+.card {
+    margin-right: 6px;
+}
+
+input[type='checkbox']:checked {
+    background-color: #430281;
+} 
+input[type='checkbox']:checked:after {
+    background-color: #430281;
+}
+
+/* Style the input fields */
+/* .form-inline input {
+    vertical-align: middle;
+    margin: 5px 10px 5px 0;
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+  }
+  
+  /* Style the submit button */
+  /* .form-inline button {
+    padding: 10px 20px;
+    background-color: dodgerblue;
+    border: 1px solid #ddd;
+    color: white;
+  } */
+   
