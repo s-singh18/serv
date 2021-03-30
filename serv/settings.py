@@ -27,7 +27,7 @@ SECRET_KEY = 'n1h4c4uednwt4234fn%^)kyv@go^y-+w_rvx(o&884q0+441+#'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['128.199.8.199', 'localhost']
+ALLOWED_HOSTS = ['resrvice.com', '144.126.210.202', 'localhost']
 
 MAPBOX_ACCESS_TOKEN = 'pk.eyJ1Ijoic3MzMCIsImEiOiJja2lodWh1OGcwNXMxMnhtOGMxa2djNWpxIn0.K5Gczarar9kbxmAKw0gxgg'
 
@@ -88,7 +88,7 @@ DATABASES = {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'serv',
         'USER': 'reserv_root',
-	'PASSWORD': 'BasedBoyBringsBags369',
+	'PASSWORD': 'R3$ervR00t939',
 	'HOST': 'localhost',
 	'PORT': '',
     }
@@ -147,4 +147,4 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 import os
-STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
+STATIC_ROOT = os.path.join(BASE_DIR, 'servapp/static')
