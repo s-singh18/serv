@@ -53,9 +53,9 @@ def home(request):
 def login_view(request):
     if request.method == "POST":
         # Attempt to sign user in
-        username = request.POST["username"]
+        email = request.POST["email"]
         password = request.POST["password"]
-        user = authenticate(request, username=username, password=password)
+        user = authenticate(request, email=email, password=password)
 
         # Check if authentication successful
         if user is not None:
@@ -69,7 +69,7 @@ def login_view(request):
             return HttpResponseRedirect(reverse("home"))
         else:
             return render(request, "servapp/login.html", {
-                "message": "Invalid name and/or password."
+                "message": "Invalid email and/or password."
             })
     else:
         return render(request, "servapp/login.html")
@@ -97,11 +97,11 @@ def register(request):
 
         # Attempt to create new user
         try:
-            user = User.objects.create_user(username, email, password)
+            user = User.objects.create_user(username=username, email=email, password=password)
             user.save()
         except IntegrityError:
             return render(request, "servapp/register.html", {
-                "message": "Username already taken."
+                "message": "Email already taken."
             })
         login(request, user)
         current_user = user
@@ -272,10 +272,11 @@ def search(request):
     if request.method == "GET":
         listing_type = request.GET["listing_type"]
         location = request.GET["location"]
+        location_url = location.replace(" ", "%20")
         # if location and listing type field not filled
-        if location != "" and listing_type != "":
+        if location_url != "" and listing_type != "":
             # Get data from Open Street Maps
-            with urllib.request.urlopen("https://nominatim.openstreetmap.org/search.php?q=" + location + "&polygon_geojson=1&format=json") as url:
+            with urllib.request.urlopen("https://nominatim.openstreetmap.org/search.php?q=" + location_url + "&polygon_geojson=1&format=json") as url:
                 # Convert to JSON object
                 data = json.loads(url.read().decode())
                 print(data)
@@ -286,7 +287,7 @@ def search(request):
                 # Convert JSON object to GEO Django object
                 polygon = GEOSGeometry(json.dumps(data[0]['geojson']))
                 # Query listings filtering results within searched location
-                listing_list = Listing.objects.filter(listing_type__icontains=listing_type, location__within=polygon)
+                listing_list = Listing.objects.get_queryset().filter(listing_type__icontains=listing_type, location__within=polygon).order_by("-timestamp")
                 # Paginate results
                 page = request.GET.get('page', 1)
                 paginator = Paginator(listing_list, 6)

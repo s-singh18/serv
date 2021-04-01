@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", function () {
     showCalendar(currentMonth, currentYear);
     showWeekCalendar(currentDay, currentDate, currentMonth, currentYear);
     createBooking();
-
+    createModal();
 });
 
 function setCalendarMonth() {
@@ -704,8 +704,11 @@ function loadAppointments() {
 // Only triggered when appointment is selected and booking button is clicked
 function createBooking() {
     bookingButton.disabled = true;
+    bookingButton.setAttribute("data-toggle", "modal");
+    bookingButton.setAttribute("data-target", "successModal");
     bookingButton.addEventListener('click', () => {
         if (selectedAppointmentButton != undefined) {
+            
             let client_name = document.getElementById("username").value;
             let listing_title = document.getElementById("listing-title").innerText;
             if (client_name == undefined) {
@@ -739,4 +742,31 @@ function createBooking() {
             });
         }
     });
+}
+
+function createModal() {
+    // <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    let modal = document.createElement("div");
+    modal.className = "modal fade";
+    modal.id = "successModal";
+    modal.setAttribute("tabindex", "-1");
+    modal.role = "dialog";
+    modal.setAttribute("aria-labelledby", "successModalCenterTitle");
+    modal.setAttribute("aria-hidden", "true");
+    modal.innerHTML = `
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="successModalCenterTitle">Success</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                ...
+                </div>
+            </div>
+        </div>
+    `;
+    document.getElementsByClassName("listing-page-right")[0].appendChild(modal);
 }

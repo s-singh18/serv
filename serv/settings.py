@@ -22,15 +22,14 @@ BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'n1h4c4uednwt4234fn%^)kyv@go^y-+w_rvx(o&884q0+441+#'
+SECRET_KEY = os.environ.get("SECRET_KEY", None)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['resrvice.com', '144.126.210.202', 'localhost']
+ALLOWED_HOSTS = ['resrvice.com', '143.110.234.55', 'localhost']
 
-MAPBOX_ACCESS_TOKEN = 'pk.eyJ1Ijoic3MzMCIsImEiOiJja2lodWh1OGcwNXMxMnhtOGMxa2djNWpxIn0.K5Gczarar9kbxmAKw0gxgg'
-
+MAPBOX_ACCESS_TOKEN = os.environ.get("MAPBOX_ACCESS_TOKEN", None)
 
 # Application definition
 
@@ -87,8 +86,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'serv',
-        'USER': 'reserv_root',
-	'PASSWORD': 'R3$ervR00t939',
+        'USER': 'sss30',
+	'PASSWORD': os.environ.get("DJANGO_DB_PASSWORD", None),
 	'HOST': 'localhost',
 	'PORT': '',
     }
@@ -146,5 +145,4 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
-import os
-STATIC_ROOT = os.path.join(BASE_DIR, 'servapp/static')
+STATIC_ROOT = os.path.join(BASE_DIR, "servapp/static/")

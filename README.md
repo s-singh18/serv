@@ -111,3 +111,5 @@ $ python manage.py runserver
 
 The app should run and direct you to its home page.
 
+
+Copyright 2021, Sohil Singh, All rights reserved.

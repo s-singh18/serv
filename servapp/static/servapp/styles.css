@@ -295,7 +295,13 @@ a.btn.btn-primary:hover {
     margin-top: 6px;
 }
 
+.arrow-button {
+    border: 1px solid black;
+    color: black;
+}
+
 .arrow-button:hover {
+    
     background-color: #430281;
     color: white;
 }
@@ -320,21 +326,26 @@ a.btn.btn-primary:hover {
 .table-button-container {
     width: 100%;
     height: 100%;
-    margin: none;
-    padding: none;
-    display: inline-block;
-}
-
-.table-button {
-    width: 48%;
-    height: 100%;
-    white-space: nowrap;
-    /* float: left; */
+    /*margin: none;*/
+    /*padding: none;*/
     display: inline-flex;
     justify-content: center;
     align-items: center;
+}
+
+.table-button {
+    color: black;
+    flex-shrink: 0;
+    border: 1px solid black;
+    width: 42%;
+    height: 100%;
+    white-space: nowrap;
+    /* float: left; */
+    display: flex;
+    justify-content: center;
+    /*align-items: center;*/
     font-size: medium;
-    text-align: center;
+    /*text-align: center;*/
 }
 
 .table-button:hover {

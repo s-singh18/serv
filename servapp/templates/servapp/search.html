@@ -11,7 +11,7 @@
                     <div class="card-title"> 
                         <a class="title" href="{% url 'listing' listing.title %}"><h5>{{ listing.title }}</h5></a> 
                     </div>
-                    <div class="card-subtitle"><h6>{{ listing.user }}</h6></div>
+                    <div class="card-subtitle"><h6>{{ listing.user.username }}</h6></div>
                     <p class="card-text">{{ listing.description }}</p>
                 </div>
             </div>

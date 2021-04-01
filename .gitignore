@@ -1,2 +1,3 @@
 servenv/*
-env
+.env
+
