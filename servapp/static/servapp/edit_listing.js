@@ -43,11 +43,24 @@ function load_map() {
 
     marker = L.marker(coordinates).addTo(map);
     marker.bindPopup(address).openPopup();
+    let house_number = "";
+    let road = "";
+    let city = "";
+    let state = "";
+    let postcode = "";
+    let country = "";
 
     map.on('click', (e) => {
         if (marker != undefined) {
             map.removeLayer(marker);
         };
+
+        house_number = "";
+        road = "";
+        city = "";
+        state = "";
+        postcode = "";
+        country = "";
     
         marker = L.marker(e.latlng).addTo(map);
         coordinates = [e.latlng.lat, e.latlng.lng];
@@ -57,13 +70,6 @@ function load_map() {
         .then(response => response.json())
         .then(location_data => {
             console.log(location_data);
-            let house_number = "";
-            let road = "";
-            let city = "";
-            let state = "";
-            let postcode = "";
-            let country = "";
-
             if (location_data.address.house_number != undefined) {
                 house_number = location_data.address.house_number + " ";
             }
@@ -88,11 +94,11 @@ function load_map() {
                 country = location_data.address.country;
             }
 
-            location_data.address.country
             let address = house_number + road + city + state + postcode + country;
             marker.bindPopup(address).openPopup();
             document.querySelector('#address').value = address;
             document.querySelector('#mapbox-address').value = address;
+            document.getElementById('location').value = e.latlng.lat + "," + e.latlng.lng;
         });
     });
 }
@@ -112,21 +118,35 @@ function geocode_address() {
         fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${search_data.result.place_name}`)
         .then(response => response.json())
         .then(data => {
-            let boundingbox = data[0].boundingbox;
-            let bbox = [[parseFloat(boundingbox[0]), parseFloat(boundingbox[2])], [parseFloat(boundingbox[1]), parseFloat(boundingbox[3])]]
-            let lat = data[0].lat;
-            let lng = data[0].lon;
+            let lat;
+            let lon;
+            if (data[0].boundingbox != undefined) {
+                let boundingbox = data[0].boundingbox;
+                let bbox = [[parseFloat(boundingbox[0]), parseFloat(boundingbox[2])], [parseFloat(boundingbox[1]), parseFloat(boundingbox[3])]]
+                lat = data[0].lat;
+                lon = data[0].lon;
 
-            map.fitBounds(bbox);
+                map.fitBounds(bbox);
+            } else {
+                map.jumpTo({
+                    center: data[0].center,
+                    zoom: 12,
+                    pitch: 45,
+                    bearing: 90
+                });
+                lat = data[0].center[1];
+                lon = data[0].center[0];
+            }
 
             if (marker != undefined) {
                 map.removeLayer(marker);
             };
         
-            marker = L.marker([lat, lng]).addTo(map);
+            marker = L.marker([lat, lon]).addTo(map);
             marker.bindPopup(search_data.result.place_name).openPopup();
             document.querySelector('#address').value = search_data.result.place_name;
             document.querySelector('#mapbox-address').value = search_data.result.place_name;
+            document.getElementById('location').value = lat + ',' + lon;
         });
     });
 }

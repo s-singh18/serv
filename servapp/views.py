@@ -129,9 +129,6 @@ def create_listing(request):
             service_names = data.get("service_names", "")
             service_rates = data.get("service_rates", "")
             service_times = data.get("service_times", "")
-            print(service_names)
-            print(service_rates)
-            print(service_times)
         except ValueError as err:
             listing_title = request.POST["listing_title"]
             listing_username = request.POST["listing_username"]
@@ -140,6 +137,7 @@ def create_listing(request):
             listing_description = request.POST["listing_description"]
             listing_location = request.POST["listing_location"]
 
+        print("Listing location: " + listing_location)
         user = User.objects.get(username = listing_username)
         if user.is_authenticated:
             errors = listing_validation.check_create_listing(listing_title, listing_type, listing_address, listing_description, listing_username)
@@ -345,6 +343,8 @@ def listing(request, title):
     except Listing.DoesNotExist:
         listing = None
         reviews = None
+        data = None
+        services = None
 
     return render(request, "servapp/listing.html",
         {'listing': listing, 'reviews': reviews,

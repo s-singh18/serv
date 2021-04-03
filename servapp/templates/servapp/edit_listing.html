@@ -4,12 +4,14 @@
 
 {% block body %}
 
-<h2 class="title">Edit Listing</h2>
+
 <div class="listings-view">
+    <h2 class="title">Edit Listing</h2>
     {% for error in errors %}
         <li class="error">{{ error }}</li>
     {% empty %}
     {% endfor %}
+    <br>
     <form action="{% url 'edit_listing' listing.title%}" method="POST">
         {% csrf_token %}
         <input class="form-control" type="hidden" name="username" value="{{ user.username }}">
@@ -31,6 +33,18 @@
         <!-- <div class="form-group">
             <input class="form-control" type="number" name="rate" placeholder="Rate">
         </div> -->
+        <!-- <div class="form-group" id="edit-service-card">
+            <div class="card">
+                <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs" id="tab-nav" role="tablist">
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content mt-3" id="pane-content">
+                    </div>
+                </div>
+            </div>
+        </div> -->
         <input class="btn btn-primary" type="submit" value="Submit">
     </form>
 </div>
@@ -45,6 +59,8 @@
 
 {% block script %}
     <script src="{% static 'servapp/edit_listing.js' %}"></script>
+    <!-- <script src="{% static 'servapp/edit_service_skeleton.js' %}"></script> -->
+    <!-- <script src="{% static 'servapp/edit_service_appointments.js' %}"></script> -->
     <!-- Promise polyfill script required to use Mapbox GL Geocoder in IE 11 -->
     
 {% endblock %}

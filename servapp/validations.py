@@ -6,39 +6,39 @@ class ListingValidation():
 
     def check_create_listing(self, title, listing_type, address, description, username):
         error = []
-        if self.check_title(title) is not None:
+        if self.check_title(title) != None:
             error.append(self.check_title(title))
         if Listing.objects.filter(title=title).exists():
             error.append("Listing with that title already exists")
-        if self.check_type(listing_type) is not None:
+        if self.check_type(listing_type) != None:
             error.append(self.check_type(listing_type))
-        if self.check_address(address) is not None:
+        if self.check_address(address) != None:
             error.append(self.check_address(address))
-        if self.check_description(description) is not None:
+        if self.check_description(description) != None:
             error.append(self.check_description(description))
-        if self.check_unique(username) is not None:
+        if self.check_unique(username) != None:
             error.append(self.check_unique(username))
         return error
 
     def check_edit_listing(self, title, listing_type, address, description):
         error = []
-        if self.check_title(title) is not None:
+        if self.check_title(title) != None:
             error.append(self.check_title(title))
-        if self.check_type(listing_type) is not None:
+        if self.check_type(listing_type) != None:
             error.append(self.check_type(listing_type))
-        if self.check_address(address) is not None:
+        if self.check_address(address) != None:
             error.append(self.check_address(address))
-        if self.check_description(description) is not None:
+        if self.check_description(description) != None:
             error.append(self.check_description(description))
 
         return error
 
     def check_title(self, title):
-        if title is "":
+        if title == "":
             error = "No title given"
         elif len(title) > 114:
             error = "Invalid title"
-        elif re.match("^\w+$", title) is False:
+        elif re.match("^\w+$", title) == False:
             error = "Invalid title"
         elif title.isspace():
             error = "Invalid title"
@@ -47,11 +47,11 @@ class ListingValidation():
         return error
 
     def check_type(self, listing_type):
-        if listing_type is "":
+        if listing_type == "":
             error = "No type given"
         elif len(listing_type) > 114:
             error = "Invalid listing type"
-        elif re.match("^\w+$", listing_type) is False:
+        elif re.match("^\w+$", listing_type) == False:
             error = "Invalid listing type"
         elif listing_type.isspace():
             error = "Invalid listing type"
@@ -60,9 +60,9 @@ class ListingValidation():
         return error
 
     def check_address(self, address):
-        if address is "":
+        if address == "":
             error = "No address given"
-        elif re.match("^\w+$", address) is False:
+        elif re.match("^\w+$", address) == False:
             error = "Invalid address"
         elif address.isspace():
             error = "Invalid address"
@@ -71,7 +71,7 @@ class ListingValidation():
         return error
 
     def check_description(self, description):
-        if description is "":
+        if description == "":
             error = "No description given"
         elif len(description) > 6000:
             error = "Invalid description"
@@ -103,7 +103,7 @@ class ReviewValidation():
         return error
 
     def check_stars(self, stars):
-        if stars is "":
+        if stars == "":
             error = "No stars given"
         elif int(stars) > 3 and int(stars) < 1:
             error = "Invalid review"
@@ -112,7 +112,7 @@ class ReviewValidation():
         return error
         
     def check_text(self, text):
-        if text is "":
+        if text == "":
             error = "No review given"
         elif len(text) > 6000:
             error = "Invalid review"
@@ -135,21 +135,21 @@ class ServiceValidation():
 
     def check_create_service(self, name, rate, times):
         error = []
-        if self.check_name(name) is not None:
+        if self.check_name(name) != None:
             error.append(self.check_name(name))
-        if self.check_rate(rate) is not None:
+        if self.check_rate(rate) != None:
             error.append(self.check_rate(rate))
-        if self.check_times(times) is not None:
+        if self.check_times(times) != None:
             error.append(self.check_times(times))
         return error
 
 
     def check_name(self, name):
-        if name is "":
+        if name == "":
             error = "No name given"
         elif len(name) > 114:
             error = "Invalid name"
-        elif re.match("^\w+$", name) is False:
+        elif re.match("^\w+$", name) == False:
             error = "Invalid name"
         elif name.isspace():
             error = "Invalid name"

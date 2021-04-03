@@ -26,9 +26,9 @@
                 {% csrf_token %}
                 <label for="stars">Stars:</label>
                 <select name="stars" id="stars">
-                    <option value="3">3</option>
-                    <option value="2">2</option>
-                    <option value="1">1</option>
+                    <option value="3">3 - Exceeds Expectations</option>
+                    <option value="2">2 - Meets Expectations</option>
+                    <option value="1">1 - Fails Expectations </option>
                 </select>
                 <textarea class="form-control" id="review-text" name="text" placeholder="Write a review..."></textarea>
                 <input class="form-control" type="hidden" name="username" id="username" value="{{ user.username }}">
