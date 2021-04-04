@@ -373,6 +373,16 @@ def profile(request):
 
 # Functions that only return JSON objects
 
+def get_services(request, listing_title, username):
+    user = User.objects.get(username=username)
+    listing = Listing.objects.filter(user=user, title=listing_title)
+    services = Service.objects.filter(listing=listing)
+    data = serializers.serialize('json', services)
+    print(data)
+    return JsonResponse(data=data,
+    status=200,
+    safe=False)
+
 @csrf_exempt
 def get_appointments(request, listing_title, service_name, day, date, month, year):
     listing = Listing.objects.get(title=listing_title)

@@ -5,8 +5,9 @@
 {% block body %}
     <div class="listing-page-left">
         <div class="listing-view">
+            <input class="listing-owner" id="listin-owner" type="hidden" value="{{ listing.user.username }}">
             <h1 class="listing-title" id="listing-title">{{ listing.title }}</h1>
-            <h3 class="listing-owner" id="listing-owner">{{ listing.user.username }}</h3>
+            <!-- <h3 class="listing-owner" id="listing-owner">{{ listing.user.username }}</h3> -->
             <h5 class="listing-listing-type">{{ listing.listing_type }}</h4>
             <p class="listing-description">{{ listing.description }}</p>  
             <input class='form-control' id='listing-geojson' type="hidden" value="{{ listing_geojson }}">
