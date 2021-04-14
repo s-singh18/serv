@@ -190,7 +190,19 @@ a.btn.btn-primary:hover {
     /* flex: 1; */
 }
 
+footer {
+    position: fixed;
+    padding: 10px 10px 0px 10px;
+    bottom: 0;
+    width: 100%;
+    /* Height of the footer*/ 
+    height: 30px;
+}
 
+.copywrite {
+    text-align: center;
+    font-size: small;
+}
 
 .vertical-line {
     margin-top: 30px;
