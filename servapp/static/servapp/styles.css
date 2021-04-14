@@ -16,14 +16,23 @@ body {
 
 .register-link {
     color: #430281;
+    transition-duration: 0.3s;
 }
+
+.register-link:hover {
+    color: grey;
+}
+
+.register-link:focus {
+    color: grey;
+}
+
 
 input.btn.btn-primary {
     margin-top: 2px;
 }
 
 .title-search {
-
     position: absolute;
     left: 50%;
     top: 50%;
@@ -93,9 +102,6 @@ input#search-field.mapboxgl-ctrl-geocoder--input {
 input.mapboxgl-ctrl-geocoder--input {
     background-color: white;
     /* border-radius: 75%; */
-    
-    
-    
 }
 
 
@@ -147,7 +153,16 @@ a.btn.btn-primary:hover {
     float: left;
 }
 
-#appointment-body {height: 100%; padding-bottom: 0px; display: flex; flex-direction: column;} 
+#appointment-body {
+    height: 100%; 
+    padding-bottom: 0px; 
+    display: flex; 
+    flex-direction: column;
+}
+
+#user-appointment-body {
+    transition: opacity .5s ease-in-out;
+}
 .appointment-header {
     width: 100%;
     flex: 1;
@@ -356,6 +371,28 @@ a.btn.btn-primary:hover {
 .table-button:focus {
     background-color: #430281;
     color: white;
+}
+
+.footer {
+    justify-content: flex-start;
+}
+
+.modal-button {
+    color: white;
+    background-color: #430281;
+    transition-duration: 0.3s;
+
+
+}
+
+.modal-button:hover {
+    background-color: white;
+    color: grey;
+}
+
+.modal-button:focus {
+    background-color: white;
+    color: grey;
 }
 
 .appointment-div {

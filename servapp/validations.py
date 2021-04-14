@@ -1,10 +1,10 @@
 import re
 
-from .models import User, Listing, Review
+from .models import User, Listing, Review, Service
 
 class ListingValidation():
 
-    def check_create_listing(self, title, listing_type, address, description, username):
+    def check_create_listing(self, title, listing_type, address, description, user_id):
         error = []
         if self.check_title(title) != None:
             error.append(self.check_title(title))
@@ -16,8 +16,8 @@ class ListingValidation():
             error.append(self.check_address(address))
         if self.check_description(description) != None:
             error.append(self.check_description(description))
-        if self.check_unique(username) != None:
-            error.append(self.check_unique(username))
+        if self.check_unique(user_id) != None:
+            error.append(self.check_unique(user_id))
         return error
 
     def check_edit_listing(self, title, listing_type, address, description):
@@ -81,8 +81,8 @@ class ListingValidation():
             error = None
         return error
 
-    def check_unique(self, username):
-        user = User.objects.get(username=username)
+    def check_unique(self, user_id):
+        user = User.objects.get(id=user_id)
         if Listing.objects.filter(user=user).exists():
             error = "Limit one listing per user"
         else:
@@ -91,14 +91,14 @@ class ListingValidation():
 
 class ReviewValidation():
 
-    def check_review(self, text, stars, title, username):
+    def check_review(self, text, stars, title, email):
         error = []
         if self.check_text(text) is not None:
             error.append(self.check_text(text))
         if self.check_stars(stars) is not None:
             error.append(self.check_stars(stars))
-        if self.check_unique(title, username) is not None:
-            error.append(self.check_unique(title, username))
+        if self.check_unique(title, email) is not None:
+            error.append(self.check_unique(title, email))
 
         return error
 
@@ -122,8 +122,8 @@ class ReviewValidation():
             error = None
         return error
 
-    def check_unique(self, title, username):
-        user = User.objects.get(username=username)
+    def check_unique(self, title, email):
+        user = User.objects.get(email=email)
         listing = Listing.objects.get(title=title)
         if Review.objects.filter(user=user, listing=listing).exists():
             error = "Review for this listing already exists"
@@ -134,6 +134,17 @@ class ReviewValidation():
 class ServiceValidation():
 
     def check_create_service(self, name, rate, times):
+        error = []
+        if self.check_name(name) != None:
+            error.append(self.check_name(name))
+        if self.check_rate(rate) != None:
+            error.append(self.check_rate(rate))
+        if self.check_times(times) != None:
+            error.append(self.check_times(times))
+        return error
+
+
+    def check_edit_service(self, name, rate, times):
         error = []
         if self.check_name(name) != None:
             error.append(self.check_name(name))
@@ -163,6 +174,8 @@ class ServiceValidation():
         elif len(rate) > 9:
             error = "Invalid rate"
         elif re.match("^[0-9]+$", rate) is False:
+            error = "Invalid rate"
+        elif int(rate) < 0:
             error = "Invalid rate"
         else:
             error = None

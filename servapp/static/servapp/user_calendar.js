@@ -579,7 +579,8 @@ function loadUserBookings() {
         let times = result.times;
         let am_pm = result.am_pm;
         let services = result.services;
-        let listings = result.listings;
+        let listing_ids = result.listing_ids;
+        let listing_titles = result.listing_titles;
         let user_appointment_body = document.getElementById('user-appointment-body');
         user_appointment_body.innerHTML = "";
         let header = document.createElement('h6');
@@ -636,7 +637,7 @@ function loadUserBookings() {
                 button.addEventListener('click', () => {
                     let url = window.location.origin;
                     // Link to listing
-                    document.location.href = url + "/listing" + "/" + listings[i];
+                    document.location.href = url + "/listing" + "/" + listing_titles[i] + "/" + listing_ids[i];
                 });
                 
             }

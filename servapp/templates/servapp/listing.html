@@ -5,9 +5,8 @@
 {% block body %}
     <div class="listing-page-left">
         <div class="listing-view">
-            <input class="listing-owner" id="listin-owner" type="hidden" value="{{ listing.user.username }}">
+            <input class="listing-owner" id="listing-id" type="hidden" value="{{ listing.id }}">
             <h1 class="listing-title" id="listing-title">{{ listing.title }}</h1>
-            <!-- <h3 class="listing-owner" id="listing-owner">{{ listing.user.username }}</h3> -->
             <h5 class="listing-listing-type">{{ listing.listing_type }}</h4>
             <p class="listing-description">{{ listing.description }}</p>  
             <input class='form-control' id='listing-geojson' type="hidden" value="{{ listing_geojson }}">
@@ -23,7 +22,7 @@
                 <li class="error">{{ error }}</li>
             {% empty %}
             {% endfor %}
-            <form id='review-form' method="POST" action="{% url 'listing' listing.title %}">
+            <form id='review-form' method="POST" action="{% url 'listing' title=listing.title id=listing.id %}">
                 {% csrf_token %}
                 <label for="stars">Stars:</label>
                 <select name="stars" id="stars">
@@ -60,7 +59,7 @@
     <div class="listing-page-right">
         <div class="calendar-view">
             {% if listing.user.username == user.username %}
-                <a class="edit-link" id="edit-listing" href="{% url 'edit_listing' listing.title %}">Edit</a>
+                <a class="edit-link" id="edit-listing" href="{% url 'edit_listing' %}">Edit</a>
             {% endif %}
             <div id="accordion">
                 <div class="listing-view">
@@ -72,9 +71,12 @@
                         <div id="collapseOne" class="panel-collapse show card-body" aria-labelledby="headingOne">
                             <div class="form-inline" id="service-button-container">
                                 {% for service in services %}
-                                    <button type="button" class="btn btn-primary btn-sm service-button" id="{{ service.name }}">{{ service.name }} - ${{ service.rate }}</button>
+                                    <div class="service">
+                                        <button type="button" class="btn btn-primary btn-sm service-button" id="{{ service.name }}">{{ service.name }} - ${{ service.rate }}</button>
+                                        <input id="service-{{ service.id }}" type="hidden" value="{{ service.id }}">
+                                    </div>
                                 {% empty %}
-                                    <p>None specified</p>
+                                    <p>No services</p>
                                 {% endfor %}
                             </div>
                         </div>
@@ -152,6 +154,29 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal for login and register -->
+    <input id="isAuthenticated" type="hidden" value="{{ request.user.is_authenticated }}">
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="exampleModalBody">
+                    
+                </div>
+                <div class="modal-footer footer" id="exampleModalFooter">
+                    <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> -->
+                    <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+                </div>
+            </div>
+        </div>
+    </div>
     
     
 {% endblock %}
@@ -160,6 +185,6 @@
 
 {% block script %}
     <script src="{% static 'servapp/listing.js' %}"></script>
-    <script src="{% static 'servapp/calendar.js' %}"></script>
+    <script src="{% static 'servapp/booking_calendar.js' %}"></script>
     <!-- <script src="{% static 'servapp/appointment.js' %}"></script> -->
 {% endblock %}

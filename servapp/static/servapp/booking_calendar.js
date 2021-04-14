@@ -28,6 +28,10 @@ var selectedYear;
 var selectedServiceButton;
 var selectedAppointmentButton;
 var selectedAppointment_AM_PM;
+var servicesExist;
+
+var listingID = document.getElementById('listing-id').value;
+let listingTitle = document.getElementById("listing-title").innerText;
 
 var bookingButton = document.getElementById("booking-button");
 
@@ -38,8 +42,24 @@ document.addEventListener("DOMContentLoaded", function () {
     showCalendar(currentMonth, currentYear);
     showWeekCalendar(currentDay, currentDate, currentMonth, currentYear);
     createBooking();
-    createModal();
 });
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+const csrftoken = getCookie('csrftoken');
 
 function setCalendarMonth() {
     let listings_header = document.getElementById('listings-header');
@@ -580,22 +600,27 @@ function setSelectedDates(day, date, month, year) {
     selectedMonth = month;
     selectedYear = year;
     // On new selected days load appointments for that day
-    loadAppointments()
+    if (servicesExist == true) {
+        loadAppointments()
+    }
+    
 }
 
 // From appointments.js
 
 function clickServiceButton() {
     let service_buttons = Array.from(document.getElementsByClassName('service-button'));
-    if (service_buttons == undefined) {
+    if (service_buttons.length == 0) {
         let appointment_body = document.getElementById("appointment-body");
-        appointment_body.innerText = "No Appointments.";
+        let p = document.create
+        appointment_body.innerText = "No Appointments";
+        servicesExist = false;
     } else {
         // Load appointments for first element
         selectedServiceButton = service_buttons[0];
         selectedServiceButton.disabled = true;
         selectedServiceButton.classList.add("active");
-        // loadAppointments();
+        servicesExist = true;
         
         // add click event listener and button presser to all elements
         service_buttons.forEach(element => {
@@ -618,11 +643,10 @@ function clickServiceButton() {
 }
 
 function loadAppointments() {
-    let listing_title = document.getElementById("listing-title").innerText;
     selectedAppointmentButton = undefined;
     selectedAppointment_AM_PM = undefined;
     bookingButton.disabled = true;
-    fetch(`/get_appointments/${listing_title}/${selectedServiceButton.id}/${selectedDay}/${selectedDate}/${selectedMonth}/${selectedYear}`)
+    fetch(`/get_appointments/${listingTitle}/${selectedServiceButton.nextElementSibling.value}/${selectedDay}/${selectedDate}/${selectedMonth}/${selectedYear}`)
     .then(response => response.json())
     .then(result => {
         let appointment_am = document.getElementById('appointment-am');
@@ -705,23 +729,20 @@ function loadAppointments() {
 function createBooking() {
     bookingButton.disabled = true;
     bookingButton.setAttribute("data-toggle", "modal");
-    bookingButton.setAttribute("data-target", "successModal");
+    bookingButton.setAttribute("data-target", "#exampleModalCenter");
     bookingButton.addEventListener('click', () => {
         if (selectedAppointmentButton != undefined) {
-            
-            let client_name = document.getElementById("username").value;
-            let listing_title = document.getElementById("listing-title").innerText;
-            if (client_name == undefined) {
-                client_name = null;
-            }
-            let provider_name = document.getElementById("listing-owner").innerText;
-            fetch("/create_booking", {
+            let booking_request = new Request(
+                '/create_booking',
+                {headers: {'X-CSRFToken': csrftoken}}
+            );
+        
+            // Create booking post request
+            fetch(booking_request, {
                 method: "POST",
                 body: JSON.stringify({
-                    listing_title: listing_title,
-                    service_name: selectedServiceButton.id,
-                    client_name: client_name,
-                    provider_name: provider_name,
+                    listing_id: listingID,
+                    service_id: selectedServiceButton.nextElementSibling.value,
                     time: selectedAppointmentButton.value,
                     am_pm: selectedAppointment_AM_PM,
                     day: selectedDay,
@@ -733,40 +754,282 @@ function createBooking() {
             .then(response => response.json())
             .then(data => {
                 if (data.error) {
-                    document.getElementById('login').click();
-                    return false;
+                    loadLoginModal();
                 } else {
-                    location.reload();
-                    return false;
+                    loadSuccessModal();
                 }
+                
             });
         }
     });
 }
 
-function createModal() {
-    // <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-    let modal = document.createElement("div");
-    modal.className = "modal fade";
-    modal.id = "successModal";
-    modal.setAttribute("tabindex", "-1");
-    modal.role = "dialog";
-    modal.setAttribute("aria-labelledby", "successModalCenterTitle");
-    modal.setAttribute("aria-hidden", "true");
-    modal.innerHTML = `
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="successModalCenterTitle">Success</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                      <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                ...
-                </div>
-            </div>
-        </div>
-    `;
-    document.getElementsByClassName("listing-page-right")[0].appendChild(modal);
+function loadLoginModal() {
+    let modal_title = document.getElementById('exampleModalLongTitle');
+    modal_title.innerText = "Login";
+    
+    let modal_body = document.getElementById('exampleModalBody');
+    modal_body.innerHTML = ``;
+
+    let form_errors = document.createElement('form-errors');
+    modal_body.appendChild(form_errors);
+
+    let email_div = document.createElement('div');
+    email_div.className = "form-group";
+    modal_body.appendChild(email_div);
+
+    let email_input = document.createElement('input');
+    email_input.className = "form-control";
+    email_input.type = "email";
+    email_input.name = "email";
+    email_input.placeholder = "Email";
+    email_div.appendChild(email_input)
+
+    let password_div = document.createElement('div');
+    password_div.className = "form-group";
+    modal_body.appendChild(password_div);
+
+    let password_input = document.createElement('input');
+    password_input.className = "form-control";
+    password_input.type = "password";
+    password_input.name = "password";
+    password_input.placeholder = "Password";
+    password_div.appendChild(password_input)
+
+    let paragraph = document.createElement('p');
+    paragraph.innerText = "Don't have an account?  ";
+
+    let register_link = document.createElement('a');
+    register_link.className = "register-link";
+    register_link.innerText = "Register here.";
+    register_link.href = "#";
+    register_link.role = "button";
+    paragraph.appendChild(register_link);
+    modal_body.appendChild(paragraph);
+
+    let modal_footer = document.getElementById('exampleModalFooter');
+    modal_footer.innerHTML = ``;
+    let login_button = document.createElement('button');
+    login_button.className = "btn btn-primary modal-button";
+    login_button.innerText = "Login";
+    modal_footer.appendChild(login_button);
+
+    register_link.addEventListener('click', loadRegisterModal);
+
+    login_button.addEventListener('click', () => {
+        let login_request = new Request(
+            '/login',
+            {headers: {'X-CSRFToken': csrftoken}}
+        );
+        fetch(login_request, {
+            method: "POST",
+            body: JSON.stringify({
+                email: email_input.value,
+                password: password_input.value,
+            }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                form_errors.innerHTML = ``;
+
+                let error = document.createElement('li');
+                error.className = "error";
+                error.innerText = data.error;
+                let br = document.createElement('br');
+
+                form_errors.appendChild(error);
+                form_errors.appendChild(br);
+                return false;
+            } else {
+                let csrf = getCookie('csrftoken');
+                let new_booking_request = new Request(
+                    '/create_booking',
+                    {headers: {'X-CSRFToken': csrf}}
+                );
+            
+                // Create booking post request
+                fetch(new_booking_request, {
+                    method: "POST",
+                    body: JSON.stringify({
+                        listing_id: listingID,
+                        service_id: selectedServiceButton.nextElementSibling.value,
+                        time: selectedAppointmentButton.value,
+                        am_pm: selectedAppointment_AM_PM,
+                        day: selectedDay,
+                        date: String(selectedDate),
+                        month: String(selectedMonth + 1),
+                        year: String(selectedYear),
+                    }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        loadLoginModal();
+                    } else {
+                        loadSuccessModal();
+                    }
+                });
+            }
+        });
+    });
+}
+
+function loadRegisterModal() {
+    let modal_title = document.getElementById('exampleModalLongTitle');
+    modal_title.innerText = "Register";
+    
+    let modal_body = document.getElementById('exampleModalBody');
+    modal_body.innerHTML = ``;
+
+    let form_errors = document.createElement('div');
+    modal_body.appendChild(form_errors);
+
+    let user_div = document.createElement('div');
+    user_div.className = "form-group";
+    modal_body.appendChild(user_div);
+
+    let user_input = document.createElement('input');
+    user_input.className = "form-control";
+    user_input.type = "text";
+    user_input.name = "username";
+    user_input.placeholder = "Name";
+    user_div.appendChild(user_input);
+
+    let email_div = document.createElement('div');
+    email_div.className = "form-group";
+    modal_body.appendChild(email_div);
+
+    let email_input = document.createElement('input');
+    email_input.className = "form-control";
+    email_input.type = "email";
+    email_input.name = "email";
+    email_input.placeholder = "Email";
+    email_div.appendChild(email_input)
+
+    let password_div = document.createElement('div');
+    password_div.className = "form-group";
+    modal_body.appendChild(password_div);
+
+    let password_input = document.createElement('input');
+    password_input.className = "form-control";
+    password_input.type = "password";
+    password_input.name = "password";
+    password_input.placeholder = "Password";
+    password_div.appendChild(password_input)
+
+    let confirm_div = document.createElement('div');
+    confirm_div.className = "form-group";
+    modal_body.appendChild(confirm_div);
+
+    let confirm_input = document.createElement('input');
+    confirm_input.className = "form-control";
+    confirm_input.type = "password";
+    confirm_input.name = "confirmation";
+    confirm_input.placeholder = "Confirm Password";
+    confirm_div.appendChild(confirm_input)
+
+    let paragraph = document.createElement('p');
+    paragraph.innerText = "Already have an account?  ";
+
+    let login_link = document.createElement('a');
+    login_link.className = "register-link";
+    login_link.innerText = "Login here.";
+    login_link.href = "#";
+    login_link.role = "button";
+    paragraph.appendChild(login_link);
+    modal_body.appendChild(paragraph);
+
+    let modal_footer = document.getElementById('exampleModalFooter');
+    modal_footer.innerHTML = ``;
+    let register_button = document.createElement('button');
+    register_button.className = "btn btn-primary modal-button";
+    register_button.innerText = "Register";
+    modal_footer.appendChild(register_button);
+
+    login_link.addEventListener('click', loadLoginModal);
+
+    register_button.addEventListener('click', () => {
+        let csrf = getCookie('csrftoken');
+        let register_request = new Request(
+            '/register',
+            {headers: {'X-CSRFToken': csrf}}
+        );
+        fetch(register_request, {
+            method: "POST",
+            body: JSON.stringify({
+                username: user_input.value,
+                email: email_input.value,
+                password: password_input.value,
+                confirmation: confirm_input.value,
+            }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                form_errors.innerHTML = ``;
+
+                let error = document.createElement('li');
+                error.className = "error";
+                error.innerText = data.error;
+                let br = document.createElement('br');
+
+                form_errors.appendChild(error);
+                form_errors.appendChild(br);
+                return false;
+            } else {
+                let csrf = getCookie('csrftoken');
+                let new_booking_request = new Request(
+                    '/create_booking',
+                    {headers: {'X-CSRFToken': csrf}}
+                );
+            
+                // Create booking post request
+                fetch(new_booking_request, {
+                    method: "POST",
+                    body: JSON.stringify({
+                        listing_id: listingID,
+                        service_id: selectedServiceButton.nextElementSibling.value,
+                        time: selectedAppointmentButton.value,
+                        am_pm: selectedAppointment_AM_PM,
+                        day: selectedDay,
+                        date: String(selectedDate),
+                        month: String(selectedMonth + 1),
+                        year: String(selectedYear),
+                    }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        loadRegisterModal();
+                    } else {
+                        loadSuccessModal();
+                    }
+                });
+            }
+        });
+    });
+
+}
+
+function loadSuccessModal() {
+    let modal_title = document.getElementById('exampleModalLongTitle');
+    modal_title.innerText = "Success";
+    
+    let modal_body = document.getElementById('exampleModalBody');
+    modal_body.innerHTML = ``;
+
+    let success = document.createElement('p');
+    success.innerText = "Created a booking at " + selectedAppointmentButton.value + " " + selectedAppointment_AM_PM + ", " + days[selectedDay] + " " + String(selectedMonth) + "/" + String(selectedDate) + " for " + selectedServiceButton.id + " with " + listingTitle + ".  View at your ";
+    let profile_link = document.createElement('a');
+    let url = window.location.origin;
+    profile_link.className = "register-link";
+    profile_link.href = url + "/profile";
+    profile_link.innerText = "profile."
+    success.appendChild(profile_link);
+    modal_body.appendChild(success);
+
+    
+    let modal_footer = document.getElementById('exampleModalFooter');
+    modal_footer.innerHTML = ``;
 }

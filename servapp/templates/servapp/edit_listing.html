@@ -7,34 +7,41 @@
 
 <div class="listings-view">
     <h2 class="title">Edit Listing</h2>
-    {% for error in errors %}
-        <li class="error">{{ error }}</li>
-    {% empty %}
-    {% endfor %}
+    <div id="errors">
+        {% if errors %}
+            <p>Errors:</p>
+            {% for error in errors %}
+                <li class="error">{{ error }}</li>
+            {% empty %}
+            {% endfor %}
+            <br>
+        {% endif %}
+    </div>
     <br>
-    <form id="listing-form" action="{% url 'edit_listing' listing.title%}" method="POST">
+    <form id="listing-form" action="{% url 'edit_listing' %}" method="POST">
         {% csrf_token %}
-        <input class="form-control" type="hidden" name="username" id="username" value="{{ user.username }}">
+        <!-- <input class="form-control" type="hidden" name="username" id="username" value="{{ user.username }}"> -->
+        <input class="form-control" type="hidden" name="listing_id" id="listing-id" value="{{ listing.id }}">
         <div class="form-group">
-            <input autofocus class="form-control" type="text" name="title" value="{{ listing.title }}">
+            <input autofocus class="form-control" type="text" name="title" id="title" value="{{ listing.title }}">
         </div>
         
         <div class="form-group">
-            <input class="form-control" type="text" name="listing_type" value="{{ listing.listing_type }}">
+            <input class="form-control" type="text" id="listing-type" name="listing_type" value="{{ listing.listing_type }}">
         </div>
         <div class="form-group" id="geocoder-address" >
             <input class="form-control" type="text" name="address" id="address" value="{{ listing.address }}">
         </div>
         <br>
         <div class="form-group">
-            <textarea class="form-control" name="description">{{ listing.description }}</textarea>
+            <textarea class="form-control" id="description" name="description">{{ listing.description }}</textarea>
         </div>
         <input class="form-control" id="location" name="location" type="hidden" value="">
         <!-- <div class="form-group">
             <input class="form-control" type="number" name="rate" placeholder="Rate">
         </div> -->
         <div class="form-group" id="edit-service-card">
-            <!-- <div class="card">
+            <div class="card">
                 <div class="card-header">
                     <ul class="nav nav-tabs card-header-tabs" id="tab-nav" role="tablist">
                     </ul>
@@ -43,7 +50,7 @@
                     <div class="tab-content mt-3" id="pane-content">
                     </div>
                 </div>
-            </div> -->
+            </div>
         </div>
         <input class="btn btn-primary" type="submit" value="Submit">
     </form>
@@ -60,7 +67,7 @@
 {% block script %}
     <script src="{% static 'servapp/edit_listing.js' %}"></script>
     <!-- <script src="{% static 'servapp/edit_service_skeleton.js' %}"></script> -->
-    <!-- <script src="{% static 'servapp/edit_service_appointments.js' %}"></script> -->
+    <script src="{% static 'servapp/edit_service_appointments.js' %}"></script>
     <!-- Promise polyfill script required to use Mapbox GL Geocoder in IE 11 -->
     
 {% endblock %}

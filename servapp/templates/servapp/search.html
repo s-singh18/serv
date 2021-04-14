@@ -8,8 +8,9 @@
         {% for listing in listings %}
             <div class="card border-dark mb-3">
                 <div class="card-body">
+                    <input class="form-control" id="listing-{{ listing.id }}" type="hidden" value="{{ listing.id }}">
                     <div class="card-title"> 
-                        <a class="title" href="{% url 'listing' listing.title %}"><h5>{{ listing.title }}</h5></a> 
+                        <a class="title" href="{% url 'listing' title=listing.title id=listing.id %}"><h5>{{ listing.title }}</h5></a> 
                     </div>
                     <div class="card-subtitle"><h6>{{ listing.user.username }}</h6></div>
                     <p class="card-text">{{ listing.description }}</p>

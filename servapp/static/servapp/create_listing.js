@@ -17,9 +17,6 @@ document.addEventListener("DOMContentLoaded", function () {
     
     geocodeAddress();
     loadMap();
-    
-    
-    
 
 });
 

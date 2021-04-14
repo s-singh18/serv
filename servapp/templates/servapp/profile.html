@@ -12,8 +12,8 @@
     <hr>
     <div id="accordion">
 <!-- Show service bookings in calendar -->
-{% if request.session.listing %}
-        <h4>{{ request.session.listing }} Bookings</h4>
+{% if request.session.listing_title %}
+        <h4>{{ request.session.listing_title }} Bookings</h4>
         <div class="card">
             <div class="card-header" id="headingOne">
                 <h5 class="mb-0">

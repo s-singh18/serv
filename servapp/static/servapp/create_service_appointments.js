@@ -831,6 +831,9 @@ function submitListing() {
                     }
                     console.log(current_times);
                 }
+                if (current_times == "-;-;-;-;-;-;-") {
+                    current_times = "";
+                }
                 service_times.push(current_times);
             }
             
@@ -873,12 +876,14 @@ function submitListing() {
         })
         .then(response => response.json())
         .then(result => {
-            if (result.status == 200) {
+            if (result.message) {
                 // Good input
-                let url = window.location.origin + "/listing/" + listing_title;
+                let url = window.location.origin + "/listing/" + result.listing_title + "/" + result.listing_id;
                 console.log(url);
                 document.location.href = url;
-            } else if (result.status == 400) {
+            } 
+            
+            if (result.errors) {
                 let error_messages = result.errors;
                 let error_container = document.getElementById('errors');
                 error_container.innerHTML = ``;
