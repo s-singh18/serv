@@ -35,6 +35,8 @@ router.register(r'listings', viewsets.ListingViewSet)
 router.register(r'reviews', viewsets.ReviewViewSet)
 # from serv.api import router
 
+handler404 = 'servapp.views.handler404'
+handler500 = 'servapp.views.handler500'
 
 urlpatterns = [
     path('admin/', admin.site.urls),

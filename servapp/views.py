@@ -18,6 +18,7 @@ from django.core import serializers
 import urllib.request, json 
 from django.contrib.gis.geos import Point
 from django.contrib.gis.geos import Polygon
+from django.template import RequestContext
 from urllib.parse import urlencode
 
 from rest_framework.response import Response
@@ -42,12 +43,17 @@ listing_validation = ListingValidation()
 review_validation = ReviewValidation()
 service_validation = ServiceValidation()
 
+def handler404(request, *args, **argv):
+    return HttpResponse('404.html', status=404)
+
+
+def handler500(request, *args, **argv):
+    return HttpResponse('500.html', status=500)
+
 def home(request):
         return render(request, "servapp/home.html", {
                     'mapbox_access_token': MAPBOX_ACCESS_TOKEN,
                     })
-        
-
 
 def login_view(request):
     if request.method == "POST":

@@ -856,12 +856,17 @@ footer {
     margin-right: 6px;
 }
 
+.error404 {
+    color: #430281;
+}
+
 input[type='checkbox']:checked {
     background-color: #430281;
 } 
 input[type='checkbox']:checked:after {
     background-color: #430281;
 }
+
 
 /* Style the input fields */
 /* .form-inline input {
