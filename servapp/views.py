@@ -44,11 +44,11 @@ review_validation = ReviewValidation()
 service_validation = ServiceValidation()
 
 def handler404(request, *args, **argv):
-    return HttpResponse('404.html', status=404)
+    return render(request, 'servapp/404.html', status=404)
 
 
 def handler500(request, *args, **argv):
-    return HttpResponse('500.html', status=500)
+    return render(request, 'servapp/500.html', status=500)
 
 def home(request):
         return render(request, "servapp/home.html", {

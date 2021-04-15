@@ -17,6 +17,8 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
 from servapp import views, viewsets
+from django.conf.urls import handler400, handler403, handler404, handler500
+
 
 # Router provides URL access to APIs
 # Get entire list of objects
