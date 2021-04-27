@@ -1,5 +1,14 @@
-body {
+#content {
+    min-height: 600px;
+    height: auto !important;
+    height: 600px;
+}
+
+html, body {
     background-color : whitesmoke;
+    font-family: Arial, Helvetica, sans-serif;
+    height: 100%;
+    margin: 0;
 }
 
 .nav-bar {
@@ -140,17 +149,27 @@ a.btn.btn-primary:hover {
     
 }
 
+.listing-page {
+    display: inline-flex;
+}
+
 .listing-page-right {
-    height: 100%;
+    display: flex;
+    /* height: 100%; */
     width: 50%;
-    float: left;
+    float: right;
+    flex-direction: column;
+    flex-grow: 1;
 }
 
 .listing-page-left {
+    display: flex;
     padding-left: 3px;
-    height: 100%;
+    /* height: 100%; */
     width: 50%;
     float: left;
+    flex-direction: column;
+    flex-grow: 1;
 }
 
 #appointment-body {
@@ -226,6 +245,7 @@ footer {
     height: 100%; /*50 for other way */
     width: 51%; /*100 for other way */
     float: left;
+    /* overflow: auto; */
 }
 
 .title-view {
@@ -277,9 +297,9 @@ footer {
 .calendar-view {
     margin-top: 0px;
     padding-top: 0px;
-    float: left;
-    width: 100%;
-    position: relative;
+    float: right;
+    width: 96%;
+    /* position: relative; */
 }
 
 #calendar-container {
@@ -287,6 +307,12 @@ footer {
     width: 100%;
 }
 
+.accordion-view {
+    position: -webkit-sticky; /* for Safari */
+    position: sticky;
+    top: 12px;
+    align-self: flex-start;
+}
 
 #header-box {
     display: flex;
@@ -727,15 +753,15 @@ footer {
     color: white;
 } */
 
-#review-text {
+#review-body {
     width: 90%;
 } 
 
 .edit-link {
-    float: right;
-    margin-right: 18px;
-    margin-top: 9px;
+    float: left;
     color: black;
+    justify-content: flex-end;
+    text-align: right;
 }
 .map-view {
     /* display: inline-block; */
@@ -850,6 +876,10 @@ footer {
 
 .form-control {
     margin-right: 1px;
+}
+
+.review-form-element {
+    width: 90%;
 }
 
 .card {

@@ -91,40 +91,42 @@ class ListingValidation():
 
 class ReviewValidation():
 
-    def check_review(self, text, stars, title, email):
+    def check_review(self, header, body, listing_id, user_id):
         error = []
-        if self.check_text(text) is not None:
-            error.append(self.check_text(text))
-        if self.check_stars(stars) is not None:
-            error.append(self.check_stars(stars))
-        if self.check_unique(title, email) is not None:
-            error.append(self.check_unique(title, email))
+        if self.check_header(header) is not None:
+            error.append(self.check_header(header))
+        if self.check_body(body) is not None:
+            error.append(self.check_body(body))
+        if self.check_unique(listing_id, user_id) is not None:
+            error.append(self.check_unique(listing_id, user_id))
 
         return error
 
-    def check_stars(self, stars):
-        if stars == "":
-            error = "No stars given"
-        elif int(stars) > 3 and int(stars) < 1:
+    def check_header(self, header):
+        if header == "":
+            error = "No header given"
+        elif len(header) > 300:
+            error = "Max review head length 300 characters"
+        elif header.isspace():
             error = "Invalid review"
         else:
             error = None
         return error
         
-    def check_text(self, text):
-        if text == "":
-            error = "No review given"
-        elif len(text) > 6000:
-            error = "Invalid review"
-        elif text.isspace():
+    def check_body(self, body):
+        if body == "":
+            error = "No body given"
+        elif len(body) > 6000:
+            error = "Max review body length 6000 characters"
+        elif body.isspace():
             error = "Invalid review"
         else:
             error = None
         return error
 
-    def check_unique(self, title, email):
-        user = User.objects.get(email=email)
-        listing = Listing.objects.get(title=title)
+    def check_unique(self, listing_id, user_id):
+        user = User.objects.get(id=user_id)
+        listing = Listing.objects.get(id=listing_id)
         if Review.objects.filter(user=user, listing=listing).exists():
             error = "Review for this listing already exists"
         else:

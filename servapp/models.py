@@ -63,8 +63,8 @@ class Listing(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
 
 class Review(models.Model): 
-    stars = models.CharField(max_length=300, blank=False)
-    text = models.TextField(blank=True, default=False)
+    header = models.CharField(max_length=300, blank=False, default=" ")
+    body = models.TextField(blank=False, default=" ")
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="writer")
     listing = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name="review_listing")
     timestamp = models.DateTimeField(auto_now_add=True)

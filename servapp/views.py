@@ -12,7 +12,6 @@ from geopy.geocoders import MapBox
 from django.contrib.gis.geos import Point
 from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.serializers import serialize
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core import serializers
 import urllib.request, json 
@@ -217,25 +216,29 @@ def listing(request, title, id):
     errors = []
     try:
         listing = Listing.objects.get(id=id)
-        data = serializers.serialize('geojson', [listing,])
-        struct = json.loads(data)
-        data = json.dumps(struct)
+        data = get_geojson(id)
         reviews = Review.objects.order_by('-timestamp').filter(listing=listing).all()
         services = Service.objects.filter(listing=listing).all()
-        # Create review
+        # 
         if request.method == "POST":
             # Check if user is logged in
             if request.user.is_authenticated:
-                stars = request.POST["stars"]
-                text = request.POST["text"]
-                username = request.POST["username"]
-                print(username)
+                header = request.POST["header"]
+                body = request.POST["body"]
+                listing_id = request.POST["listing_id"]
+                listing = Listing.objects.get(id=listing_id)
                 user = User.objects.get(id=request.user.id)
                 # Check for errors
-                errors = review_validation.check_review(text, stars, title, user.email)
-                if not errors and request.user != username:
-                    Review.objects.create(stars=stars, text=text, user=user, listing=listing)
+                errors = review_validation.check_review(header, body, listing_id, user.id)
+                if not errors:
+                    Review.objects.create(header=header, body=body, user=user, listing=listing)
                     reviews = Review.objects.order_by('-timestamp').filter(listing=listing).all()
+                render(request, "servapp/listing.html",
+                {'listing': listing, 'reviews': reviews,
+                'listing_geojson': data, 'errors': errors,
+                'services': services,
+                'mapbox_access_token': MAPBOX_ACCESS_TOKEN}, 
+                status=200)
             else:
                 return HttpResponseRedirect(reverse("login"))
     
@@ -309,9 +312,9 @@ def create_listing(request):
                         time = service_times[i]
                         
 
-                        if (service_validation.check_create_service(name, rate, time, listing_title, user_id)):
+                        if (service_validation.check_create_service(name, rate, time)):
                             separator = ', '
-                            service_error = separator.join(service_validation.check_create_service(name, rate, time, listing_title, user_id))
+                            service_error = separator.join(service_validation.check_create_service(name, rate, time))
                             num = i + 1
                             error = "Service " + str(num) + ": " + service_error
                             errors.append(error)
@@ -355,10 +358,10 @@ def create_listing(request):
 def edit_listing(request):
     user_email = request.user.email
     user = User.objects.get(id=request.user.id)
+    
     listing = Listing.objects.get(id=request.session.get('listing_id'))
-    data = serializers.serialize('geojson', [listing,])
-    struct = json.loads(data)
-    json_data = json.dumps(struct)
+    json_data = get_geojson(listing.id)
+    
     errors = []
     if request.method == "POST":
         print("POST Request")
@@ -482,7 +485,6 @@ def edit_listing(request):
                         'listing': listing, 'listing_geojson': json_data,
                         'errors': errors, 
                         }, status=200)
-
 
 # @login_required
 # def edit_review(request):
@@ -618,3 +620,10 @@ def checkExists(string):
         return string
     else:
         return ""
+
+def get_geojson(listing_id):
+    listing = Listing.objects.get(id=listing_id)
+    data = serializers.serialize('geojson', [listing,])
+    struct = json.loads(data)
+    json_data = json.dumps(struct)
+    return json_data
