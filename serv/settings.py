@@ -104,6 +104,69 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 6
 
 }
+
+# Logs
+LOG_PATH = os.path.join(BASE_DIR, "log/")
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': LOG_PATH + "error.log",
+        },
+    },
+    'loggers': {
+        'django.server': {
+            'handlers': ['file'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+    },
+}
+
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': True,
+#     'formatters': {
+#         'standard': {
+#             'format': '%(asctime)s [%(levelname)s]- %(message)s'}
+
+#     },
+#     'handlers': {
+#         'django_error': {
+#             'level': 'DEBUG',
+#             'class': 'logging.handlers.RotatingFileHandler',
+#             'filename': LOG_PATH + 'django.log',
+#             'formatter': 'standard'
+#         },
+        
+#     },
+#     'loggers': {
+#         'info': {
+#             'handlers': ['info', "console"],
+#             'level': 'DEBUG',
+#             'propagate': True
+#         },
+#         'django': {
+#             'handlers': ['console'],
+#             'level': 'INFO',
+#             'propagate': True,
+#         },
+#         'django.request': {
+#             'handlers': ['django_error', 'console'],
+#             'level': 'DEBUG',
+#             'propagate': True,
+#         },
+#         'django.server': {
+#             'handlers': ['console'],
+#             'level': 'ERROR',
+#             'propagate': True,
+#         }
+#     },
+# }
     
 
 AUTH_USER_MODEL = "servapp.User"

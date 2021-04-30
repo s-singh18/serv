@@ -1,3 +1,4 @@
 servenv/*
 .env
+log/*
 
