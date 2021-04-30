@@ -16,6 +16,7 @@ import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
+PARENT = BASE_DIR.parent
 
 
 # Quick-start development settings - unsuitable for production
@@ -106,7 +107,7 @@ REST_FRAMEWORK = {
 }
 
 # Logs
-LOG_PATH = os.path.join(BASE_DIR, "log/")
+LOG_PATH = os.path.join(PARENT, "log/")
 
 LOGGING = {
     'version': 1,
@@ -127,47 +128,6 @@ LOGGING = {
     },
 }
 
-# LOGGING = {
-#     'version': 1,
-#     'disable_existing_loggers': True,
-#     'formatters': {
-#         'standard': {
-#             'format': '%(asctime)s [%(levelname)s]- %(message)s'}
-
-#     },
-#     'handlers': {
-#         'django_error': {
-#             'level': 'DEBUG',
-#             'class': 'logging.handlers.RotatingFileHandler',
-#             'filename': LOG_PATH + 'django.log',
-#             'formatter': 'standard'
-#         },
-        
-#     },
-#     'loggers': {
-#         'info': {
-#             'handlers': ['info', "console"],
-#             'level': 'DEBUG',
-#             'propagate': True
-#         },
-#         'django': {
-#             'handlers': ['console'],
-#             'level': 'INFO',
-#             'propagate': True,
-#         },
-#         'django.request': {
-#             'handlers': ['django_error', 'console'],
-#             'level': 'DEBUG',
-#             'propagate': True,
-#         },
-#         'django.server': {
-#             'handlers': ['console'],
-#             'level': 'ERROR',
-#             'propagate': True,
-#         }
-#     },
-# }
-    
 
 AUTH_USER_MODEL = "servapp.User"
 
