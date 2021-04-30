@@ -118,8 +118,26 @@ LOGGING = {
             'class': 'logging.FileHandler',
             'filename': LOG_PATH + "error.log",
         },
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler'
+        }
+    },
+    'formatters': {
+        'verbose': {
+            'format': '%(asctime)s %(levelname)-8s [%(name)s:%(lineno)s] %(message)s',
+        },
     },
     'loggers': {
+        '': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+        },
+        'django.request': {
+            'handlers': ['file'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
         'django.server': {
             'handlers': ['file'],
             'level': 'ERROR',
