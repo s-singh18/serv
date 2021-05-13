@@ -20,7 +20,6 @@
     <br>
     <form id="listing-form" action="{% url 'edit_listing' %}" method="POST">
         {% csrf_token %}
-        <!-- <input class="form-control" type="hidden" name="username" id="username" value="{{ user.username }}"> -->
         <input class="form-control" type="hidden" name="listing_id" id="listing-id" value="{{ listing.id }}">
         <div class="form-group">
             <input autofocus class="form-control" type="text" name="title" id="title" value="{{ listing.title }}">

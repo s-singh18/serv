@@ -4,9 +4,12 @@
 <div class="listing-page-left">
     <h2>Login</h2>
 
-    {% if message %}
-        <div>{{ message }}</div>
-    {% endif %}
+    <div class="errors">
+        {% if error %}
+            <li class="error">{{ error }}</li>
+        {% endif %}
+    </div>
+    
 
     <form action="{% url 'login' %}" method="POST">
         {% csrf_token %}
@@ -19,7 +22,9 @@
         <input class="btn btn-primary review-button" type="submit" value="Login">
     </form>
 
-    Don't have an account? <a class="register-link"href="{% url 'register' %}">Register here.</a>
+    <p>
+        Don't have an account? <a class="register-link"href="{% url 'register' %}">Register here.</a>
+    </p>
 </div>
     
 

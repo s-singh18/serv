@@ -34,6 +34,10 @@ var listingID = document.getElementById('listing-id').value;
 let listingTitle = document.getElementById("listing-title").innerText;
 
 var bookingButton = document.getElementById("booking-button");
+var reviewButton = document.getElementById("review-button");
+
+var reviewHeader = document.getElementById("review-header").value;
+var reviewBody = document.getElementById("review-body").value;
 
 document.addEventListener("DOMContentLoaded", function () {
     clickServiceButton();
@@ -42,7 +46,22 @@ document.addEventListener("DOMContentLoaded", function () {
     showCalendar(currentMonth, currentYear);
     showWeekCalendar(currentDay, currentDate, currentMonth, currentYear);
     createBooking();
+    createReview();
 });
+
+// Reload page after login or registration, send review request
+window.onload = function() {
+    var reloading = sessionStorage.getItem("reloading");
+    var header = sessionStorage.getItem("reviewHeader");
+    var body = sessionStorage.getItem("reviewBody");
+    if (reloading) {
+        sendReviewRequest();
+        sessionStorage.removeItem("reloading");
+        sessionStorage.removeItem("reviewHeader");
+        sessionStorage.removeItem("reviewBody");
+    }
+}
+
 
 function getCookie(name) {
     let cookieValue = null;
@@ -607,7 +626,6 @@ function setSelectedDates(day, date, month, year) {
 }
 
 // From appointments.js
-
 function clickServiceButton() {
     let service_buttons = Array.from(document.getElementsByClassName('service-button'));
     if (service_buttons.length == 0) {
@@ -732,39 +750,39 @@ function createBooking() {
     bookingButton.setAttribute("data-target", "#exampleModalCenter");
     bookingButton.addEventListener('click', () => {
         if (selectedAppointmentButton != undefined) {
-            let booking_request = new Request(
-                '/create_booking',
-                {headers: {'X-CSRFToken': csrftoken}}
-            );
-        
-            // Create booking post request
-            fetch(booking_request, {
-                method: "POST",
-                body: JSON.stringify({
-                    listing_id: listingID,
-                    service_id: selectedServiceButton.nextElementSibling.value,
-                    time: selectedAppointmentButton.value,
-                    am_pm: selectedAppointment_AM_PM,
-                    day: selectedDay,
-                    date: String(selectedDate),
-                    month: String(selectedMonth + 1),
-                    year: String(selectedYear),
-                }),
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    loadLoginModal();
-                } else {
-                    loadSuccessModal();
-                }
-                
-            });
+            if (document.getElementById('login')) {
+                let request_type = "Booking";
+                loadLoginModal(request_type);
+            } else {
+                sendBookingRequest();
+            }
+            
         }
     });
 }
 
-function loadLoginModal() {
+function createReview() {
+    reviewButton.setAttribute("data-toggle", "modal");
+    reviewButton.setAttribute("data-target", "#exampleModalCenter");
+    reviewButton.addEventListener('click', (event) => {
+        event.preventDefault();
+        if (document.getElementById('login')) {
+            let request_type = "Review";
+            let errors = reviewValidation();
+            if (errors) {
+                showErrors(errors)
+            } else {
+                loadLoginModal(request_type);
+            }
+            
+        } else {
+            event.stopPropagation();
+            sendReviewRequest();
+        }
+    });
+}
+
+function loadLoginModal(requestType) {
     let modal_title = document.getElementById('exampleModalLongTitle');
     modal_title.innerText = "Login";
     
@@ -814,12 +832,16 @@ function loadLoginModal() {
     login_button.innerText = "Login";
     modal_footer.appendChild(login_button);
 
-    register_link.addEventListener('click', loadRegisterModal);
+    register_link.addEventListener('click', (event) => {
+        event.preventDefault();
+        loadRegisterModal(requestType);
+    });
 
     login_button.addEventListener('click', () => {
+        let csrf = getCookie('csrftoken')
         let login_request = new Request(
             '/login',
-            {headers: {'X-CSRFToken': csrftoken}}
+            {headers: {'X-CSRFToken': csrf}}
         );
         fetch(login_request, {
             method: "POST",
@@ -842,40 +864,24 @@ function loadLoginModal() {
                 form_errors.appendChild(br);
                 return false;
             } else {
-                let csrf = getCookie('csrftoken');
-                let new_booking_request = new Request(
-                    '/create_booking',
-                    {headers: {'X-CSRFToken': csrf}}
-                );
-            
-                // Create booking post request
-                fetch(new_booking_request, {
-                    method: "POST",
-                    body: JSON.stringify({
-                        listing_id: listingID,
-                        service_id: selectedServiceButton.nextElementSibling.value,
-                        time: selectedAppointmentButton.value,
-                        am_pm: selectedAppointment_AM_PM,
-                        day: selectedDay,
-                        date: String(selectedDate),
-                        month: String(selectedMonth + 1),
-                        year: String(selectedYear),
-                    }),
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.error) {
-                        loadLoginModal();
-                    } else {
-                        loadSuccessModal();
-                    }
-                });
+                document.getElementById('close-button').click();
+                // Review Request
+                if (requestType == "Review") {
+                    sessionStorage.setItem("reloading", "true");
+                    sessionStorage.setItem("header", reviewHeader)
+                    sessionStorage.setItem("body", reviewBody)
+                    location.reload();
+                }
+                // Booking Request
+                if (requestType == "Booking") {
+                    sendBookingRequest();
+                }
             }
         });
     });
 }
 
-function loadRegisterModal() {
+function loadRegisterModal(requestType) {
     let modal_title = document.getElementById('exampleModalLongTitle');
     modal_title.innerText = "Register";
     
@@ -947,7 +953,10 @@ function loadRegisterModal() {
     register_button.innerText = "Register";
     modal_footer.appendChild(register_button);
 
-    login_link.addEventListener('click', loadLoginModal);
+    login_link.addEventListener('click', (event) => {
+        event.preventDefault();
+        loadLoginModal(requestType);
+    });
 
     register_button.addEventListener('click', () => {
         let csrf = getCookie('csrftoken');
@@ -978,38 +987,20 @@ function loadRegisterModal() {
                 form_errors.appendChild(br);
                 return false;
             } else {
-                let csrf = getCookie('csrftoken');
-                let new_booking_request = new Request(
-                    '/create_booking',
-                    {headers: {'X-CSRFToken': csrf}}
-                );
-            
-                // Create booking post request
-                fetch(new_booking_request, {
-                    method: "POST",
-                    body: JSON.stringify({
-                        listing_id: listingID,
-                        service_id: selectedServiceButton.nextElementSibling.value,
-                        time: selectedAppointmentButton.value,
-                        am_pm: selectedAppointment_AM_PM,
-                        day: selectedDay,
-                        date: String(selectedDate),
-                        month: String(selectedMonth + 1),
-                        year: String(selectedYear),
-                    }),
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.error) {
-                        loadRegisterModal();
-                    } else {
-                        loadSuccessModal();
-                    }
-                });
+                document.getElementById('close-button').click();
+                if (requestType == "Review") {
+                    sessionStorage.setItem("reloading", "true");
+                    sessionStorage.setItem("header", reviewHeader)
+                    sessionStorage.setItem("body", reviewBody)
+                    location.reload();
+                }
+
+                if (requestType == "Booking") {
+                    sendBookingRequest();
+                }
             }
         });
     });
-
 }
 
 function loadSuccessModal() {
@@ -1032,4 +1023,149 @@ function loadSuccessModal() {
     
     let modal_footer = document.getElementById('exampleModalFooter');
     modal_footer.innerHTML = ``;
+
+    selectedAppointmentButton.remove();
+    selectedAppointmentButton = undefined;
+    selectedAppointment_AM_PM = undefined;
+
+}
+
+function sendBookingRequest() {
+    let csrf = getCookie('csrftoken');
+    let new_booking_request = new Request(
+        '/create_booking',
+        {headers: {'X-CSRFToken': csrf}}
+    );
+    
+    // Create booking post request
+    fetch(new_booking_request, {
+        method: "POST",
+        body: JSON.stringify({
+            listing_id: listingID,
+            service_id: selectedServiceButton.nextElementSibling.value,
+            time: selectedAppointmentButton.value,
+            am_pm: selectedAppointment_AM_PM,
+            day: selectedDay,
+            date: String(selectedDate),
+            month: String(selectedMonth + 1),
+            year: String(selectedYear),
+        }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            let request_type = "Booking";
+            loadLoginModal(request_type);
+        } else {
+            loadSuccessModal();
+            $('#exampleModalCenter').on('hidden.bs.modal', function () {
+                location.reload();
+            })
+        }
+    });
+}
+
+function sendReviewRequest() {
+    let csrf = getCookie('csrftoken');
+    let errors = reviewValidation();
+    if (errors.length > 0) {
+        let review_body;
+        let review_header;
+        if (sessionStorage.getItem('reloading')) {
+            review_header = sessionStorage.getItem('reviewHeader');
+            review_body = sessionStorage.getItem('reviewBody');
+        } else {
+            review_header = reviewHeader;
+            review_body = reviewBody;
+        }
+        let create_request = new Request(
+            '/listing/' + listingTitle + "/" + listingID,
+            {headers: {'X-CSRFToken': csrf}}
+        );
+
+        // Create booking post request
+        fetch(create_request, {
+            method: "POST",
+            body: JSON.stringify({
+                header: review_header,
+                body: review_body,
+            }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.errors) {
+                showErrors(data.errors);
+            } 
+        });
+    } else {
+        showErrors(errors);
+    }   
+}
+
+function reviewValidation() {
+    let errors = [];
+    if (checkHeader != undefined) {
+        errors.push(checkHeader);
+    }
+    if (checkBody != undefined) {
+        errors.push(checkBody);
+    }
+    if (getReview != undefined) {
+        errors.push(getReview);
+    }
+    return errors
+}
+
+function showErrors(errors) {
+    let div_errors = document.getElementById('errors');
+    div_errors.innerHTML = ``;
+    errors.forEach(error => {
+        let li = document.createElement('li');
+        li.className = "error";
+        li.innerText = error;
+        div_errors.appendChild(li);
+    });
+}
+
+function checkHeader() {
+    let header = reviewHeader;
+    // body: document.getElementById('review-body').value;
+    let error;
+    if (header == "") {
+        error = "No header given";
+    } else if (header.length > 300) {
+        error = "Max review header length 300 characters";
+    } else if (header.trim().length) {
+        error = "Invalid review header";
+    } else {
+        error = undefined
+    }
+    return error   
+}
+
+function checkBody() {
+    let body = reviewBody;
+    // body: document.getElementById('review-body').value;
+    let error;
+    if (body == "") {
+        error = "No body given";
+    } else if (body.length > 300) {
+        error = "Max review body length 6000 characters";
+    } else if (body.trim().length) {
+        error = "Invalid review body";
+    } else {
+        error = undefined
+    }
+    return error   
+}
+
+function getReview() {
+    // Create booking post request
+    fetch(`/get-review/{listingID}`)
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            return data.error
+        }
+    });
 }

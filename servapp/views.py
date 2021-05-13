@@ -28,7 +28,7 @@ from django.contrib.gis.geos import GEOSGeometry
 from .serializers import ListingSerializer
 from .models import User, Listing, Review, Service, Booking
 from .viewsets import UserViewSet, ListingViewSet, ReviewViewSet
-from .validations import ListingValidation, ReviewValidation, ServiceValidation
+from .validations import UserValidation, ListingValidation, ReviewValidation, ServiceValidation
 
 import datetime
 
@@ -38,6 +38,7 @@ from serv.settings import MAPBOX_ACCESS_TOKEN
 MAPBOX = MapBox(MAPBOX_ACCESS_TOKEN)
 DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
+user_validation = UserValidation()
 listing_validation = ListingValidation()
 review_validation = ReviewValidation()
 service_validation = ServiceValidation()
@@ -99,7 +100,7 @@ def login_view(request):
             return HttpResponseRedirect(reverse("home"))
         else:
             return render(request, "servapp/login.html", {
-                "message": "Invalid email and/or password."
+                "error": "Invalid email and/or password."
             })
     else:
         return render(request, "servapp/login.html")
@@ -138,21 +139,23 @@ def register(request):
             # Ensure password matches confirmation
             password = request.POST["password"]
             confirmation = request.POST["confirmation"]
-            if password != confirmation:
-                return render(request, "servapp/register.html", {
-                    "message": "Passwords must match."
-                })
+            
+            errors = []
+            errors = user_validation.check_registration(username, email, password, confirmation)
 
-            # Attempt to create new user
-            try:
-                user = User.objects.create_user(username=username, email=email, password=password)
-                user.save()
-            except IntegrityError:
-                return render(request, "servapp/register.html", {
-                    "message": "Email already taken."
-                })
-            login(request, user)
-            return HttpResponseRedirect(reverse("home"))
+            if not errors:
+                # Attempt to create new user
+                try:
+                    user = User.objects.create_user(username=username, email=email, password=password)
+                    user.save()
+                except IntegrityError:
+                    return render(request, "servapp/register.html", {
+                        "message": "Email already taken."
+                    })
+                login(request, user)
+                return HttpResponseRedirect(reverse("home"))
+            else:
+                return render(request, "servapp/register.html", {'errors': errors})
     else:
         return render(request, "servapp/register.html")
 
@@ -223,13 +226,26 @@ def listing(request, title, id):
         if request.method == "POST":
             # Check if user is logged in
             if request.user.is_authenticated:
-                header = request.POST["header"]
-                body = request.POST["body"]
-                listing_id = request.POST["listing_id"]
-                listing = Listing.objects.get(id=listing_id)
+                try:
+                    data = json.loads(request.body)
+                    header = data.get("header", "")
+                    body = data.get("body", "")
+                    user = User.objects.get(id=request.user.id)
+                    errors = review_validation.check_review(header, body, id, user.id)
+                    if not errors:
+                        Review.objects.create(header=header, body=body, user=user, listing=listing)
+                        reviews = Review.objects.order_by('-timestamp').filter(listing=listing).all()
+                        return JsonResponse({'message': "Review Created"}, status=200)
+                    else:
+                        return JsonResponse({'errors': errors}, status=400)
+
+                except ValueError as err:
+                    header = request.POST["header"]
+                    body = request.POST["body"]
+                
                 user = User.objects.get(id=request.user.id)
                 # Check for errors
-                errors = review_validation.check_review(header, body, listing_id, user.id)
+                errors = review_validation.check_review(header, body, id, user.id)
                 if not errors:
                     Review.objects.create(header=header, body=body, user=user, listing=listing)
                     reviews = Review.objects.order_by('-timestamp').filter(listing=listing).all()
@@ -615,11 +631,14 @@ def get_day_bookings(request, name, day, date, month, year, client):
 
     return JsonResponse({"times": times, "am_pm": am_pm, "listing_ids": listing_ids, "listing_titles": listing_titles, "services": services, "clients": clients, "providers": providers}, status=200)
     
-def checkExists(string):
-    if string:
-        return string
+def get_review(request, listing_id):
+    user = User.objects.get(id=request.user.id)
+    listing = Listing.objects.get(id=listing_id)
+    if Review.objects.filter(user=user, listing=listing).exists():
+        return JsonResponse({"error": "Review for this listing already exists"}, status=200)
     else:
-        return ""
+        return JsonResponse({"message": "No review"}, status=200)
+
 
 def get_geojson(listing_id):
     listing = Listing.objects.get(id=listing_id)

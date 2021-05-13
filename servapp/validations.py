@@ -2,6 +2,63 @@ import re
 
 from .models import User, Listing, Review, Service
 
+class UserValidation():
+    def check_registration(self, username, email, password, confirmation):
+        errors = []
+        if self.check_username(username) != None:
+            errors.append(self.check_username(username))
+        if self.check_email(email) != None:
+            errors.append(self.check_email(email))
+        if self.check_password(password) != None:
+            errors.append(self.check_password(password))
+        if self.check_confirmation(password, confirmation) != None:
+            errors.append(self.check_confirmation(password, confirmation))
+        return errors
+
+    def check_username(self, username):
+        if len(username) > 60:
+            error = "Username too long"
+        elif username == "":
+            error = "Username not given"
+        elif username.isspace():
+            error = "Invalid Username"
+        elif re.match("^\w+$", username) == False:
+            error = "Invalid Username"
+        else:
+            error = None
+        return error
+    
+    def check_email(self, email):
+        if re.match("[^@]+@[^@]+\.[^@]+", email) == False:
+            error = "Invalid Email"
+        elif email == "":
+            error = "Email not given"
+        elif email.isspace():
+            error = "Invalid Email"
+        else:
+            error = None
+        return error
+
+    def check_password(self, password):
+        reg = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!#%*?&]{6,}$"
+        match_re = re.search(reg, password)
+        if not match_re:
+            error = "Password must contain a minimum six characters, at least one uppercase character, one lowercase character, one number and one special character."
+        elif password == "":
+            error = "Password not given"
+        elif password.isspace():
+            error = "Invalid Password"
+        else:
+            error = None
+        return error
+
+    def check_confirmation(self, password, confirmation):
+        if confirmation != password:
+            error = "Passwords must match"
+        else:
+            error = None
+        return error
+
 class ListingValidation():
 
     def check_create_listing(self, title, listing_type, address, description, user_id):
@@ -106,9 +163,9 @@ class ReviewValidation():
         if header == "":
             error = "No header given"
         elif len(header) > 300:
-            error = "Max review head length 300 characters"
+            error = "Max review header length 300 characters"
         elif header.isspace():
-            error = "Invalid review"
+            error = "Invalid review header"
         else:
             error = None
         return error
@@ -119,7 +176,7 @@ class ReviewValidation():
         elif len(body) > 6000:
             error = "Max review body length 6000 characters"
         elif body.isspace():
-            error = "Invalid review"
+            error = "Invalid review body"
         else:
             error = None
         return error

@@ -19,19 +19,19 @@
     
             <div class="review-view">
                 <hr>
-                {% for error in errors %}
-                    <li class="error">{{ error }}</li>
-                {% empty %}
-                {% endfor %}
+                <div class="errors" id="errors">
+                    {% for error in errors %}
+                        <li class="error">{{ error }}</li>
+                    {% empty %}
+                    {% endfor %}
+                </div>
                 <form id='review-form' method="POST" action="{% url 'listing' title=listing.title id=listing.id %}">
                     {% csrf_token %}
                     <h5>Write a Review</h5>
                     <input class="form-control review-form-element" id="review-header" name="header" placeholder="Header">
-                    <textarea class="form-control review-form-element" id="review-text" name="body" placeholder="Body"></textarea>
+                    <textarea class="form-control review-form-element" id="review-body" name="body" placeholder="Body"></textarea>
                     <input class="listing-owner" id="listing-id" name="listing_id" type="hidden" value="{{ listing.id }}">
-                    <input class="form-control" type="hidden" name="username" id="username" value="{{ user.username }}">
                     <input class="btn btn-primary review-button" type="submit" id="review-button" value="Submit">
-                    
                 </form>
                 <hr>
                 <div class="reviews">
@@ -51,7 +51,6 @@
                 </div>
                 <input id='mapbox-access-token' type="hidden" value= "{{ mapbox_access_token }}">
                 <input id='map-icon' type="hidden" value="{% static 'servapp/mapbox-icon.png' %}">
-                
             </div>
         </div>
     
@@ -63,7 +62,7 @@
                 <div class="listing-view">
                     <div class="card">
                         <div class="card-header" id="listings-header">
-                                <button class="btn btn-link text-left" id="listings-button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                <button class="btn btn-link text-left sc-text" id="listings-button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
                                     Services</button>
                         </div>
                         <div id="collapseOne" class="panel-collapse show card-body" aria-labelledby="headingOne">
@@ -85,7 +84,7 @@
                     <div class="card-header" id="headingTwo">
                         <h5 class="mb-0">
                             <div id="header-box">
-                                <button id="monthAndYear" class="btn btn-link text-left" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+                                <button class="btn btn-link text-left sc-text" id="monthAndYear" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
                                 </button>
                                 <form class="form-inline d-flex flex-nowrap" id="month-year">
                                     <select class="form-control col-sm-6" name="month" id="month" onchange="jump()">
@@ -118,14 +117,12 @@
                             </thead>
                 
                             <tbody id="calendar-body">
-                
                             </tbody>
                         </table>
                         <br/>
                     </div>
                     <table class="table table-bordered table-responsive-md" id="week-calendar">
                         <thead class="week-head">
-
                         </thead>
                     </table>
                     <div class="card-body" id="appointment-body">
@@ -139,7 +136,6 @@
                             <div class="col right-div">
                                 <p class="centered-paragraph"><u>PM</u></p>
                                 <div class="appointment-div" id="appointment-pm">
-
                                 </div>
                             </div>
                         </div> 
@@ -160,12 +156,11 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="exampleModalLongTitle"></h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <button type="button" class="close" id="close-button" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <div class="modal-body" id="exampleModalBody">
-                        
+                    <div class="modal-body" id="exampleModalBody">  
                     </div>
                     <div class="modal-footer footer" id="exampleModalFooter">
                         <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> -->

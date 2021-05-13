@@ -4,7 +4,7 @@
 
 {% block nav %}
 <nav class="navbar navbar-expand-md navbar-custom py-3" style="background-color: #430280;">
-    <a class="navbar-brand"></a>
+    <h6 class="navbar-brand nav-link">Resrvice</h6>
     <!-- <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
     </button> -->
@@ -26,14 +26,14 @@
                     {% endif %}
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
+                    <a class="nav-link" href="{% url 'logout' %}">Logout</a>
                 </li>
             {% else %}
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'login' %}">Create Listing</a>
                 </li>
                 <li class="nav-item" id="nav-login">
-                    <a class="nav-link" nav-link" href="{% url 'login' %}">Log In</a>
+                    <a class="nav-link" nav-link" href="{% url 'login' %}">Login</a>
                 </li>
                 <li class="nav-item" id="nav-register">
                     <a class="nav-link" href="{% url 'register' %}">Register</a>

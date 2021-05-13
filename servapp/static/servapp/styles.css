@@ -28,12 +28,12 @@ html, body {
     transition-duration: 0.3s;
 }
 
-.register-link:hover {
-    color: grey;
+.register-link:hover, .register-link:focus  {
+    color: #190140;
 }
 
-.register-link:focus {
-    color: grey;
+.register-link:active {
+    color: silver;
 }
 
 
@@ -41,15 +41,70 @@ input.btn.btn-primary {
     margin-top: 2px;
 }
 
-.title-search {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
+.home-view {
     text-align: center;
-	background-color: whitesmoke;
-	margin: auto;
+    
 }
+
+.home-image {
+    margin: auto;
+    display: block;
+    width: 75%;
+    height: 75%;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.title-search {
+    background-image: url(painted_ladies.png);
+    background-size: cover;
+    position: absolute;
+    margin: auto;
+    display: block;
+    width: 75%;
+    height: 75%;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+}
+
+.home-elements {
+    position: absolute;
+    margin: auto;
+    display: block;
+    width: 60%;
+    height: 36%;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.home-title {
+    color: white;
+    width: 84%;
+    /* right: 5px; */
+    margin: 0;
+}
+
+.home-subtitle {
+    font-family: "Arial";
+    font-style: normal;
+    font-weight: bold;
+    color: white;
+    margin: auto;
+}
+
+.home-form {
+    align-items: center;
+    justify-content: center;
+}
+
 
 .title {
     color: black;
@@ -76,8 +131,9 @@ a.title {
     right: 2px;
 } */
 
-a.navbar-brand {
+.navbar-brand {
     color: white;
+    outline: none;
 }
 
 a.nav-link {
@@ -88,8 +144,9 @@ svg.mapboxgl-ctrl-geocoder--icon.mapboxgl-ctrl-geocoder--icon-search {
     display: none;
 }
 
-div.search-form {
-    display: inline;
+.search-form {
+    display: block;
+    margin: auto;
 }
 
 div#geocoder-nav.geocoder-nav {
@@ -129,14 +186,14 @@ a.btn.btn-primary {
     transition-duration: 0.3s;
 }
 
-.nav-submit:hover {
-    background-color: white; 
-    color: grey;
+.nav-submit:hover, .nav-submit:focus {
+    background-color: #190140; 
+    color: white;
 }
 
-.nav-submit:focus {
-    background-color: white; 
-    color: grey;
+.nav-submit:active, .nav-submit:active:hover, .nav-submit:active:focus, .nav-submit:active:hover:focus {
+    background-color: white;
+    color: silver;
 }
 
 a.btn.btn-primary:hover {
@@ -321,6 +378,18 @@ footer {
 
 }
 
+.sc-text {
+    color: #430281;
+}
+
+.sc-text:hover {
+    color: #190140;
+}
+
+.sc-text:active {
+    color: silver;
+}
+
 #monthAndYear {
     height: 100%;
     width: 25%;
@@ -354,13 +423,12 @@ footer {
 }
 
 .arrow-button:hover {
-    
     background-color: #430281;
     color: white;
 }
 
-.arrow-button:focus {
-    background-color: #430281;
+.arrow-button:active {
+    background-color: #190140;
     color: white;
 }
 
@@ -401,13 +469,13 @@ footer {
     /*text-align: center;*/
 }
 
-.table-button:hover {
+.table-button:hover, .table-button:focus {
     background-color: #430281;
     color: white;
 }
 
-.table-button:focus {
-    background-color: #430281;
+.table-button:active, .table-button:active:hover, .table-button:active:focus, .table-button:active:hover:focus {
+    background-color: #190140;
     color: white;
 }
 
@@ -423,14 +491,14 @@ footer {
 
 }
 
-.modal-button:hover {
-    background-color: white;
-    color: grey;
+.modal-button:hover, .modal-button:focus {
+    background-color: #190140;
+    color: white;
 }
 
-.modal-button:focus {
+.modal-button:active, .modal-button:active:hover, .modal-button:active:focus, .modal-button:active:hover:focus {
     background-color: white;
-    color: grey;
+    color: silver;
 }
 
 .appointment-div {
@@ -461,24 +529,20 @@ footer {
     margin-right: 6px;
 }
 
-.service-button:hover {
-    background-color: white; 
-    color: grey;
+.service-button:hover, .service-button:focus {
+    background-color: #190140;
+    color: white;
 }
 
-.service-button:focus {
-    background-color: white; 
-    color: grey;
+.service-button:disabled, .service-button:disabled:active, .service-button:active, .service-button:active:hover, .service-button:active:focus, .service-button:active:hover:focus {
+    background-color: white;
+    color: silver;
 }
 
-.service-button:disabled {
-    background-color: white; 
-    color: grey;
-}
 
-.nav-submit:hover {
+.nav-submit:hover, .nav-submit:active, .nav-submit:active:hover, .nav-submit:active:focus, .nav-submit:active:hover:focus {
     background-color: white; 
-    color: grey;
+    color: silver;
 }
 
 .service-tab {
@@ -579,19 +643,14 @@ footer {
     /* width: 120px; */
 }
 
-.appointment-button:hover {
-    background-color: white;
-    color: grey;
+.appointment-button:hover, .appointment-button:focus {
+    background-color: #190140;
+    color: white;
 }
 
-.appointment-button:focus {
+.appointment-button:disabled, .appointment-button:active, .appointment-button:active:hover, .appointment-button:active:focus, .appointment-button:active:hover:focus {
     background-color: white;
-    color: grey;
-}
-
-.appointment-button:disabled {
-    background-color: white;
-    color: grey;
+    color: silver;
 }
 
 
@@ -605,18 +664,13 @@ footer {
     font-size: x-large;
 }
 
-.book-button:hover {
-    color: grey;
-    background-color: white;
+.book-button:hover, .book-button:focus {
+    color: white;
+    background-color: #190140;
 }
 
-.book-button:focus {
-    color: grey;
-    background-color: white;
-}
-
-.book-button:disabled {
-    color: grey;
+.book-button:disabled, .book-button:active, .book-button:active:hover, .book-button:active:focus, .book-button:active:hover:focus {
+    color: silver;
     background-color: white;
 }
 
@@ -625,14 +679,14 @@ footer {
     background-color: #430281;
 }
 
-.review-button:hover {
-    background-color: white; 
-    color: grey;
+.review-button:hover, .review-button:focus {
+    color: white;
+    background-color: #190140;
 }
 
-.review-button:focus {
-    background-color: white; 
-    color: grey;
+.review-button:active, .review-button:active:hover, .review-button:active:focus, .review-button:active:hover:focus {
+    color: silver;
+    background-color: white;
 }
 
 /* .body-button {
@@ -759,6 +813,7 @@ footer {
 
 .edit-link {
     float: left;
+    margin-top: 9px;
     color: black;
     justify-content: flex-end;
     text-align: right;
@@ -847,7 +902,7 @@ footer {
 
 .mapboxgl-popup-content {
     text-align: center;
-    font-family: 'Open Sans', sans-serif;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 .page-view {

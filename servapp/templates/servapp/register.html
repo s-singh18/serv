@@ -3,10 +3,13 @@
 {% block body %}
 <div class="listing-page-left">
     <h2>Register</h2>
-
-    {% if message %}
-        <div>{{ message }}</div>
-    {% endif %}
+    <div class="errors">
+        {% for error in errors %}
+            <li class="error">{{ error }}</li>
+        {% empty %}
+        {% endfor %}
+    </div>
+        
 
     <form action="{% url 'register' %}" method="post">
         {% csrf_token %}
@@ -25,7 +28,9 @@
         <input class="btn btn-primary review-button" type="submit" value="Register">
     </form>
 
-    Already have an account? <a class="register-link" href="{% url 'login' %}">Login here.</a>
+    <p>
+        Already have an account? <a class="register-link" href="{% url 'login' %}">Login here.</a>
+    </p>
 
 </div>
     
