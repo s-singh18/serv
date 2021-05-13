@@ -59,7 +59,7 @@ input.btn.btn-primary {
 }
 
 .title-search {
-    background-image: url(painted_ladies.png);
+    background-image: url("painted_ladies.png");
     background-size: cover;
     position: absolute;
     margin: auto;
@@ -134,6 +134,10 @@ a.title {
 .navbar-brand {
     color: white;
     outline: none;
+}
+
+.brand {
+    color: white;
 }
 
 a.nav-link {
