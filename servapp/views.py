@@ -171,7 +171,7 @@ def profile(request):
 def search(request):
     # Get form fields
     if request.method == "GET":
-        listing_type = request.GET["listing_type"]
+        listing_type = request.GET["listing_type"].title()
         location = request.GET["location"]
         location_url = location.replace(" ", "%20")
         # if location and listing type field not filled
@@ -283,7 +283,7 @@ def create_listing(request):
             # Get contents of post
             listing_username = data.get("listing_username", "")
             listing_title = data.get("listing_title", "")
-            listing_type =  data.get("listing_type", "")
+            listing_type =  data.get("listing_type", "").title()
             listing_address = data.get("listing_address", "")
             listing_location = data.get("listing_location", "")
             listing_description = data.get("listing_description", "")
@@ -294,7 +294,7 @@ def create_listing(request):
         except ValueError as err:
             listing_title = request.POST["listing_title"]
             listing_username = request.POST["listing_username"]
-            listing_type = request.POST["listing_type"]
+            listing_type = request.POST["listing_type"].title()
             listing_address = request.POST["listing_address"]
             listing_description = request.POST["listing_description"]
             listing_location = request.POST["listing_location"]
@@ -390,7 +390,7 @@ def edit_listing(request):
             username = data.get("username", "")
             listing_id = data.get("listing_id", "")
             title = data.get("title", "")
-            listing_type =  data.get("listing_type", "")
+            listing_type =  data.get("listing_type", "").title()
             address = data.get("address", "")
             location = data.get("location", "")
             description = data.get("description", "")
@@ -407,7 +407,7 @@ def edit_listing(request):
             listing_id = request.POST["listing_id"]
             title = request.POST["title"]
             username = request.POST["username"]
-            listing_type = request.POST["listing_type"]
+            listing_type = request.POST["listing_type"].title()
             address = request.POST["address"]
             description = request.POST["description"]
             location = request.POST["location"]

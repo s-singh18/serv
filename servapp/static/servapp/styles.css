@@ -131,13 +131,13 @@ a.title {
     right: 2px;
 } */
 
+.lr-line {
+    margin-top: 12px;
+}
+
 .navbar-brand {
     color: white;
     outline: none;
-}
-
-.brand {
-    color: white;
 }
 
 a.nav-link {
