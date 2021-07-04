@@ -9,17 +9,22 @@ function search() {
     let listings_geojson = JSON.parse(document.querySelector('#listings_geojson').value);
     let polygon_geojson = JSON.parse(document.querySelector('#polygon_geojson').value);
     let center = JSON.parse(document.querySelector('#center').value);
-    let bbox = JSON.parse(document.querySelector('#bbox').value);
     let listing_type = document.querySelector('#listing_type').value;
     let location = document.querySelector('#location').value;
     mapboxgl.accessToken = document.querySelector('#mapbox-access-token').value;
+    let bbox = turf.bbox(polygon_geojson);
+
+    if (center == "") {
+        center = turf.centroid(polygon_geojson)
+    }
 
     var map = new mapboxgl.Map({
         container: 'map',
         style: 'mapbox://styles/mapbox/streets-v11',
         center: center,
-        bounds: bbox,
+        bbox: bbox,
     });
+    map.fitBounds(bbox);
 
     let titles = document.getElementsByClassName("card-title");
     var counter = 0;
@@ -62,7 +67,7 @@ function search() {
         
         map.addSource('polygon', {
             type: 'geojson',
-            data: polygon_geojson
+            data: polygon_geojson,
         });
     
         map.addLayer({

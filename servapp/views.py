@@ -1,4 +1,4 @@
-import json
+import json, re
 
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
@@ -29,6 +29,7 @@ from .serializers import ListingSerializer
 from .models import User, Listing, Review, Service, Booking
 from .viewsets import UserViewSet, ListingViewSet, ReviewViewSet
 from .validations import UserValidation, ListingValidation, ReviewValidation, ServiceValidation
+from .states import STATES, ABBRS, CODES
 
 import datetime
 
@@ -171,43 +172,69 @@ def profile(request):
 def search(request):
     # Get form fields
     if request.method == "GET":
-        listing_type = request.GET["listing_type"].title()
-        location = request.GET["location"]
+        listing_type = request.GET["listing_type"].strip().title()
+        location = request.GET["location"].strip().title()
         location_url = location.replace(" ", "%20")
         # if location and listing type field not filled
         if location_url != "" and listing_type != "":
-            # Get data from Open Street Maps
-            with urllib.request.urlopen("https://nominatim.openstreetmap.org/search.php?q=" + location_url + "&polygon_geojson=1&format=json") as url:
+            # (Old) Get data from Open Street Maps: "https://nominatim.openstreetmap.org/search.php?q=" + location_url + "&polygon_geojson=1&format=json"
+            # (New) Get geojson data from US Census
+            if re.match('\d{5}', location_url):
+                # Zip codes
+                api_url = "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/tigerWMS_Current/MapServer/2/query?where=&text=" + location_url + "&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&distance=&units=esriSRUnit_Foot&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&havingClause=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&returnExtentOnly=false&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&featureEncoding=esriDefault&f=geojson"
+            else:
+                # Incorporated places (city, town, village)
+                api_url = "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/tigerWMS_Current/MapServer/28/query?where=&text=" + location_url + "&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&distance=&units=esriSRUnit_Foot&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&havingClause=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&returnExtentOnly=false&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&featureEncoding=esriDefault&f=geojson"
+            with urllib.request.urlopen(api_url) as url:
                 # Convert to JSON object
                 data = json.loads(url.read().decode())
-                print(data)
-                center = json.dumps([float(data[0]['lon']), float(data[0]['lat'])])
-                bbox = json.dumps([float(data[0]['boundingbox'][3]), float(data[0]['boundingbox'][1]), float(data[0]['boundingbox'][2]), float(data[0]['boundingbox'][0])])
-                polygon_geojson = json.dumps(data[0]['geojson'])
+                # If there are multiple features returned, find the one with the largest land area(AREALAND)
+                if len(data['features']) > 1:
+                    max_area = 0
+                    max_index = 0
+                    for i, f in enumerate(data['features']):
+                        if f['properties']['AREALAND'] > max_area:
+                            max_area = f['properties']['AREALAND']
+                            max_index = i
+                    feature = data['features'][max_index]
+                elif len(data['features']) == 1:
+                    feature = data['features'][0]
+                else:
+                    feature = None
                 
-                # Convert JSON object to GEO Django object
-                polygon = GEOSGeometry(json.dumps(data[0]['geojson']))
-                # Query listings filtering results within searched location
-                listing_list = Listing.objects.get_queryset().filter(listing_type__icontains=listing_type, location__within=polygon).order_by("-timestamp")
-                # Paginate results
-                page = request.GET.get('page', 1)
-                paginator = Paginator(listing_list, 6)
-                try:
-                    listings = paginator.page(page)
-                except PageNotAnInteger:
-                    listings = paginator.page(1)
-                except EmptyPage:
-                    listings = paginator.page(paginator.num_pages)
-                # Serialize listing results into geojson object
-                listings_geojson = serialize('geojson', listings,
-                    fields=('title', 'user', 'listing_type', 'location', 'address', 'description', 'rate', 'timestamp'))
-                
+                if feature != None:
+                    center = json.dumps([float(feature['properties']['CENTLON']), float(feature['properties']['CENTLAT'])])
+                    polygon_geojson = json.dumps(feature['geometry'])
+                    print(polygon_geojson)
+                    # Convert JSON object to GEO Django object
+                    polygon = GEOSGeometry(polygon_geojson)
+                    # Query listings filtering results within searched location
+                    listing_list = Listing.objects.get_queryset().filter(listing_type__icontains=listing_type, location__within=polygon).order_by("-timestamp")
+                    # Paginate results
+                    page = request.GET.get('page', 1)
+                    paginator = Paginator(listing_list, 6)
+                    try:
+                        listings = paginator.page(page)
+                    except PageNotAnInteger:
+                        listings = paginator.page(1)
+                    except EmptyPage:
+                        listings = paginator.page(paginator.num_pages)
+                    # Serialize listing results into geojson object
+                    listings_geojson = serialize('geojson', listings,
+                        fields=('title', 'user', 'listing_type', 'location', 'address', 'description', 'rate', 'timestamp'))
+                else:
+                    listings = ''
+                    listings_geojson = ''
+                    polygon_geojson = ''
+                    center = ''
+                    listing_type = listing_type
+                    location = location
                 # Return objects to search.html
                 return render(request, "servapp/search.html", 
                     {'listings': listings, 
                     'listings_geojson': listings_geojson,
                     'polygon_geojson': polygon_geojson,
-                    'center': center, 'bbox': bbox,
+                    'center': center,
                     'listing_type': listing_type, 'location': location, 
                     'mapbox_access_token': MAPBOX_ACCESS_TOKEN},
                     status=200) 
