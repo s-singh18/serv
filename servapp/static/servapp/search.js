@@ -1,3 +1,15 @@
+mapboxgl.accessToken = document.querySelector('#mapbox-access-token').value;
+
+var geocoder_address = new MapboxGeocoder({
+    accessToken: mapboxgl.accessToken,
+    marker: false,
+    mapboxgl: mapboxgl,
+    flyTo: false,
+    countries: 'us',
+    types: "address",
+    placeholder: "Address",
+}); 
+
 document.addEventListener("DOMContentLoaded", function () {
     
     search();
