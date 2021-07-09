@@ -15,23 +15,33 @@ var geocoder_address = new MapboxGeocoder({
     countries: 'us',
     types: "address",
     placeholder: "Address",
-    // render: function (item) {
-    //     return `<div class="mapboxgl-ctrl-geocoder mapboxgl-ctrl">
-
-    //             </div>
-    //     `;
-    // }
+    render: function (item) {
+        console.log(item);
+        return `<li class="form-control no-border">${item.place_name}</li>
+        `;
+    }
 });
 
 document.addEventListener("DOMContentLoaded", function () {
     load_map();
     geocode_address();
-
-
-
-
+    // get_geocoder_suggestions();
 
 });
+
+function get_geocoder_suggestions() {
+    // Incomplete!!! 
+    // Limit Geocode queries and set Render function
+    let geocoder_input = document.getElementById('mapbox-address');
+    geocoder_address.off('query', (e) => { });
+    geocoder_input.addEventListener('keydown', (e) => {
+        let input_length = geocoder_input.innerText.length;
+        // Prevent autocomplete from firing if no input or input length is not divisible by 3
+        if (!(input_length > 0 && input_length % 3 == 0)) {
+
+        }
+    });
+}
 
 function load_map() {
     let listing_geojson = JSON.parse(document.querySelector('#listing-geojson').value);
@@ -79,7 +89,6 @@ function load_map() {
         fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${e.latlng.lng},${e.latlng.lat}.json?access_token=${accessToken}`)
             .then(response => response.json())
             .then(location_data => {
-                console.log(location_data);
                 if (location_data.features.length > 0) {
                     let address = location_data.features[0].place_name;
                     marker.bindPopup(address).openPopup();
@@ -102,6 +111,10 @@ function geocode_address() {
     let geocoder_element = document.querySelector('.mapboxgl-ctrl-geocoder--input');
     geocoder_element.id = "mapbox-address";
     geocoder_element.className = "form-control";
+    let geocoder_div = document.querySelector(".mapboxgl-ctrl-geocoder.mapboxgl-ctrl");
+    geocoder_div.style.width = "100%";
+    geocoder_div.style.maxWidth = "3600px";
+    geocoder_div.style.marginRight = "0px";
     geocoder_element.value = document.querySelector('#address').value;
 
     // search_form.addEventListener("submit", (event) => {

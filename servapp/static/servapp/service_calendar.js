@@ -151,9 +151,9 @@ function showServiceCalendar(serviceMonth, serviceYear) {
                         serviceFutureWeekSelectedId = undefined;
                         showServiceWeekCalendar(serviceToday.getDay(), serviceToday.getDate(), serviceToday.getMonth(), serviceToday.getFullYear());
                     });
-                } 
+                }
                 row.appendChild(cell);
-                
+
                 let current_date = new Date(serviceYear, serviceMonth, date);
                 if (serviceToday.getTime() <= current_date.getTime()) {
                     // Add event listener to future dates
@@ -165,7 +165,7 @@ function showServiceCalendar(serviceMonth, serviceYear) {
                         serviceFutureWeekSelectedId = undefined;
                         showServiceWeekCalendar(current_date.getDay(), current_date.getDate(), current_date.getMonth(), current_date.getFullYear());
                     });
-                }   
+                }
                 date++;
             }
         }
@@ -176,7 +176,6 @@ function showServiceCalendar(serviceMonth, serviceYear) {
 // Week calendar that shows under the month and year header
 function showServiceWeekCalendar(serviceDay, serviceDate, serviceMonth, serviceYear) {
     var year_disp = serviceYear;
-    console.log(serviceYear);
     let daysInMonth = 32 - new Date(serviceYear, serviceMonth, 32).getDate();
     // on load initialize week calendar with serviceToday's date and the upcoming week
     let month_disp = serviceMonth + 1;
@@ -186,7 +185,7 @@ function showServiceWeekCalendar(serviceDay, serviceDate, serviceMonth, serviceY
     let day_disp = serviceDays[serviceDay];
     // row holds week calendar elements
     let row = document.createElement("tr");
-    
+
     // Create containers for left and right buttons
     let left_button = document.createElement("td");
     left_button.className = "table-button-header";
@@ -194,7 +193,7 @@ function showServiceWeekCalendar(serviceDay, serviceDate, serviceMonth, serviceY
     left_button_div.className = "table-button-container";
     let right_button_div = document.createElement("div");
     right_button_div.className = "table-button-container";
-    
+
     // Create serviceNext and servicePrevious, day and week buttons for left side
     let left_week_button = document.createElement("button");
     left_week_button.className = 'btn btn-outline-info table-button';
@@ -205,7 +204,7 @@ function showServiceWeekCalendar(serviceDay, serviceDate, serviceMonth, serviceY
     left_button_div.appendChild(left_week_button);
     left_button_div.appendChild(left_day_button);
     left_button.appendChild(left_button_div);
-    
+
     // Create serviceNext and servicePrevious, day and week buttons for right side
     let right_button = document.createElement("td");
     right_button.className = "table-button-header";
@@ -219,20 +218,20 @@ function showServiceWeekCalendar(serviceDay, serviceDate, serviceMonth, serviceY
     right_button_div.appendChild(right_week_button);
     right_button.appendChild(right_button_div);
 
-    var day_count = 1; 
+    var day_count = 1;
     let th = document.createElement("td");
     th.innerHTML = `<h6 class="week-date">${month_disp}/${date_disp}</h6>
                     <p class="week-day">${day_disp}</p>`;
     th.id = String(serviceDate).concat("-", String(serviceMonth), "-", String(year_disp), "-service");;
     if (serviceFutureWeekSelectedId == undefined) {
         th.className = "week-cell week-selected";
-        serviceWeekSelectedElement = th; 
+        serviceWeekSelectedElement = th;
         setServiceSelectedDates(serviceDay, serviceDate, serviceMonth, serviceYear);
     } else {
         th.className = "week-cell";
     }
-    
-    
+
+
     th.addEventListener('click', () => {
         serviceWeekSelectedElement.className = "week-cell";
         th.className = "week-cell week-selected";
@@ -252,7 +251,7 @@ function showServiceWeekCalendar(serviceDay, serviceDate, serviceMonth, serviceY
         serviceFutureWeekSelectedId = undefined;
         setServiceSelectedDates(serviceDay, serviceDate, serviceMonth, serviceYear);
     });
-    
+
     row.appendChild(th);
 
     // Refers to day of the week
@@ -263,11 +262,10 @@ function showServiceWeekCalendar(serviceDay, serviceDate, serviceMonth, serviceY
         day_index++;
     }
     date_disp++;
-    
+
     // Create row calendar for the rest of the week 
     let out_of_bounds = false;
-    while (day_index != serviceDay) {  
-        console.log(day_index);
+    while (day_index != serviceDay) {
         day_count++;
         let td = document.createElement("td");
         if (date_disp > daysInMonth) {
@@ -292,7 +290,7 @@ function showServiceWeekCalendar(serviceDay, serviceDate, serviceMonth, serviceY
             td.addEventListener('click', () => {
                 serviceWeekSelectedElement.className = "week-cell";
                 td.className = "week-cell week-selected";
-                serviceWeekSelectedElement = td;  
+                serviceWeekSelectedElement = td;
                 let date_elements = serviceWeekSelectedElement.id.split("-");
                 let selected_date = parseInt(date_elements[0]);
                 let selected_month = parseInt(date_elements[1]);
@@ -323,7 +321,7 @@ function showServiceWeekCalendar(serviceDay, serviceDate, serviceMonth, serviceY
         }
         date_disp++;
     }
-    
+
     let week_head = document.querySelector('.service-week-head');
     // clear servicePrevious table
     week_head.innerText = "";
@@ -332,11 +330,11 @@ function showServiceWeekCalendar(serviceDay, serviceDate, serviceMonth, serviceY
     if (serviceFutureWeekSelectedId != undefined) {
         updateServiceSelectedElements(serviceFutureWeekSelectedId);
     }
-        
+
     row.prepend(left_button);
     row.appendChild(right_button);
-    
-    
+
+
 
     right_day_button.addEventListener('click', () => {
         let date_elements = serviceWeekSelectedElement.id.split("-");
@@ -347,7 +345,7 @@ function showServiceWeekCalendar(serviceDay, serviceDate, serviceMonth, serviceY
         let date_string = String(selected_date).concat("-", String(selected_month), "-", String(selected_year), "-service");
         // Not the last day of the calendar
         if (selected_date == 31 && selected_month == 11 && selected_year == serviceLastYear) {
-        } 
+        }
         else {
             selected_date++;
             if (selected_date > month_days) {
@@ -357,7 +355,7 @@ function showServiceWeekCalendar(serviceDay, serviceDate, serviceMonth, serviceY
                     selected_year++;
                 } else {
                     selected_month++;
-                } 
+                }
                 serviceSelectMonth.value = selected_month;
                 serviceSelectYear.value = selected_year;
                 serviceJump();
@@ -400,7 +398,7 @@ function showServiceWeekCalendar(serviceDay, serviceDate, serviceMonth, serviceY
         let month_days = 32 - new Date(selected_year, selected_month, 32).getDate();
         // Not the last day of the calendar
         if (selected_date >= 25 && selected_month == 11 && selected_year == serviceLastYear) {
-        } 
+        }
         else {
             selected_date = selected_date + 7;
             if (selected_date > month_days) {
@@ -410,7 +408,7 @@ function showServiceWeekCalendar(serviceDay, serviceDate, serviceMonth, serviceY
                     selected_year++;
                 } else {
                     selected_month++;
-                } 
+                }
                 serviceSelectMonth.value = selected_month;
                 serviceSelectYear.value = selected_year;
                 serviceJump();
@@ -441,7 +439,7 @@ function showServiceWeekCalendar(serviceDay, serviceDate, serviceMonth, serviceY
             }
         }
     });
-    
+
     left_day_button.addEventListener('click', () => {
         let date_elements = serviceWeekSelectedElement.id.split("-");
         let selected_date = parseInt(date_elements[0]);
@@ -450,7 +448,7 @@ function showServiceWeekCalendar(serviceDay, serviceDate, serviceMonth, serviceY
         let month_days = 32 - new Date(serviceYear, serviceMonth, 32).getDate();
         // Not serviceToday
         if (selected_date == serviceToday.getDate() && selected_month == serviceToday.getMonth() && selected_year == serviceToday.getFullYear()) {
-        } 
+        }
         else {
             selected_date--;
             if (selected_date < 1) {
@@ -459,12 +457,12 @@ function showServiceWeekCalendar(serviceDay, serviceDate, serviceMonth, serviceY
                     selected_year--;
                 } else {
                     selected_month--;
-                } 
+                }
                 serviceSelectMonth.value = selected_month;
                 serviceSelectYear.value = selected_year;
                 serviceJump();
                 selected_date = 32 - new Date(selected_year, selected_month, 32).getDate();
-                
+
             }
             date_string = String(selected_date).concat("-", String(selected_month), "-", String(selected_year), "-service");
             let new_serviceWeekSelectedElement = document.getElementById(date_string);
@@ -495,7 +493,7 @@ function showServiceWeekCalendar(serviceDay, serviceDate, serviceMonth, serviceY
                 selected_year--;
             } else {
                 selected_month--;
-            } 
+            }
             serviceSelectMonth.value = selected_month;
             serviceSelectYear.value = selected_year;
             serviceJump();
@@ -504,7 +502,7 @@ function showServiceWeekCalendar(serviceDay, serviceDate, serviceMonth, serviceY
         let new_selected = new Date(selected_year, selected_month, selected_date);
 
         if (new_selected.getTime() > serviceToday.getTime() || (serviceToday.getDate() == new_selected.getDate() && serviceToday.getMonth() == new_selected.getMonth() && serviceToday.getFullYear() == new_selected.getFullYear())) {
-            start_date = start_date - 7; 
+            start_date = start_date - 7;
             if (start_date < 1) {
                 if (start_month == 0) {
                     start_month = 11;
@@ -533,7 +531,7 @@ function showServiceWeekCalendar(serviceDay, serviceDate, serviceMonth, serviceY
                 updateServiceSelectedElements(date_string);
             }
         }
-    }); 
+    });
 }
 
 // update elements in week and month calendar without changing the week or month calendar view
@@ -575,67 +573,67 @@ function loadServiceBookings() {
     let client_name = document.getElementById("username").value;
     let client = "False";
     fetch(`/get_day_bookings/${client_name}/${serviceSelectedDay}/${serviceSelectedDate}/${serviceSelectedMonth}/${serviceSelectedYear}/${client}`)
-    .then(response => response.json())
-    .then(result => {
-        let times = result.times;
-        let am_pm = result.am_pm;
-        let services = result.services;
-        let listings = result.listings;
-        let clients = result.clients;
-        let service_appointment_body = document.getElementById('service-appointment-body');
-        service_appointment_body.innerHTML = "";
-        let header = document.createElement('h6');
-        if (times.length == 0) {
-            header.innerText = "No Appointments";
-            service_appointment_body.appendChild(header);
-        } else {
-            header.innerText = "Appointments";
-            service_appointment_body.appendChild(header);
+        .then(response => response.json())
+        .then(result => {
+            let times = result.times;
+            let am_pm = result.am_pm;
+            let services = result.services;
+            let listings = result.listings;
+            let clients = result.clients;
+            let service_appointment_body = document.getElementById('service-appointment-body');
+            service_appointment_body.innerHTML = "";
+            let header = document.createElement('h6');
+            if (times.length == 0) {
+                header.innerText = "No Appointments";
+                service_appointment_body.appendChild(header);
+            } else {
+                header.innerText = "Appointments";
+                service_appointment_body.appendChild(header);
 
-            let appointment_row = document.createElement('div');
-            appointment_row.className = "row appointments";
-            service_appointment_body.appendChild(appointment_row);
+                let appointment_row = document.createElement('div');
+                appointment_row.className = "row appointments";
+                service_appointment_body.appendChild(appointment_row);
 
-            let right_div = document.createElement('div');
-            right_div.className = 'col right-div';
-            let right_p = document.createElement('p');
-            right_p.className = "centered-paragraph";
-            right_p.innerHTML = `<u>AM</u>`;
-            let right_appointment_div = document.createElement('div');
-            right_appointment_div.className = "appointment-div";
-            right_appointment_div.id = "service-appointment-am";
-            right_div.appendChild(right_p);
-            right_div.appendChild(right_appointment_div);
-            appointment_row.appendChild(right_div);
+                let right_div = document.createElement('div');
+                right_div.className = 'col right-div';
+                let right_p = document.createElement('p');
+                right_p.className = "centered-paragraph";
+                right_p.innerHTML = `<u>AM</u>`;
+                let right_appointment_div = document.createElement('div');
+                right_appointment_div.className = "appointment-div";
+                right_appointment_div.id = "service-appointment-am";
+                right_div.appendChild(right_p);
+                right_div.appendChild(right_appointment_div);
+                appointment_row.appendChild(right_div);
 
-            let left_div = document.createElement('div');
-            left_div.className = 'col left-div';
-            let left_p = document.createElement('p');
-            left_p.className = "centered-paragraph";
-            left_p.innerHTML = `<u>PM</u>`;
-            let left_appointment_div = document.createElement('div');
-            left_appointment_div.className = "appointment-div appointment-pm";
-            left_appointment_div.id = "service-appointment-pm";
-            left_div.appendChild(left_p);
-            left_div.appendChild(left_appointment_div);
-            appointment_row.appendChild(left_div);
+                let left_div = document.createElement('div');
+                left_div.className = 'col left-div';
+                let left_p = document.createElement('p');
+                left_p.className = "centered-paragraph";
+                left_p.innerHTML = `<u>PM</u>`;
+                let left_appointment_div = document.createElement('div');
+                left_appointment_div.className = "appointment-div appointment-pm";
+                left_appointment_div.id = "service-appointment-pm";
+                left_div.appendChild(left_p);
+                left_div.appendChild(left_appointment_div);
+                appointment_row.appendChild(left_div);
 
-            for (let i=0; i < times.length; i++) {
-                let button = document.createElement('input');
-                button.type = "button";
-                if (am_pm[i] == 'AM') {
-                    button.className = "btn btn-primary btn-sm appointment-button";
-                    button.value = times[i] + " - " + clients[i];
-                    right_appointment_div.appendChild(button);
-                } else {
-                    button.className = "btn btn-primary btn-sm appointment-button";
-                    button.value = times[i] + " - " + clients[i];
-                    left_appointment_div.appendChild(button);
+                for (let i = 0; i < times.length; i++) {
+                    let button = document.createElement('input');
+                    button.type = "button";
+                    if (am_pm[i] == 'AM') {
+                        button.className = "btn btn-primary btn-sm appointment-button";
+                        button.value = times[i] + " - " + clients[i];
+                        right_appointment_div.appendChild(button);
+                    } else {
+                        button.className = "btn btn-primary btn-sm appointment-button";
+                        button.value = times[i] + " - " + clients[i];
+                        left_appointment_div.appendChild(button);
+                    }
+                    // let url = window.location.origin;
+                    // Link to listing
+                    // button.href = url +"/listing" + "/" + listings[i];
                 }
-                // let url = window.location.origin;
-                // Link to listing
-                // button.href = url +"/listing" + "/" + listings[i];
             }
-        }
-    });
+        });
 }

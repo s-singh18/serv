@@ -152,8 +152,28 @@ svg.mapboxgl-ctrl-geocoder--icon.mapboxgl-ctrl-geocoder--icon-search {
   margin: auto;
 }
 
-.form-control-address {
+.geocoder-input {
+  margin: 0px;
   width: 100%;
+}
+
+.no-border {
+  border: 0;
+  box-shadow: none;
+}
+
+.no-border:hover,
+.no-border:focus {
+  border: 0;
+  box-shadow: none;
+}
+
+.no-border:active,
+.no-border:active:hover,
+.no-border:active:focus,
+.no-border:active:hover:focus {
+  border: 0;
+  box-shadow: none;
 }
 
 div#geocoder-nav.geocoder-nav {
