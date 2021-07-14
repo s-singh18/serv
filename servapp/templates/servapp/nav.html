@@ -3,64 +3,79 @@
 {% load static %}
 
 {% block nav %}
-    <nav class="navbar navbar-expand-md navbar-custom py-3" style="background-color: #430280;">
-        <a class="navbar-brand nav-link" href="{% url 'home' %}">Resrvice</a>
-        <!-- <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+<nav class="navbar navbar-expand-md navbar-custom py-3" style="background-color: #430280;">
+    <a class="navbar-brand nav-link" href="{% url 'home' %}">Resrvice</a>
+    <!-- <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button> -->
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav mx-auto">
-                <li class="nav-item active">
-                    <div id="geocoder-nav" class="geocoder-nav">
-                        <form class="form-inline" method="GET" action="{% url 'search' %}">
-                            <div class="form-group">
-                                <input class="form-control" id="listing-input" type="text" name="listing_type" placeholder="Service">
-                            </div>
-                            <div class="form-group">
-                                <input class="form-control" id="location-input" type="text" name="location" placeholder="Location">
-                            </div>
-                            <input class="form-control" type="hidden" name="username" id="username" value="{{ user.username }}">
-                                <input class="btn btn-primary nav-submit" type="submit" value="Submit">
-                        </form>
-                    </div>
-                </li>
-            </ul>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav mx-auto">
+            <li class="nav-item active">
+                <div id="geocoder-nav" class="geocoder-nav">
+                    <form class="form-inline" method="GET" action="{% url 'search' %}">
+                        <div class="form-group">
+                            <input class="form-control" id="listing-input" type="text" name="listing_type"
+                                placeholder="Service">
+                        </div>
+                        <div class="form-group" id="location-div">
+                            <input class="form-control" id="location-input" type="text" name="location"
+                                placeholder="Location">
+                        </div>
+                        <input class="form-control" type="hidden" name="username" id="username"
+                            value="{{ user.username }}">
+                        <input id="postcode" name="postcode" type="hidden" value="">
+                        <input id="place" name="place" type="hidden" value="">
+                        <input id="district" name="district" type="hidden" value="">
+                        <input id="region" name="region" type="hidden" value="">
+                        <input id="country" name="country" type="hidden" value="">
+
+                        <input class="btn btn-primary nav-submit" id="home-submit" type="submit" value="Submit">
+                    </form>
+                </div>
+            </li>
+        </ul>
         <div>
             <ul class="navbar-nav me-auto>
                 {% if user.is_authenticated %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'profile' %}">{{ user.username }}</a>
-                    </li>
-                    <li class="nav-item">
-                        {% if request.session.listing_id == None %}
-                            <a class="nav-link" href="{% url 'create_listing' %}">Create Listing</a>
-                        {% else %}
-                            <a class="nav-link" href="{% url 'listing' title=request.session.listing_title id=request.session.listing_id %}">{{ request.session.listing_title }}</a>
-                        {% endif %}
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'logout' %}">Logout</a>
-                    </li>
+                    <li class=" nav-item">
+                <a class="nav-link" href="{% url 'profile' %}">{{ user.username }}</a>
+                </li>
+                <li class="nav-item">
+                    {% if request.session.listing_id == None %}
+                    <a class="nav-link" href="{% url 'create_listing' %}">Create Listing</a>
+                    {% else %}
+                    <a class="nav-link"
+                        href="{% url 'listing' title=request.session.listing_title id=request.session.listing_id %}">
+                        {{ request.session.listing_title }}</a>
+                    {% endif %}
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                </li>
                 {% else %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'login' %}">Create Listing</a>
-                    </li>
-                    <li class="nav-item" id="nav-login">
-                        <a class="nav-link" id="login" href="{% url 'login' %}">Login</a>
-                    </li>
-                    <li class="nav-item" id="nav-register">
-                        <a class="nav-link" href="{% url 'register' %}">Register</a>
-                    </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'login' %}">Create Listing</a>
+                </li>
+                <li class="nav-item" id="nav-login">
+                    <a class="nav-link" id="login" href="{% url 'login' %}">Login</a>
+                </li>
+                <li class="nav-item" id="nav-register">
+                    <a class="nav-link" href="{% url 'register' %}">Register</a>
+                </li>
                 {% endif %}
             </ul>
         </div>
-        </div>
-    </nav>
-    {% block body %}
-    {% endblock %}
+    </div>
+</nav>
+
+<script src="{% static 'servapp/states.js' %}"></script>
+<script src="{% static 'servapp/nav.js' %}"></script>
+{% block body %}
+{% endblock %}
 
 {% endblock %}
 
 {% block script %}
-    <!-- <script src="{% static 'servapp/listing.js' %}"></script> -->
+
+
 {% endblock %}

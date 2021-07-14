@@ -4,72 +4,86 @@
 
 {% block body %}
 
+<div>
     <div class="listings-view">
         {% for listing in listings %}
-            <div class="card border-dark mb-3">
-                <div class="card-body">
-                    <input class="form-control" id="listing-{{ listing.id }}" type="hidden" value="{{ listing.id }}">
-                    <div class="card-title"> 
-                        <a class="title" href="{% url 'listing' title=listing.title id=listing.id %}"><h5>{{ listing.title }}</h5></a> 
-                    </div>
-                    <div class="card-subtitle"><h6>{{ listing.user.username }}</h6></div>
-                    <p class="card-text">{{ listing.description }}</p>
+        <div class="card border-dark mb-3">
+            <div class="card-body">
+                <input class="form-control" id="listing-{{ listing.id }}" type="hidden" value="{{ listing.id }}">
+                <div class="card-title">
+                    <a class="title" href="{% url 'listing' title=listing.title id=listing.id %}">
+                        <h5>{{ listing.title }}</h5>
+                    </a>
                 </div>
+                <div class="card-subtitle">
+                    <h6>{{ listing.user.username }}</h6>
+                </div>
+                <p class="card-text">{{ listing.description }}</p>
             </div>
+        </div>
 
         {% empty %}
-            <h3 class="no-results">No results found for "{{ listing_type }}" in {{ location }}.</h3>
-        
+        <h3 class="no-results">No results found for "{{ listing_type }}" in {{ location }}.</h3>
+
         {% endfor %}
         {% if listings.has_other_pages %}
-            <div class="text-center">
-                <ul class="pagination">
-                    {% if listings.has_previous %}
-                        <li class="page-item"><a class="page-link" href="?listing_type={{ listing_type }}&location={{ location }}&page={{ listings.previous_page_number }}">&laquo;</a></li>
-                    {% else %}
-                        <li class="disabled"><span></span></li>
-                    {% endif %}
+        <div class="text-center">
+            <ul class="pagination">
+                {% if listings.has_previous %}
+                <li class="page-item"><a class="page-link"
+                        href="?listing_type={{ listing_type }}&location={{ location }}&page={{ listings.previous_page_number }}">&laquo;</a>
+                </li>
+                {% else %}
+                <li class="disabled"><span></span></li>
+                {% endif %}
 
-                    {% if listings.number|add:'-4' > 1 %}
-                        <li class="page-item">...</li>
-                    {% endif %}
+                {% if listings.number|add:'-4' > 1 %}
+                <li class="page-item">...</li>
+                {% endif %}
 
-                    {% for i in listings.paginator.page_range %}
-                        {% if listings.number == i %}
-                            <li class="page-item active"><span class="page-link">{{ i }} <span class="sr-only">(current)</span></span></li>
-                        {% elif i > listings.number|add:'-5' and i < listings.number|add:'10' %}
-                            <li class="page-item"><a class="page-link" href="?listing_type={{ listing_type }}&location={{ location }}&page={{ i }}">{{ i }}</a></li>
-                        {% endif %}
+                {% for i in listings.paginator.page_range %}
+                {% if listings.number == i %}
+                <li class="page-item active"><span class="page-link">{{ i }} <span
+                            class="sr-only">(current)</span></span></li>
+                {% elif i > listings.number|add:'-5' and i < listings.number|add:'10' %} <li class="page-item"><a
+                        class="page-link"
+                        href="?listing_type={{ listing_type }}&location={{ location }}&page={{ i }}">{{ i }}</a></li>
+                    {% endif %}
                     {% endfor %}
 
                     {% if listings.paginator.num_pages > listings.number|add:'4' %}
-                        <li>...</li>
+                    <li>...</li>
                     {% endif %}
 
                     {% if listings.has_next %}
-                        <li class="page-item"><a class="page-link" href="?listing_type={{ listing_type }}&location={{ location }}&page={{ listings.next_page_number }}">&raquo;</a></li>
+                    <li class="page-item"><a class="page-link"
+                            href="?listing_type={{ listing_type }}&location={{ location }}&page={{ listings.next_page_number }}">&raquo;</a>
+                    </li>
                     {% else %}
-                        <li class="disabled"><span></span></li>
-                    {% endif %}            
-                </ul>
-            </div>
+                    <li class="disabled"><span></span></li>
+                    {% endif %}
+            </ul>
+        </div>
         {% endif %}
     </div>
 
     <div class="map-view">
         <div id='map'></div>
     </div>
+</div>
 
-    <div id="data">
-        <input class="form-control" id="listings_geojson" type="hidden" value="{{ listings_geojson }}"> 
-        <input class="form-control" id="polygon_geojson" type="hidden" value="{{ polygon_geojson }}"> 
-        <input class="form-control" id="center" type="hidden" value="{{ center }}"> 
-        <input class="form-control" id="listing_type" type="hidden" value="{{ listing_type }}"> 
-        <input class="form-control" id="location" type="hidden" value="{{ location }}">
-    </div>
+
+
+<div id="data">
+    <input class="form-control" id="listings_geojson" type="hidden" value="{{ listings_geojson }}">
+    <input class="form-control" id="polygon_geojson" type="hidden" value="{{ polygon_geojson }}">
+    <input class="form-control" id="center" type="hidden" value="{{ center }}">
+    <input class="form-control" id="listing_type" type="hidden" value="{{ listing_type }}">
+    <input class="form-control" id="location" type="hidden" value="{{ location }}">
+</div>
 
 {% endblock %}
 
 {% block script %}
-    <script src="{% static 'servapp/search.js' %}"></script>
+<script src="{% static 'servapp/search.js' %}"></script>
 {% endblock %}

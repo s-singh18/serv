@@ -3,12 +3,16 @@
 var marker = {};
 var map;
 
-mapboxgl.accessToken = document.querySelector('#mapbox-access-token').value;
-var accessToken = mapboxgl.accessToken;
+var accessToken = document.querySelector('#mapbox-access-token').value;
+mapboxgl.accessToken = accessToken;
+
+
+mapboxgl.accessToken = accessToken;
+
 
 
 var geocoder_address = new MapboxGeocoder({
-    accessToken: mapboxgl.accessToken,
+    accessToken: accessToken,
     marker: false,
     mapboxgl: mapboxgl,
     flyTo: false,
@@ -16,9 +20,7 @@ var geocoder_address = new MapboxGeocoder({
     types: "address",
     placeholder: "Address",
     render: function (item) {
-        console.log(item);
-        return `<li class="form-control no-border">${item.place_name}</li>
-        `;
+        return `${item.place_name}`;
     }
 });
 
@@ -47,7 +49,6 @@ function load_map() {
     let listing_geojson = JSON.parse(document.querySelector('#listing-geojson').value);
     let address = document.querySelector('#address').value;
     let coordinates = [listing_geojson.features[0].geometry.coordinates[1], listing_geojson.features[0].geometry.coordinates[0]];
-    console.log(coordinates);
     // [lat, lon]
     document.querySelector('#location').value = coordinates;
     map = L.map('leaflet-map').setView(coordinates, 18);
@@ -93,11 +94,11 @@ function load_map() {
                     let address = location_data.features[0].place_name;
                     marker.bindPopup(address).openPopup();
                     document.querySelector('#address').value = address;
-                    document.querySelector('#mapbox-address').value = address;
+                    // document.querySelector('#mapbox-address').value = address;
                     document.getElementById('location').value = e.latlng.lat + "," + e.latlng.lng;
                 } else {
                     document.querySelector('#address').value = "";
-                    document.querySelector('#mapbox-address').value = "";
+                    // document.querySelector('#mapbox-address').value = "";
                     document.getElementById('location').value = "";
                 }
             });
@@ -107,24 +108,27 @@ function load_map() {
 
 function geocode_address() {
     geocoder_address.addTo('#geocoder-address');
-    document.querySelector('#address').type = "hidden";
-    let geocoder_element = document.querySelector('.mapboxgl-ctrl-geocoder--input');
-    geocoder_element.id = "mapbox-address";
-    geocoder_element.className = "form-control";
-    let geocoder_div = document.querySelector(".mapboxgl-ctrl-geocoder.mapboxgl-ctrl");
+
+    let geocoder_div = document.getElementById('geocoder-address').children[1];
     geocoder_div.style.width = "100%";
     geocoder_div.style.maxWidth = "3600px";
-    geocoder_div.style.marginRight = "0px";
-    geocoder_element.value = document.querySelector('#address').value;
+    geocoder_div.style.margin = "0";
+
+    let geocoder_input = geocoder_div.children[1];
+    geocoder_input.className = "form-control";
+    geocoder_input.style.maxWidth = "3600px";
+    geocoder_input.style.width = "100%";
+    geocoder_input.value = document.querySelector('#address').value;
+    document.querySelector('#address').remove();
+    geocoder_input.id = "address";
+    geocoder_input.name = "address";
 
     // search_form.addEventListener("submit", (event) => {
     geocoder_address.on('result', (search_data) => {
-        console.log(search_data);
         // fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${search_data.result.place_name}`)
         fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${search_data.result.place_name}.json?limit=1&access_token=${accessToken}`)
             .then(response => response.json())
             .then(data => {
-                console.log(data);
                 let features = data.features[0];
                 let lat;
                 let lon;
@@ -154,7 +158,7 @@ function geocode_address() {
                 marker = L.marker([lat, lon]).addTo(map);
                 marker.bindPopup(search_data.result.place_name).openPopup();
                 document.querySelector('#address').value = search_data.result.place_name;
-                document.querySelector('#mapbox-address').value = search_data.result.place_name;
+                // document.querySelector('#mapbox-address').value = search_data.result.place_name;
                 document.getElementById('location').value = lat + ',' + lon;
             });
     });

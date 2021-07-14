@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 // Reload page after login or registration, send review request
-window.onload = function() {
+window.onload = function () {
     var reloading = sessionStorage.getItem("reloading");
     var header = sessionStorage.getItem("reviewHeader");
     var body = sessionStorage.getItem("reviewBody");
@@ -203,9 +203,9 @@ function showCalendar(month, year) {
                         future_week_selected_id = undefined;
                         showWeekCalendar(today.getDay(), today.getDate(), today.getMonth(), today.getFullYear());
                     });
-                } 
+                }
                 row.appendChild(cell);
-                
+
                 let current_date = new Date(year, month, date);
                 if (today.getTime() <= current_date.getTime()) {
                     // Add event listener to future dates
@@ -217,7 +217,7 @@ function showCalendar(month, year) {
                         future_week_selected_id = undefined;
                         showWeekCalendar(current_date.getDay(), current_date.getDate(), current_date.getMonth(), current_date.getFullYear());
                     });
-                }   
+                }
                 date++;
             }
         }
@@ -228,7 +228,6 @@ function showCalendar(month, year) {
 // Week calendar that shows under the month and year header
 function showWeekCalendar(day, date, month, year) {
     var year_disp = year;
-    console.log(year);
     let daysInMonth = 32 - new Date(year, month, 32).getDate();
     // on load initialize week calendar with today's date and the upcoming week
     let month_disp = month + 1;
@@ -238,7 +237,7 @@ function showWeekCalendar(day, date, month, year) {
     let day_disp = days[day];
     // row holds week calendar elements
     let row = document.createElement("tr");
-    
+
     // Create containers for left and right buttons
     let left_button = document.createElement("td");
     left_button.className = "table-button-header";
@@ -246,7 +245,7 @@ function showWeekCalendar(day, date, month, year) {
     left_button_div.className = "table-button-container";
     let right_button_div = document.createElement("div");
     right_button_div.className = "table-button-container";
-    
+
     // Create next and previous, day and week buttons for left side
     let left_week_button = document.createElement("button");
     left_week_button.className = 'btn btn-outline-info table-button';
@@ -257,7 +256,7 @@ function showWeekCalendar(day, date, month, year) {
     left_button_div.appendChild(left_week_button);
     left_button_div.appendChild(left_day_button);
     left_button.appendChild(left_button_div);
-    
+
     // Create next and previous, day and week buttons for right side
     let right_button = document.createElement("td");
     right_button.className = "table-button-header";
@@ -271,20 +270,20 @@ function showWeekCalendar(day, date, month, year) {
     right_button_div.appendChild(right_week_button);
     right_button.appendChild(right_button_div);
 
-    var day_count = 1; 
+    var day_count = 1;
     let th = document.createElement("td");
     th.innerHTML = `<h6 class="week-date">${month_disp}/${date_disp}</h6>
                     <p class="week-day">${day_disp}</p>`;
     th.id = String(date).concat("-", String(month), "-", String(year_disp));;
     if (future_week_selected_id == undefined) {
         th.className = "week-cell week-selected";
-        week_selected_element = th; 
+        week_selected_element = th;
         setSelectedDates(day, date, month, year);
     } else {
         th.className = "week-cell";
     }
-    
-    
+
+
     th.addEventListener('click', () => {
         week_selected_element.className = "week-cell";
         th.className = "week-cell week-selected";
@@ -304,7 +303,7 @@ function showWeekCalendar(day, date, month, year) {
         future_week_selected_id = undefined;
         setSelectedDates(day, date, month, year);
     });
-    
+
     row.appendChild(th);
 
     // Refers to day of the week
@@ -315,11 +314,10 @@ function showWeekCalendar(day, date, month, year) {
         day_index++;
     }
     date_disp++;
-    
+
     // Create row calendar for the rest of the week 
     let out_of_bounds = false;
-    while (day_index != day) {  
-        console.log(day_index);
+    while (day_index != day) {
         day_count++;
         let td = document.createElement("td");
         if (date_disp > daysInMonth) {
@@ -344,7 +342,7 @@ function showWeekCalendar(day, date, month, year) {
             td.addEventListener('click', () => {
                 week_selected_element.className = "week-cell";
                 td.className = "week-cell week-selected";
-                week_selected_element = td;  
+                week_selected_element = td;
                 let date_elements = week_selected_element.id.split("-");
                 let selected_date = parseInt(date_elements[0]);
                 let selected_month = parseInt(date_elements[1]);
@@ -375,7 +373,7 @@ function showWeekCalendar(day, date, month, year) {
         }
         date_disp++;
     }
-    
+
     let week_head = document.querySelector('.week-head');
     // clear previous table
     week_head.innerText = "";
@@ -384,11 +382,11 @@ function showWeekCalendar(day, date, month, year) {
     if (future_week_selected_id != undefined) {
         updateSelectedElements(future_week_selected_id);
     }
-        
+
     row.prepend(left_button);
     row.appendChild(right_button);
-    
-    
+
+
 
     right_day_button.addEventListener('click', () => {
         let date_elements = week_selected_element.id.split("-");
@@ -399,7 +397,7 @@ function showWeekCalendar(day, date, month, year) {
         let date_string = String(selected_date).concat("-", String(selected_month), "-", String(selected_year));
         // Not the last day of the calendar
         if (selected_date == 31 && selected_month == 11 && selected_year == lastYear) {
-        } 
+        }
         else {
             selected_date++;
             if (selected_date > month_days) {
@@ -409,7 +407,7 @@ function showWeekCalendar(day, date, month, year) {
                     selected_year++;
                 } else {
                     selected_month++;
-                } 
+                }
                 selectMonth.value = selected_month;
                 selectYear.value = selected_year;
                 jump();
@@ -452,7 +450,7 @@ function showWeekCalendar(day, date, month, year) {
         let month_days = 32 - new Date(selected_year, selected_month, 32).getDate();
         // Not the last day of the calendar
         if (selected_date >= 25 && selected_month == 11 && selected_year == lastYear) {
-        } 
+        }
         else {
             selected_date = selected_date + 7;
             if (selected_date > month_days) {
@@ -462,7 +460,7 @@ function showWeekCalendar(day, date, month, year) {
                     selected_year++;
                 } else {
                     selected_month++;
-                } 
+                }
                 selectMonth.value = selected_month;
                 selectYear.value = selected_year;
                 jump();
@@ -493,7 +491,7 @@ function showWeekCalendar(day, date, month, year) {
             }
         }
     });
-    
+
     left_day_button.addEventListener('click', () => {
         let date_elements = week_selected_element.id.split("-");
         let selected_date = parseInt(date_elements[0]);
@@ -502,7 +500,7 @@ function showWeekCalendar(day, date, month, year) {
         let month_days = 32 - new Date(year, month, 32).getDate();
         // Not today
         if (selected_date == today.getDate() && selected_month == today.getMonth() && selected_year == today.getFullYear()) {
-        } 
+        }
         else {
             selected_date--;
             if (selected_date < 1) {
@@ -511,12 +509,12 @@ function showWeekCalendar(day, date, month, year) {
                     selected_year--;
                 } else {
                     selected_month--;
-                } 
+                }
                 selectMonth.value = selected_month;
                 selectYear.value = selected_year;
                 jump();
                 selected_date = 32 - new Date(selected_year, selected_month, 32).getDate();
-                
+
             }
             date_string = String(selected_date).concat("-", String(selected_month), "-", String(selected_year));
             let new_week_selected_element = document.getElementById(date_string);
@@ -547,7 +545,7 @@ function showWeekCalendar(day, date, month, year) {
                 selected_year--;
             } else {
                 selected_month--;
-            } 
+            }
             selectMonth.value = selected_month;
             selectYear.value = selected_year;
             jump();
@@ -556,7 +554,7 @@ function showWeekCalendar(day, date, month, year) {
         let new_selected = new Date(selected_year, selected_month, selected_date);
 
         if (new_selected.getTime() > today.getTime() || (today.getDate() == new_selected.getDate() && today.getMonth() == new_selected.getMonth() && today.getFullYear() == new_selected.getFullYear())) {
-            start_date = start_date - 7; 
+            start_date = start_date - 7;
             if (start_date < 1) {
                 if (start_month == 0) {
                     start_month = 11;
@@ -585,7 +583,7 @@ function showWeekCalendar(day, date, month, year) {
                 updateSelectedElements(date_string);
             }
         }
-    }); 
+    });
 }
 
 // update elements in week and month calendar without changing the week or month calendar view
@@ -622,7 +620,7 @@ function setSelectedDates(day, date, month, year) {
     if (servicesExist == true) {
         loadAppointments()
     }
-    
+
 }
 
 // From appointments.js
@@ -639,10 +637,9 @@ function clickServiceButton() {
         selectedServiceButton.disabled = true;
         selectedServiceButton.classList.add("active");
         servicesExist = true;
-        
+
         // add click event listener and button presser to all elements
         service_buttons.forEach(element => {
-            console.log(element)
             // First element
 
             // Listen to each button to see if it is clicked
@@ -657,7 +654,7 @@ function clickServiceButton() {
         });
     }
     let index = 0;
-    
+
 }
 
 function loadAppointments() {
@@ -665,82 +662,81 @@ function loadAppointments() {
     selectedAppointment_AM_PM = undefined;
     bookingButton.disabled = true;
     fetch(`/get_appointments/${listingTitle}/${selectedServiceButton.nextElementSibling.value}/${selectedDay}/${selectedDate}/${selectedMonth}/${selectedYear}`)
-    .then(response => response.json())
-    .then(result => {
-        let appointment_am = document.getElementById('appointment-am');
-        let appointment_pm = document.getElementById('appointment-pm');
-        appointment_am.innerText = "";
-        appointment_pm.innerText = "";
-        console.log(result);
-        let am_appointments = result.am_appointments;
-        let pm_appointments = result.pm_appointments;
-        let am_count = 0;
-        if (am_appointments != '') {
-            am_appointments.forEach(element => {
-                let button = document.createElement('input');
-                button.type = "button";
-                button.className = "btn btn-primary btn-sm appointment-button";
-                button.value = `${element}`;
-                appointment_am.appendChild(button);
-                button.addEventListener('click', () => {
-                    if (selectedAppointmentButton == undefined) {
-                        selectedAppointmentButton = button;
-                        selectedAppointmentButton.classList.add('active');
-                        selectedAppointmentButton.disabled = true;
-                        selectedAppointment_AM_PM = "AM";
-                        bookingButton.disabled = false;
-                    } else {
-                        selectedAppointmentButton.classList.remove('active');
-                        selectedAppointmentButton.disabled = false;
-                        selectedAppointmentButton = button;
-                        selectedAppointmentButton.classList.add('active');
-                        selectedAppointmentButton.disabled = true;
-                        selectedAppointment_AM_PM = "AM";
-                        bookingButton.disabled = false;
-                    }
+        .then(response => response.json())
+        .then(result => {
+            let appointment_am = document.getElementById('appointment-am');
+            let appointment_pm = document.getElementById('appointment-pm');
+            appointment_am.innerText = "";
+            appointment_pm.innerText = "";
+            let am_appointments = result.am_appointments;
+            let pm_appointments = result.pm_appointments;
+            let am_count = 0;
+            if (am_appointments != '') {
+                am_appointments.forEach(element => {
+                    let button = document.createElement('input');
+                    button.type = "button";
+                    button.className = "btn btn-primary btn-sm appointment-button";
+                    button.value = `${element}`;
+                    appointment_am.appendChild(button);
+                    button.addEventListener('click', () => {
+                        if (selectedAppointmentButton == undefined) {
+                            selectedAppointmentButton = button;
+                            selectedAppointmentButton.classList.add('active');
+                            selectedAppointmentButton.disabled = true;
+                            selectedAppointment_AM_PM = "AM";
+                            bookingButton.disabled = false;
+                        } else {
+                            selectedAppointmentButton.classList.remove('active');
+                            selectedAppointmentButton.disabled = false;
+                            selectedAppointmentButton = button;
+                            selectedAppointmentButton.classList.add('active');
+                            selectedAppointmentButton.disabled = true;
+                            selectedAppointment_AM_PM = "AM";
+                            bookingButton.disabled = false;
+                        }
+
+                    });
+                    am_count++;
+                });
+            }
+
+            let pm_count = 0;
+            if (result.pm_appointments != '') {
+                result.pm_appointments.forEach(element => {
+                    let button = document.createElement('input');
+                    button.type = "button";
+                    button.className = "btn btn-primary btn-sm appointment-button";
+                    button.value = `${element}`;
+                    appointment_pm.appendChild(button);
+                    button.addEventListener('click', () => {
+                        if (selectedAppointmentButton == undefined) {
+                            selectedAppointmentButton = button;
+                            selectedAppointmentButton.classList.add('active');
+                            selectedAppointmentButton.disabled = true;
+                            selectedAppointment_AM_PM = "PM";
+                            bookingButton.disabled = false;
+                        } else {
+                            selectedAppointmentButton.classList.remove('active');
+                            selectedAppointmentButton.disabled = false;
+                            selectedAppointmentButton = button;
+                            selectedAppointmentButton.classList.add('active');
+                            selectedAppointmentButton.disabled = true;
+                            selectedAppointment_AM_PM = "PM";
+                            bookingButton.disabled = false;
+                        }
+                    });
+
 
                 });
-                am_count++;
-            });    
-        }
-        
-        let pm_count = 0;
-        if (result.pm_appointments != '') {
-            result.pm_appointments.forEach(element => {
-                let button = document.createElement('input');
-                button.type = "button";
-                button.className = "btn btn-primary btn-sm appointment-button";
-                button.value = `${element}`;
-                appointment_pm.appendChild(button);
-                button.addEventListener('click', () => {
-                    if (selectedAppointmentButton == undefined) {
-                        selectedAppointmentButton = button;
-                        selectedAppointmentButton.classList.add('active');
-                        selectedAppointmentButton.disabled = true;
-                        selectedAppointment_AM_PM = "PM";
-                        bookingButton.disabled = false;
-                    } else {
-                        selectedAppointmentButton.classList.remove('active');
-                        selectedAppointmentButton.disabled = false;
-                        selectedAppointmentButton = button;
-                        selectedAppointmentButton.classList.add('active');
-                        selectedAppointmentButton.disabled = true;
-                        selectedAppointment_AM_PM = "PM";
-                        bookingButton.disabled = false;
-                    }
-                });
-                
-                
-            });     
-        }
+            }
 
-        // Dynamically set heights of appointment containers
-        // if (appointment_am.style.height > appointment_pm.style.height) {
-        //     appointment_pm.style.height = appointment_am.style.height;
-        // } else if (appointment_pm.style.height > appointment_am.style.height) {
-        //     appointment_am.style.height = appointment_pm.style.height;
-        // }
-    });
+            // Dynamically set heights of appointment containers
+            // if (appointment_am.style.height > appointment_pm.style.height) {
+            //     appointment_pm.style.height = appointment_am.style.height;
+            // } else if (appointment_pm.style.height > appointment_am.style.height) {
+            //     appointment_am.style.height = appointment_pm.style.height;
+            // }
+        });
 }
 
 // Only triggered when appointment is selected and booking button is clicked
@@ -756,7 +752,7 @@ function createBooking() {
             } else {
                 sendBookingRequest();
             }
-            
+
         }
     });
 }
@@ -774,7 +770,7 @@ function createReview() {
             } else {
                 loadLoginModal(request_type);
             }
-            
+
         } else {
             event.stopPropagation();
             sendReviewRequest();
@@ -785,7 +781,7 @@ function createReview() {
 function loadLoginModal(requestType) {
     let modal_title = document.getElementById('exampleModalLongTitle');
     modal_title.innerText = "Login";
-    
+
     let modal_body = document.getElementById('exampleModalBody');
     modal_body.innerHTML = ``;
 
@@ -841,7 +837,7 @@ function loadLoginModal(requestType) {
         let csrf = getCookie('csrftoken')
         let login_request = new Request(
             '/login',
-            {headers: {'X-CSRFToken': csrf}}
+            { headers: { 'X-CSRFToken': csrf } }
         );
         fetch(login_request, {
             method: "POST",
@@ -850,41 +846,41 @@ function loadLoginModal(requestType) {
                 password: password_input.value,
             }),
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.error) {
-                form_errors.innerHTML = ``;
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    form_errors.innerHTML = ``;
 
-                let error = document.createElement('li');
-                error.className = "error";
-                error.innerText = data.error;
-                let br = document.createElement('br');
+                    let error = document.createElement('li');
+                    error.className = "error";
+                    error.innerText = data.error;
+                    let br = document.createElement('br');
 
-                form_errors.appendChild(error);
-                form_errors.appendChild(br);
-                return false;
-            } else {
-                document.getElementById('close-button').click();
-                // Review Request
-                if (requestType == "Review") {
-                    sessionStorage.setItem("reloading", "true");
-                    sessionStorage.setItem("header", reviewHeader)
-                    sessionStorage.setItem("body", reviewBody)
-                    location.reload();
+                    form_errors.appendChild(error);
+                    form_errors.appendChild(br);
+                    return false;
+                } else {
+                    document.getElementById('close-button').click();
+                    // Review Request
+                    if (requestType == "Review") {
+                        sessionStorage.setItem("reloading", "true");
+                        sessionStorage.setItem("header", reviewHeader)
+                        sessionStorage.setItem("body", reviewBody)
+                        location.reload();
+                    }
+                    // Booking Request
+                    if (requestType == "Booking") {
+                        sendBookingRequest();
+                    }
                 }
-                // Booking Request
-                if (requestType == "Booking") {
-                    sendBookingRequest();
-                }
-            }
-        });
+            });
     });
 }
 
 function loadRegisterModal(requestType) {
     let modal_title = document.getElementById('exampleModalLongTitle');
     modal_title.innerText = "Register";
-    
+
     let modal_body = document.getElementById('exampleModalBody');
     modal_body.innerHTML = ``;
 
@@ -962,7 +958,7 @@ function loadRegisterModal(requestType) {
         let csrf = getCookie('csrftoken');
         let register_request = new Request(
             '/register',
-            {headers: {'X-CSRFToken': csrf}}
+            { headers: { 'X-CSRFToken': csrf } }
         );
         fetch(register_request, {
             method: "POST",
@@ -973,40 +969,40 @@ function loadRegisterModal(requestType) {
                 confirmation: confirm_input.value,
             }),
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.error) {
-                form_errors.innerHTML = ``;
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    form_errors.innerHTML = ``;
 
-                let error = document.createElement('li');
-                error.className = "error";
-                error.innerText = data.error;
-                let br = document.createElement('br');
+                    let error = document.createElement('li');
+                    error.className = "error";
+                    error.innerText = data.error;
+                    let br = document.createElement('br');
 
-                form_errors.appendChild(error);
-                form_errors.appendChild(br);
-                return false;
-            } else {
-                document.getElementById('close-button').click();
-                if (requestType == "Review") {
-                    sessionStorage.setItem("reloading", "true");
-                    sessionStorage.setItem("header", reviewHeader)
-                    sessionStorage.setItem("body", reviewBody)
-                    location.reload();
+                    form_errors.appendChild(error);
+                    form_errors.appendChild(br);
+                    return false;
+                } else {
+                    document.getElementById('close-button').click();
+                    if (requestType == "Review") {
+                        sessionStorage.setItem("reloading", "true");
+                        sessionStorage.setItem("header", reviewHeader)
+                        sessionStorage.setItem("body", reviewBody)
+                        location.reload();
+                    }
+
+                    if (requestType == "Booking") {
+                        sendBookingRequest();
+                    }
                 }
-
-                if (requestType == "Booking") {
-                    sendBookingRequest();
-                }
-            }
-        });
+            });
     });
 }
 
 function loadSuccessModal() {
     let modal_title = document.getElementById('exampleModalLongTitle');
     modal_title.innerText = "Success";
-    
+
     let modal_body = document.getElementById('exampleModalBody');
     modal_body.innerHTML = ``;
 
@@ -1020,7 +1016,7 @@ function loadSuccessModal() {
     success.appendChild(profile_link);
     modal_body.appendChild(success);
 
-    
+
     let modal_footer = document.getElementById('exampleModalFooter');
     modal_footer.innerHTML = ``;
 
@@ -1034,9 +1030,9 @@ function sendBookingRequest() {
     let csrf = getCookie('csrftoken');
     let new_booking_request = new Request(
         '/create_booking',
-        {headers: {'X-CSRFToken': csrf}}
+        { headers: { 'X-CSRFToken': csrf } }
     );
-    
+
     // Create booking post request
     fetch(new_booking_request, {
         method: "POST",
@@ -1051,18 +1047,18 @@ function sendBookingRequest() {
             year: String(selectedYear),
         }),
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.error) {
-            let request_type = "Booking";
-            loadLoginModal(request_type);
-        } else {
-            loadSuccessModal();
-            $('#exampleModalCenter').on('hidden.bs.modal', function () {
-                location.reload();
-            })
-        }
-    });
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                let request_type = "Booking";
+                loadLoginModal(request_type);
+            } else {
+                loadSuccessModal();
+                $('#exampleModalCenter').on('hidden.bs.modal', function () {
+                    location.reload();
+                })
+            }
+        });
 }
 
 function sendReviewRequest() {
@@ -1080,7 +1076,7 @@ function sendReviewRequest() {
         }
         let create_request = new Request(
             '/listing/' + listingTitle + "/" + listingID,
-            {headers: {'X-CSRFToken': csrf}}
+            { headers: { 'X-CSRFToken': csrf } }
         );
 
         // Create booking post request
@@ -1091,15 +1087,15 @@ function sendReviewRequest() {
                 body: review_body,
             }),
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.errors) {
-                showErrors(data.errors);
-            } 
-        });
+            .then(response => response.json())
+            .then(data => {
+                if (data.errors) {
+                    showErrors(data.errors);
+                }
+            });
     } else {
         showErrors(errors);
-    }   
+    }
 }
 
 function reviewValidation() {
@@ -1140,7 +1136,7 @@ function checkHeader() {
     } else {
         error = undefined
     }
-    return error   
+    return error
 }
 
 function checkBody() {
@@ -1156,16 +1152,16 @@ function checkBody() {
     } else {
         error = undefined
     }
-    return error   
+    return error
 }
 
 function getReview() {
     // Create booking post request
     fetch(`/get-review/{listingID}`)
-    .then(response => response.json())
-    .then(data => {
-        if (data.error) {
-            return data.error
-        }
-    });
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                return data.error
+            }
+        });
 }

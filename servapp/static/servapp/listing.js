@@ -1,8 +1,8 @@
 document.addEventListener("DOMContentLoaded", function () {
-    
+
     listing_page();
     // edit_review();
-    
+
 
 });
 
@@ -10,10 +10,8 @@ document.addEventListener("DOMContentLoaded", function () {
 function listing_page(properties, owner) {
     let mapbox_access_token = document.querySelector('#mapbox-access-token').value;
     let listing_geojson = JSON.parse(document.querySelector('#listing-geojson').value);
-    console.log(listing_geojson)
     let coordinates = listing_geojson.features[0].geometry.coordinates;
     let icon_url = document.querySelector('#map-icon').value;
-    console.log(icon_url)
     // console.log(coordinates)
     // var mapboxClient = mapboxSdk({ accessToken: mapbox_access_token });
     // var request = mapboxClient.static
@@ -26,7 +24,7 @@ function listing_page(properties, owner) {
     //       coordinates: [lon, lat],
     //       zoom: 12
     //     },
-    
+
     // //     addlayer: addLayerStyle,
     // //   before_layer: 'road-label',
     //   });
@@ -47,7 +45,7 @@ function listing_page(properties, owner) {
 //         let review_text = document.querySelector('#review-text');
 //         review_stars.style.display = none;
 //         review_text.style.display = none;
-        
+
 //         // Create review form
 //         let review_form = document.createElement('form');
 //         review_form.className = "form-inline";

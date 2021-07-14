@@ -3,26 +3,39 @@
 {% load static %}
 
 {% block body %}
-    <div class="home-view">
-        <div class="title-search">
-            <div class="home-elements">
-                <h1 class="home-subtitle">Shopping Local Made Simple</h1>
-                <div class="search-form">
-                    <form class="form-inline home-form" method="GET" action="{% url 'search' %}">
-                        <div class="form-inline">
-                            <input class="form-control" id="listing-input" type="text" name="listing_type" placeholder="Service">
-                            <input class="form-control" id="location-input" type="text" name="location" placeholder="Location">
-                            <input class="btn btn-primary review-button" type="submit" value="Submit">
+<div class="home-view">
+    <div class="title-search">
+        <div class="home-elements">
+            <h1 class="home-subtitle">Shopping Local Made Simple</h1>
+            <div class="search-form">
+                <form class="form-inline home-form" method="GET" action="{% url 'search' %}">
+                    <div class="form-inline" id="home-search-form">
+                        <div class="form-group">
+                            <input class="form-control" id="listing-input" type="text" name="listing_type"
+                                placeholder="Service">
                         </div>
-                    </form>
-                </div>
-            </div>     
+                        <div class="form-group" id="location-div">
+                            <input class="form-control" id="location-input" type="text" name="location"
+                                placeholder="Location">
+                        </div>
+                        <input id="postcode" name="postcode" type="hidden" value="">
+                        <input id="place" name="place" type="hidden" value="">
+                        <input id="district" name="district" type="hidden" value="">
+                        <input id="region" name="region" type="hidden" value="">
+                        <input id="country" name="country" type="hidden" value="">
+
+                        <input class="btn btn-primary review-button" id="home-submit" type="submit" value="Submit">
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-        
+</div>
+
 
 {% endblock %}
 
 {% block script %}
+<script src="{% static 'servapp/states.js' %}"></script>
 <script src="{% static 'servapp/home.js' %}"></script>
 {% endblock %}

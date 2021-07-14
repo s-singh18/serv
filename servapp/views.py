@@ -1,4 +1,5 @@
-import json, re
+import json
+import re
 
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
@@ -14,7 +15,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core import serializers
-import urllib.request, json 
+import urllib.request
+import json
 from django.contrib.gis.geos import Point
 from django.contrib.gis.geos import Polygon
 from django.template import RequestContext
@@ -44,6 +46,7 @@ listing_validation = ListingValidation()
 review_validation = ReviewValidation()
 service_validation = ServiceValidation()
 
+
 def handler404(request, *args, **argv):
     return render(request, 'servapp/404.html', status=404)
 
@@ -51,10 +54,12 @@ def handler404(request, *args, **argv):
 def handler500(request, *args, **argv):
     return render(request, 'servapp/500.html', status=500)
 
+
 def home(request):
-        return render(request, "servapp/home.html", {
-                    'mapbox_access_token': MAPBOX_ACCESS_TOKEN,
-                    })
+    return render(request, "servapp/home.html", {
+        'mapbox_access_token': MAPBOX_ACCESS_TOKEN,
+    })
+
 
 def login_view(request):
     if request.method == "POST":
@@ -69,7 +74,7 @@ def login_view(request):
                 login(request, user)
                 if Listing.objects.filter(user=user).exists():
                     listing = Listing.objects.filter(user=user).first()
-                    id = listing.id 
+                    id = listing.id
                     title = listing.title
                 else:
                     id = None
@@ -83,15 +88,15 @@ def login_view(request):
         except ValueError as err:
             email = request.POST["email"]
             password = request.POST["password"]
-        
+
         user = authenticate(request, email=email, password=password)
-            
+
         # Check if authentication successful
         if user is not None:
             login(request, user)
             if Listing.objects.filter(user=user).exists():
                 listing = Listing.objects.filter(user=user).first()
-                id = listing.id 
+                id = listing.id
                 title = listing.title
             else:
                 id = None
@@ -104,7 +109,7 @@ def login_view(request):
                 "error": "Invalid email and/or password."
             })
     else:
-        return render(request, "servapp/login.html")
+        return render(request, "servapp/login.html", {'mapbox_access_token': MAPBOX_ACCESS_TOKEN})
 
 
 def logout_view(request):
@@ -122,15 +127,16 @@ def register(request):
             email = data.get("email", "")
             password = data.get("password", "")
             confirmation = data.get("confirmation")
-            
+
             if password != confirmation:
                 return JsonResponse({'error': "Passwords must match"}, status=400)
             try:
-                user = User.objects.create_user(username=username, email=email, password=password)
+                user = User.objects.create_user(
+                    username=username, email=email, password=password)
                 user.save()
             except IntegrityError:
                 return JsonResponse({'error': "Email already taken"}, status=400)
-            
+
             login(request, user)
             return JsonResponse({'message': "Account Registered!"}, status=200)
         except ValueError as err:
@@ -140,14 +146,16 @@ def register(request):
             # Ensure password matches confirmation
             password = request.POST["password"]
             confirmation = request.POST["confirmation"]
-            
+
             errors = []
-            errors = user_validation.check_registration(username, email, password, confirmation)
+            errors = user_validation.check_registration(
+                username, email, password, confirmation)
 
             if not errors:
                 # Attempt to create new user
                 try:
-                    user = User.objects.create_user(username=username, email=email, password=password)
+                    user = User.objects.create_user(
+                        username=username, email=email, password=password)
                     user.save()
                 except IntegrityError:
                     return render(request, "servapp/register.html", {
@@ -158,14 +166,14 @@ def register(request):
             else:
                 return render(request, "servapp/register.html", {'errors': errors})
     else:
-        return render(request, "servapp/register.html")
+        return render(request, "servapp/register.html", {'mapbox_access_token': MAPBOX_ACCESS_TOKEN})
 
 
 @login_required
 def profile(request):
     return render(request, "servapp/profile.html", {
-                    'mapbox_access_token': MAPBOX_ACCESS_TOKEN,
-                    })
+        'mapbox_access_token': MAPBOX_ACCESS_TOKEN,
+    })
 
 
 @csrf_exempt
@@ -174,42 +182,64 @@ def search(request):
     if request.method == "GET":
         listing_type = request.GET["listing_type"].strip().title()
         location = request.GET["location"].strip().title()
-        location_url = location.replace(" ", "%20")
+        postcode = request.GET["postcode"].strip().title()
+        place = request.GET["place"].strip().title()
+        district = request.GET["district"].strip().title()
+        region = request.GET["region"].strip().title()
+        country = request.GET["country"].strip().title()
+
         # if location and listing type field not filled
-        if location_url != "" and listing_type != "":
-            # (Old) Get data from Open Street Maps: "https://nominatim.openstreetmap.org/search.php?q=" + location_url + "&polygon_geojson=1&format=json"
-            # (New) Get geojson data from US Census
-            if re.match('\d{5}', location_url):
-                # Zip codes
-                api_url = "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/tigerWMS_Current/MapServer/2/query?where=&text=" + location_url + "&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&distance=&units=esriSRUnit_Foot&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&havingClause=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&returnExtentOnly=false&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&featureEncoding=esriDefault&f=geojson"
-            else:
-                # Incorporated places (city, town, village)
-                api_url = "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/tigerWMS_Current/MapServer/28/query?where=&text=" + location_url + "&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&distance=&units=esriSRUnit_Foot&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&havingClause=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&returnExtentOnly=false&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&featureEncoding=esriDefault&f=geojson"
+        if location != "" and listing_type != "":
+            if not place and not postcode:
+                # (Old) Get data from Open Street Maps: "https://nominatim.openstreetmap.org/search.php?q=" + location_url + "&polygon_geojson=1&format=json"
+                # (New) Get geojson data from US Census
+                location_url = location.replace(" ", "+")
+                if re.match('\d{5}', location_url):
+                    # Zip codes
+                    api_url = "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/tigerWMS_Current/MapServer/2/query?where=&text=" + location_url + \
+                        "&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&distance=&units=esriSRUnit_Foot&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&havingClause=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&returnExtentOnly=false&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&featureEncoding=esriDefault&f=geojson"
+                else:
+                    # Incorporated places (city, town, village)
+                    api_url = "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/tigerWMS_Current/MapServer/28/query?where=&text=" + location_url + \
+                        "&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&distance=&units=esriSRUnit_Foot&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&havingClause=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&returnExtentOnly=false&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&featureEncoding=esriDefault&f=geojson"
+            elif postcode:
+                api_url = "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/tigerWMS_Current/MapServer/2/query?where=&text=" + postcode + \
+                    "&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&distance=&units=esriSRUnit_Foot&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&havingClause=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&returnExtentOnly=false&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&featureEncoding=esriDefault&f=geojson"
+            elif postcode == "" and place and region:
+                city = place.replace(" ", "+")
+                api_url = "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/tigerWMS_Current/MapServer/28/query?where=" + "STATE=" + region + "+AND+BASENAME+LIKE+%27%25" + city + "%25%27" + \
+                    "&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&distance=&units=esriSRUnit_Foot&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&havingClause=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&returnExtentOnly=false&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&featureEncoding=esriDefault&f=geojson"
+            print(api_url)
             with urllib.request.urlopen(api_url) as url:
                 # Convert to JSON object
                 data = json.loads(url.read().decode())
                 # If there are multiple features returned, find the one with the largest land area(AREALAND)
-                if len(data['features']) > 1:
-                    max_area = 0
-                    max_index = 0
-                    for i, f in enumerate(data['features']):
-                        if f['properties']['AREALAND'] > max_area:
-                            max_area = f['properties']['AREALAND']
-                            max_index = i
-                    feature = data['features'][max_index]
-                elif len(data['features']) == 1:
-                    feature = data['features'][0]
-                else:
+                print(data)
+                if 'error' in data:
                     feature = None
-                
+                else:
+                    if len(data['features']) > 1:
+                        max_area = 0
+                        max_index = 0
+                        for i, f in enumerate(data['features']):
+                            if f['properties']['AREALAND'] > max_area:
+                                max_area = f['properties']['AREALAND']
+                                max_index = i
+                        feature = data['features'][max_index]
+                    elif len(data['features']) == 1:
+                        feature = data['features'][0]
+                    else:
+                        feature = None
+
                 if feature != None:
-                    center = json.dumps([float(feature['properties']['CENTLON']), float(feature['properties']['CENTLAT'])])
+                    center = json.dumps([float(feature['properties']['CENTLON']), float(
+                        feature['properties']['CENTLAT'])])
                     polygon_geojson = json.dumps(feature['geometry'])
-                    print(polygon_geojson)
                     # Convert JSON object to GEO Django object
                     polygon = GEOSGeometry(polygon_geojson)
                     # Query listings filtering results within searched location
-                    listing_list = Listing.objects.get_queryset().filter(listing_type__icontains=listing_type, location__within=polygon).order_by("-timestamp")
+                    listing_list = Listing.objects.get_queryset().filter(
+                        listing_type__icontains=listing_type, location__within=polygon).order_by("-timestamp")
                     # Paginate results
                     page = request.GET.get('page', 1)
                     paginator = Paginator(listing_list, 6)
@@ -221,7 +251,7 @@ def search(request):
                         listings = paginator.page(paginator.num_pages)
                     # Serialize listing results into geojson object
                     listings_geojson = serialize('geojson', listings,
-                        fields=('title', 'user', 'listing_type', 'location', 'address', 'description', 'rate', 'timestamp'))
+                                                 fields=('title', 'user', 'listing_type', 'location', 'address', 'description', 'rate', 'timestamp'))
                 else:
                     listings = ''
                     listings_geojson = ''
@@ -230,16 +260,17 @@ def search(request):
                     listing_type = listing_type
                     location = location
                 # Return objects to search.html
-                return render(request, "servapp/search.html", 
-                    {'listings': listings, 
-                    'listings_geojson': listings_geojson,
-                    'polygon_geojson': polygon_geojson,
-                    'center': center,
-                    'listing_type': listing_type, 'location': location, 
-                    'mapbox_access_token': MAPBOX_ACCESS_TOKEN},
-                    status=200) 
+                return render(request, "servapp/search.html",
+                              {'listings': listings,
+                               'listings_geojson': listings_geojson,
+                               'polygon_geojson': polygon_geojson,
+                               'center': center,
+                               'listing_type': listing_type, 'location': location,
+                               'mapbox_access_token': MAPBOX_ACCESS_TOKEN},
+                              status=200)
         else:
             return HttpResponseRedirect(reverse("home"))
+
 
 @csrf_exempt
 def listing(request, title, id):
@@ -247,9 +278,10 @@ def listing(request, title, id):
     try:
         listing = Listing.objects.get(id=id)
         data = get_geojson(id)
-        reviews = Review.objects.order_by('-timestamp').filter(listing=listing).all()
+        reviews = Review.objects.order_by(
+            '-timestamp').filter(listing=listing).all()
         services = Service.objects.filter(listing=listing).all()
-        # 
+        #
         if request.method == "POST":
             # Check if user is logged in
             if request.user.is_authenticated:
@@ -258,10 +290,13 @@ def listing(request, title, id):
                     header = data.get("header", "")
                     body = data.get("body", "")
                     user = User.objects.get(id=request.user.id)
-                    errors = review_validation.check_review(header, body, id, user.id)
+                    errors = review_validation.check_review(
+                        header, body, id, user.id)
                     if not errors:
-                        Review.objects.create(header=header, body=body, user=user, listing=listing)
-                        reviews = Review.objects.order_by('-timestamp').filter(listing=listing).all()
+                        Review.objects.create(
+                            header=header, body=body, user=user, listing=listing)
+                        reviews = Review.objects.order_by(
+                            '-timestamp').filter(listing=listing).all()
                         return JsonResponse({'message': "Review Created"}, status=200)
                     else:
                         return JsonResponse({'errors': errors}, status=400)
@@ -269,22 +304,25 @@ def listing(request, title, id):
                 except ValueError as err:
                     header = request.POST["header"]
                     body = request.POST["body"]
-                
+
                 user = User.objects.get(id=request.user.id)
                 # Check for errors
-                errors = review_validation.check_review(header, body, id, user.id)
+                errors = review_validation.check_review(
+                    header, body, id, user.id)
                 if not errors:
-                    Review.objects.create(header=header, body=body, user=user, listing=listing)
-                    reviews = Review.objects.order_by('-timestamp').filter(listing=listing).all()
+                    Review.objects.create(
+                        header=header, body=body, user=user, listing=listing)
+                    reviews = Review.objects.order_by(
+                        '-timestamp').filter(listing=listing).all()
                 render(request, "servapp/listing.html",
-                {'listing': listing, 'reviews': reviews,
-                'listing_geojson': data, 'errors': errors,
-                'services': services,
-                'mapbox_access_token': MAPBOX_ACCESS_TOKEN}, 
-                status=200)
+                       {'listing': listing, 'reviews': reviews,
+                        'listing_geojson': data, 'errors': errors,
+                        'services': services,
+                        'mapbox_access_token': MAPBOX_ACCESS_TOKEN},
+                       status=200)
             else:
                 return HttpResponseRedirect(reverse("login"))
-    
+
     except Listing.DoesNotExist:
         listing = None
         reviews = None
@@ -292,11 +330,12 @@ def listing(request, title, id):
         services = None
 
     return render(request, "servapp/listing.html",
-        {'listing': listing, 'reviews': reviews,
-        'listing_geojson': data, 'errors': errors,
-        'services': services,
-        'mapbox_access_token': MAPBOX_ACCESS_TOKEN}, 
-        status=200)
+                  {'listing': listing, 'reviews': reviews,
+                   'listing_geojson': data, 'errors': errors,
+                   'services': services,
+                   'mapbox_access_token': MAPBOX_ACCESS_TOKEN},
+                  status=200)
+
 
 @login_required
 def create_listing(request):
@@ -310,7 +349,7 @@ def create_listing(request):
             # Get contents of post
             listing_username = data.get("listing_username", "")
             listing_title = data.get("listing_title", "")
-            listing_type =  data.get("listing_type", "").title()
+            listing_type = data.get("listing_type", "").title()
             listing_address = data.get("listing_address", "")
             listing_location = data.get("listing_location", "")
             listing_description = data.get("listing_description", "")
@@ -326,13 +365,13 @@ def create_listing(request):
             listing_description = request.POST["listing_description"]
             listing_location = request.POST["listing_location"]
 
-        print("Listing location: " + listing_location)
         user_email = request.user.email
         user_id = request.user.id
         user = User.objects.get(id=user_id)
         if user.is_authenticated:
-            errors = listing_validation.check_create_listing(listing_title, listing_type, listing_address, listing_description, user_id)
-            
+            errors = listing_validation.check_create_listing(
+                listing_title, listing_type, listing_address, listing_description, user_id)
+
             if not errors:
                 if listing_location == "":
                     point = MAPBOX.geocode(listing_address)
@@ -346,32 +385,34 @@ def create_listing(request):
             if service_names and service_rates and service_times:
                 if (len(set(service_names)) != len(service_names)):
                     errors.append("More than one service with the same name")
-                
+
                 if len(service_names) != 1 or service_names[0] != "" or service_rates[0] != "" or service_times[0] != "":
-                    print("Check errors")
                     for i in range(0, len(service_names)):
                         name = service_names[i]
                         rate = service_rates[i]
                         time = service_times[i]
-                        
 
                         if (service_validation.check_create_service(name, rate, time)):
                             separator = ', '
-                            service_error = separator.join(service_validation.check_create_service(name, rate, time))
+                            service_error = separator.join(
+                                service_validation.check_create_service(name, rate, time))
                             num = i + 1
-                            error = "Service " + str(num) + ": " + service_error
+                            error = "Service " + \
+                                str(num) + ": " + service_error
                             errors.append(error)
 
             # No errors create service
             if not errors:
-                listing = Listing.objects.create(title=listing_title, user=user, listing_type=listing_type, location=geos_point, address=listing_address, description=listing_description)
+                listing = Listing.objects.create(title=listing_title, user=user, listing_type=listing_type,
+                                                 location=geos_point, address=listing_address, description=listing_description)
                 listing.save()
                 # Save listing title to session
-                request.session['listing_id'] = listing.id;
-                request.session['listing_title'] = listing.title;
+                request.session['listing_id'] = listing.id
+                request.session['listing_title'] = listing.title
                 if len(service_names) != 1 or service_names[0] != "" or service_rates[0] != "" or service_times[0] != "":
                     for i in range(0, len(service_names)):
-                        service = Service.objects.create(listing=listing, name=service_names[i], rate=service_rates[i], times=service_times[i])
+                        service = Service.objects.create(
+                            listing=listing, name=service_names[i], rate=service_rates[i], times=service_times[i])
                         service.save()
                 return JsonResponse({'message': "Listing" + listing_title + "Created!", "listing_id": listing.id, "listing_title": listing.title}, status=200)
 
@@ -380,11 +421,11 @@ def create_listing(request):
                     return JsonResponse({'errors': errors}, status=400)
                 else:
                     return render(request, "servapp/create_listing.html", {
-                            'mapbox_access_token': MAPBOX_ACCESS_TOKEN, 'errors': errors, 
-                            }, status=400)
+                        'mapbox_access_token': MAPBOX_ACCESS_TOKEN, 'errors': errors,
+                    }, status=400)
 
-            return HttpResponseRedirect(reverse('listing', args=[listing.title, listing.id]))                
-        else: 
+            return HttpResponseRedirect(reverse('listing', args=[listing.title, listing.id]))
+        else:
             return HttpResponseRedirect(reverse("login"))
 
     if request.session.get('listing_id', None) != None:
@@ -393,21 +434,20 @@ def create_listing(request):
         return HttpResponseRedirect(reverse('listing', args=[title, id], ))
 
     return render(request, "servapp/create_listing.html", {
-                    'mapbox_access_token': MAPBOX_ACCESS_TOKEN, 'errors': errors, 
-                    })
-    
+        'mapbox_access_token': MAPBOX_ACCESS_TOKEN, 'errors': errors,
+    })
+
 
 @login_required
 def edit_listing(request):
     user_email = request.user.email
     user = User.objects.get(id=request.user.id)
-    
+
     listing = Listing.objects.get(id=request.session.get('listing_id'))
     json_data = get_geojson(listing.id)
-    
+
     errors = []
     if request.method == "POST":
-        print("POST Request")
         names = None
         rates = None
         times = None
@@ -417,7 +457,7 @@ def edit_listing(request):
             username = data.get("username", "")
             listing_id = data.get("listing_id", "")
             title = data.get("title", "")
-            listing_type =  data.get("listing_type", "").title()
+            listing_type = data.get("listing_type", "").title()
             address = data.get("address", "")
             location = data.get("location", "")
             description = data.get("description", "")
@@ -427,9 +467,6 @@ def edit_listing(request):
             names = data.get("names", "")
             rates = data.get("rates", "")
             times = data.get("times", "")
-            print(names)
-            print(rates)
-            print(times)
         except ValueError as err:
             listing_id = request.POST["listing_id"]
             title = request.POST["title"]
@@ -440,8 +477,8 @@ def edit_listing(request):
             location = request.POST["location"]
 
         if user.is_authenticated:
-            errors = listing_validation.check_edit_listing(title, listing_type, address, description)
-            print(errors)
+            errors = listing_validation.check_edit_listing(
+                title, listing_type, address, description)
             # No errors exist with the listing
             if not errors:
                 if location == "":
@@ -458,7 +495,8 @@ def edit_listing(request):
                 if len(names) != 1 or names[0] != "" or rates[0] != "" or times[0] != "":
                     # Services must have different names
                     if (len(set(names)) != len(names)):
-                        errors.append("More than one service with the same name")
+                        errors.append(
+                            "More than one service with the same name")
 
                     for i in range(0, len(names)):
                         name = names[i]
@@ -466,11 +504,13 @@ def edit_listing(request):
                         time = times[i]
                         if (service_validation.check_edit_service(name, rate, time)):
                             separator = ', '
-                            service_error = separator.join(service_validation.check_edit_service(name, rate, time))
+                            service_error = separator.join(
+                                service_validation.check_edit_service(name, rate, time))
                             num = i + 1
-                            error = "Service " + str(num) + ": " + service_error
+                            error = "Service " + \
+                                str(num) + ": " + service_error
                             errors.append(error)
-                
+
             if not errors:
                 # Edit Listing
                 listing = Listing.objects.get(id=int(listing_id))
@@ -485,19 +525,20 @@ def edit_listing(request):
                 request.session['listing_id'] = listing.id
                 request.session['listing_title'] = listing.title
                 if names and rates and times:
-                    if len(names) != 1 or names[0] != "" or rates[0] != "" or times[0] != "":                        
+                    if len(names) != 1 or names[0] != "" or rates[0] != "" or times[0] != "":
                         # Edit Services
                         for i in range(0, len(names)):
                             if service_ids[i] != None:
-                                service = Service.objects.get(id=service_ids[i])
-                                print(service)
+                                service = Service.objects.get(
+                                    id=service_ids[i])
                                 service.name = names[i]
                                 service.rate = rates[i]
                                 service.times = times[i]
                                 service.save()
                                 original_ids.remove(service_ids[i])
                             else:
-                                service = Service.objects.create(listing=listing, name=names[i], rate=rates[i], times=times[i])
+                                service = Service.objects.create(
+                                    listing=listing, name=names[i], rate=rates[i], times=times[i])
                                 service.save()
                         # service_ids are the ids passed to edit-listing originally with new services having an id of None
                         # if an service is altered its id is removed from the original_ids list
@@ -512,11 +553,11 @@ def edit_listing(request):
                     return JsonResponse({'errors': errors}, status=400)
                 else:
                     return render(request, "servapp/edit_listing.html", {
-                            'mapbox_access_token': MAPBOX_ACCESS_TOKEN, 
-                            'listing': listing, 'listing_geojson': json_data,
-                            'errors': errors, 
-                            }, status=400)
-            
+                        'mapbox_access_token': MAPBOX_ACCESS_TOKEN,
+                        'listing': listing, 'listing_geojson': json_data,
+                        'errors': errors,
+                    }, status=400)
+
             # Redirect to listing
             return HttpResponseRedirect(reverse('listing', args=[listing.title, listing.id]))
         # Return HTTP Response with errors when no JavaScript present
@@ -524,10 +565,10 @@ def edit_listing(request):
             return HttpResponseRedirect(reverse('listing', args=[listing.title, listing.id]))
     else:
         return render(request, "servapp/edit_listing.html", {
-                        'mapbox_access_token': MAPBOX_ACCESS_TOKEN, 
-                        'listing': listing, 'listing_geojson': json_data,
-                        'errors': errors, 
-                        }, status=200)
+            'mapbox_access_token': MAPBOX_ACCESS_TOKEN,
+            'listing': listing, 'listing_geojson': json_data,
+            'errors': errors,
+        }, status=200)
 
 # @login_required
 # def edit_review(request):
@@ -548,51 +589,46 @@ def get_services(request, listing_title, username):
     user = User.objects.get(id=request.user.id)
     listing = Listing.objects.get(user=user, title=listing_title)
     services = Service.objects.filter(listing=listing)
-    data = serializers.serialize('json', list(services), fields=('name', 'rate', 'times'))
-    print(data)
+    data = serializers.serialize('json', list(
+        services), fields=('name', 'rate', 'times'))
     return JsonResponse(data=data,
-    status=200,
-    safe=False)
+                        status=200,
+                        safe=False)
+
 
 @csrf_exempt
 def get_appointments(request, listing_title, service_id, day, date, month, year):
     listing = Listing.objects.get(title=listing_title)
     service = Service.objects.get(id=service_id, listing=listing)
     appointment_date = datetime.date(int(year), int(month)+1, int(date))
-    print(appointment_date)
     # Get bookings for the requested date
-    bookings = Booking.objects.filter(appointment__date=appointment_date, listing=listing, service=service)
+    bookings = Booking.objects.filter(
+        appointment__date=appointment_date, listing=listing, service=service)
     week_times = service.times.split(';')
-    print(week_times)
     am, pm = week_times[int(day)].split('-')
     am_appointments = am.split(',')
-    print(am_appointments)
     pm_appointments = pm.split(',')
-    print(pm_appointments)
     # Check bookings to see if any of the appointments are booked, return all unbooked appointments
     for booking in bookings:
-        print(booking)
         time = booking.appointment.strftime("%I:%M")
         am_pm = booking.appointment.strftime("%p")
         # remove zero padding from hr: "06:00" becomes "6:00"
         if (time[0] == '0'):
-            time = time[1 : :]
+            time = time[1::]
         # Check if there is a matching am appointment
         if (am_pm == 'AM'):
             for am in am_appointments:
                 if time == am:
                     am_appointments.remove(am)
-            print(am_appointments)
         # Check if there is a matching pm appointment
         elif (am_pm == 'PM'):
             for pm in pm_appointments:
                 if time == pm:
                     pm_appointments.remove(pm)
-            print(pm_appointments)
-            
+
     return JsonResponse(data={'am_appointments': am_appointments, 'pm_appointments': pm_appointments},
-    status=200,
-    safe=False)
+                        status=200,
+                        safe=False)
 
 
 def create_booking(request):
@@ -615,27 +651,32 @@ def create_booking(request):
             listing = Listing.objects.get(id=listing_id)
             provider = User.objects.get(id=listing.user.id)
             service = Service.objects.get(id=service_id)
-            date_string = DAYS[day] + " " + time + " " + am_pm + " " + date + "/" + month + "/" + year
-            appointment = datetime.datetime.strptime(date_string, "%a %I:%M %p %d/%m/%Y")
-            
+            date_string = DAYS[day] + " " + time + " " + \
+                am_pm + " " + date + "/" + month + "/" + year
+            appointment = datetime.datetime.strptime(
+                date_string, "%a %I:%M %p %d/%m/%Y")
+
             # create booking
-            Booking.objects.create(listing=listing, service=service, appointment=appointment, client=client, provider=provider)
+            Booking.objects.create(listing=listing, service=service,
+                                   appointment=appointment, client=client, provider=provider)
             return JsonResponse({"message": "Post sent successfully."}, status=201)
         else:
             return JsonResponse({"error": "Log in to book an appointment."}, status=400)
-        
+
     except ValueError as err:
         return JsonResponse({"error": "ValueError raised."}, status=400)
+
 
 def get_day_bookings(request, name, day, date, month, year, client):
     user = User.objects.get(id=request.user.id)
     appointment_date = datetime.date(int(year), int(month)+1, int(date))
-    print(appointment_date)
     if client == "True":
-        bookings = Booking.objects.filter(client=user, appointment__date=appointment_date).all()
+        bookings = Booking.objects.filter(
+            client=user, appointment__date=appointment_date).all()
     elif client == "False":
-        bookings = Booking.objects.filter(provider=user, appointment__date=appointment_date).all()
-    
+        bookings = Booking.objects.filter(
+            provider=user, appointment__date=appointment_date).all()
+
     times = []
     am_pm = []
     listing_ids = []
@@ -645,9 +686,8 @@ def get_day_bookings(request, name, day, date, month, year, client):
     providers = []
     for booking in bookings:
         time = booking.appointment.strftime("%I:%M")
-        print(time)
         if (time[0] == "0"):
-            time = time[1 : :]
+            time = time[1::]
         times.append(time)
         am_pm.append(booking.appointment.strftime("%p"))
         listing_ids.append(booking.listing.id)
@@ -657,7 +697,8 @@ def get_day_bookings(request, name, day, date, month, year, client):
         providers.append(booking.provider.username)
 
     return JsonResponse({"times": times, "am_pm": am_pm, "listing_ids": listing_ids, "listing_titles": listing_titles, "services": services, "clients": clients, "providers": providers}, status=200)
-    
+
+
 def get_review(request, listing_id):
     user = User.objects.get(id=request.user.id)
     listing = Listing.objects.get(id=listing_id)
@@ -669,7 +710,7 @@ def get_review(request, listing_id):
 
 def get_geojson(listing_id):
     listing = Listing.objects.get(id=listing_id)
-    data = serializers.serialize('geojson', [listing,])
+    data = serializers.serialize('geojson', [listing, ])
     struct = json.loads(data)
     json_data = json.dumps(struct)
     return json_data

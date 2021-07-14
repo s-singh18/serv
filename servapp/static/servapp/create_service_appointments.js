@@ -17,17 +17,17 @@ document.addEventListener("DOMContentLoaded", function () {
     activeIndex = 0;
     showTabPanelView();
     submitListing();
-    
+
 });
 
 class ListingError extends Error {
     constructor(message, errors) {
-      super(message, errors); // (1)
-      this.errors = errors;
-      this.name = "ListingError"; // (2)
+        super(message, errors); // (1)
+        this.errors = errors;
+        this.name = "ListingError"; // (2)
     }
-  }
-  
+}
+
 
 function getCookie(name) {
     let cookieValue = null;
@@ -56,7 +56,7 @@ function showTabPanelView() {
     // Add service tab and next tab to tab nav bar
     let nav_item = document.createElement('li');
     nav_item.className = "nav-item";
-    
+
     // Create link for service
     let nav_link = document.createElement('div');
     nav_link.id = "tab-".concat(current_count);
@@ -70,7 +70,7 @@ function showTabPanelView() {
         nav_link.className = "nav-link service-tab";
         nav_link.setAttribute("aria-selected", "false");
     }
-    
+
     // For innerText
     let nav_text = document.createElement("span");
     nav_text.innerText = "Service";
@@ -131,7 +131,7 @@ function showTabPanelView() {
     service_rate.placeholder = "Rate";
     service_rate.type = "number";
     name_rate_row.appendChild(service_rate);
-    
+
     let time_row = document.createElement("div");
     time_row.className = "row service-row time-row";
     service_form.appendChild(time_row);
@@ -165,7 +165,7 @@ function showTabPanelView() {
     let minutes = document.createElement("select");
     minutes.className = "minutes";
     time_row.appendChild(minutes);
-    for (let i=0; i < 4; i++) {
+    for (let i = 0; i < 4; i++) {
         let minute = document.createElement("option");
         if (i == 0) {
             minute.value = 00;
@@ -219,7 +219,7 @@ function showTabPanelView() {
     let appointment_am = document.createElement('div');
     appointment_am.className = "appointment-div";
     appointment_am.id = "appointment-am";
-    
+
     let right_div = document.createElement('div');
     right_div.className = "col right-div";
 
@@ -240,7 +240,7 @@ function showTabPanelView() {
     left_div.appendChild(left_p);
     left_div.appendChild(appointment_am);
     appointments.appendChild(right_div);
-    right_div.appendChild(right_p); 
+    right_div.appendChild(right_p);
     right_div.appendChild(appointment_pm);
 
     // Create labels and checkboxes for labels and days of the week
@@ -313,7 +313,7 @@ function showTabPanelView() {
                                 if (other_day_pm_appts[k] != pm_appts[k]) {
                                     pm_flag = 1;
                                 }
-                            }  
+                            }
                         } else {
                             am_flag = 1;
                             pm_flag = 1;
@@ -324,16 +324,16 @@ function showTabPanelView() {
                             if (checkedDays[activeIndex].includes(days[i]) == false) {
                                 service_form.childNodes[2].childNodes[i].firstElementChild.checked = true;
                                 checkedDays[activeIndex].push(days[i]);
-                            }  
+                            }
                         } else {
                             if (checkedDays[activeIndex].includes(days[i])) {
                                 service_form.childNodes[2].childNodes[i].firstElementChild.checked = false;
                                 checkedDays[activeIndex] = checkedDays[activeIndex].filter(item => item != days[i]);
-                            }       
+                            }
                         }
                     }
                 }
-            //  Remove from checked days list if unchecked
+                //  Remove from checked days list if unchecked
             } else if (check.checked == false) {
                 checkedDays[activeIndex] = checkedDays[activeIndex].filter(item => item != check.id);
                 if (checkedDays[activeIndex].length == 0) {
@@ -364,7 +364,7 @@ function showTabPanelView() {
                     });
                 });
             }
-                
+
             if (pm_appts.length > 0) {
                 pm_appts.forEach(appt => {
                     let button = document.createElement('input');
@@ -383,8 +383,7 @@ function showTabPanelView() {
                         appointment_pm.removeChild(button);
                     });
                 });
-            } 
-            console.log(checkedDays)
+            }
         });
 
         day_index++;
@@ -401,13 +400,13 @@ function showTabPanelView() {
             minutes_value = String(minutes_value);
         }
         let ampm_value = am_pm.value;
-        
+
         let button = document.createElement('input');
         button.type = "button";
         button.className = "btn btn-primary btn-sm appointment-button";
         let button_value = String(hours_value).concat(":", minutes_value);
         button.value = button_value;
-        
+
         // Check if there are any checked days
         if (checkedDays[activeIndex].length > 0) {
             if (ampm_value == "AM") {
@@ -436,10 +435,10 @@ function showTabPanelView() {
                     }
 
                     if (times.length > 1) {
-                        times.sort((a,b)=>a-b);
+                        times.sort((a, b) => a - b);
                     }
                     if (times_12.length > 1) {
-                        times_12.sort((a,b)=>a-b);
+                        times_12.sort((a, b) => a - b);
                     }
 
                     let appt_times = times_12.concat(times);
@@ -448,12 +447,12 @@ function showTabPanelView() {
                     for (let i = 0; i < appt_times.length; i++) {
                         t = String(appt_times[i]);
                         if (t.length == 4) {
-                            am_times.push(t.slice(0, 2) + ":" + t.slice(2, 4)); 
+                            am_times.push(t.slice(0, 2) + ":" + t.slice(2, 4));
                         } else if (t.length == 3) {
-                            am_times.push(t.slice(0, 1) + ":" + t.slice(1, 3)); 
+                            am_times.push(t.slice(0, 1) + ":" + t.slice(1, 3));
                         }
                     }
-                    
+
                     am_times.forEach(am_time => {
                         let button = document.createElement('input');
                         button.type = "button";
@@ -472,16 +471,14 @@ function showTabPanelView() {
                         });
                     });
 
-                    console.log(am_times)
-
                     // add time to the other checked days
                     checkedDays[activeIndex].forEach(day => {
                         // if (amDicts[activeIndex][day].includes(button_value) == false) {
                         amDicts[activeIndex][day] = am_times;
                         // }      
                     });
-                } 
-                
+                }
+
             } else if (ampm_value == "PM") {
                 // doesn't already have time
                 if (pmDicts[activeIndex][checkedDays[activeIndex][0]].includes(button_value) == false) {
@@ -509,10 +506,10 @@ function showTabPanelView() {
                     }
 
                     if (times.length > 1) {
-                        times.sort((a,b)=>a-b);
+                        times.sort((a, b) => a - b);
                     }
                     if (times_12.length > 1) {
-                        times_12.sort((a,b)=>a-b);
+                        times_12.sort((a, b) => a - b);
                     }
                     let appt_times = times_12.concat(times);
                     // Convert back to String
@@ -520,12 +517,12 @@ function showTabPanelView() {
                     for (let i = 0; i < appt_times.length; i++) {
                         t = String(appt_times[i]);
                         if (t.length == 4) {
-                            pm_times.push(t.slice(0, 2) + ":" + t.slice(2, 4)); 
+                            pm_times.push(t.slice(0, 2) + ":" + t.slice(2, 4));
                         } else if (t.length == 3) {
-                            pm_times.push(t.slice(0, 1) + ":" + t.slice(1, 3)); 
+                            pm_times.push(t.slice(0, 1) + ":" + t.slice(1, 3));
                         }
                     }
-                    
+
                     pm_times.forEach(pm_time => {
                         let button = document.createElement('input');
                         button.type = "button";
@@ -543,21 +540,15 @@ function showTabPanelView() {
                             appointment_pm.removeChild(button);
                         });
                     });
-                
-
-                    console.log(pm_times);
                     // add time to the other checked days
                     checkedDays[activeIndex].forEach(day => {
                         // if (pmDicts[activeIndex][day].includes(button_value) == false) {
                         pmDicts[activeIndex][day] = pm_times;
                         // }
                     });
-                } 
+                }
             }
         }
-        console.log(checkedDays)
-        console.log(amDicts[activeIndex][checkedDays[activeIndex][0]]);
-        console.log(pmDicts[activeIndex][checkedDays[activeIndex][0]]);
     });
     // End of service appointment form
 
@@ -576,7 +567,7 @@ function showTabPanelView() {
     activeTab = nav_link;
     activePanel = tab_pane;
     let service_tabs = document.getElementsByClassName('service-tab');
-    
+
     // Click on a tab
     nav_item.addEventListener('click', (event) => {
         event.stopPropagation();
@@ -590,11 +581,11 @@ function showTabPanelView() {
                 activeTab.classList.remove("active");
                 activeTab.setAttribute("aria-selected", "false");
                 activePanel.classList.remove("active");
-    
+
                 new_tab.classList.add("active");
                 new_tab.setAttribute("aria-selected", "true");
                 new_panel.classList.add("active");
-    
+
                 activeTab = new_tab;
                 activePanel = new_panel;
                 // Find active index by looping through the tabs
@@ -625,21 +616,21 @@ function showTabPanelView() {
                             }
                         }
                     });
-    
+
                     am_appts = amDicts[activeIndex][current_days[0]];
                     pm_appts = pmDicts[activeIndex][current_days[0]];
                 } else {
                     am_appts = [];
                     pm_appts = [];
                 }
-    
+
                 let appt_row = activePanel.firstChild.childNodes[6];
                 let am_container = appt_row.firstElementChild.lastElementChild;
                 let pm_container = appt_row.lastElementChild.lastElementChild;
-    
+
                 am_container.innerHTML = '';
                 pm_container.innerHTML = '';
-    
+
                 // Get am and pm appointments
                 if (am_appts.length > 0) {
                     am_appts.forEach(appt => {
@@ -660,8 +651,8 @@ function showTabPanelView() {
                             am_container.removeChild(button);
                         });
                     });
-                }   
-    
+                }
+
                 if (pm_appts.length > 0) {
                     pm_appts.forEach(appt => {
                         let button = document.createElement("input");
@@ -681,9 +672,9 @@ function showTabPanelView() {
                             pm_container.removeChild(button);
                         });
                     });
-                } 
+                }
             }
-        }     
+        }
     });
 
     // Allow max 6 services
@@ -738,9 +729,9 @@ function showTabPanelView() {
             if (tabs.length > 0) {
                 if (index == tabs.length) {
                     index--;
-                    
+
                 }
-                
+
                 activeTab.classList.remove("active");
                 activeTab.setAttribute("aria-selected", "false");
                 activePanel.classList.remove("active");
@@ -759,10 +750,9 @@ function showTabPanelView() {
             if (index < activeIndex) {
                 activeIndex--;
             }
-            
+
         }
-        console.log(activeIndex);
-             
+
         if (tabs.length == 5) {
             let create_tab = document.createElement('li');
             let create_tab_link = document.createElement('div');
@@ -780,9 +770,9 @@ function showTabPanelView() {
                 tabNav.removeChild(create_tab);
                 showTabPanelView();
             });
-        } 
+        }
 
-        
+
     });
     nav_link.appendChild(close_button);
 
@@ -817,33 +807,30 @@ function submitListing() {
                 for (let j = 0; j < 7; j++) {
                     if (amDicts[i][days[j]] != undefined) {
                         am_times = amDicts[i][days[j]].join();
-                        // console.log(am_times)
-                        
+
                     }
                     if (pmDicts[i][days[j]] != undefined) {
                         pm_times = pmDicts[i][days[j]].join();
-                        // console.log(pm_times)
                     }
                     current_times = current_times + am_times + "-" + pm_times;
-                    
+
                     if (j != 6) {
                         current_times = current_times + ";";
                     }
-                    console.log(current_times);
                 }
                 if (current_times == "-;-;-;-;-;-;-") {
                     current_times = "";
                 }
                 service_times.push(current_times);
             }
-            
+
         } else {
             // No services
             service_names = [''];
             service_rates = [''];
             service_times = [''];
         }
-        
+
 
 
         let listing_username = document.getElementById('listing-username').value;
@@ -856,7 +843,7 @@ function submitListing() {
         // Send POST request
         const request = new Request(
             '/create-listing',
-            {headers: {'X-CSRFToken': csrftoken}}
+            { headers: { 'X-CSRFToken': csrftoken } }
         );
 
         fetch(request, {
@@ -874,31 +861,30 @@ function submitListing() {
                 service_times: service_times,
             }),
         })
-        .then(response => response.json())
-        .then(result => {
-            if (result.message) {
-                // Good input
-                let url = window.location.origin + "/listing/" + result.listing_title + "/" + result.listing_id;
-                console.log(url);
-                document.location.href = url;
-            } 
-            
-            if (result.errors) {
-                let error_messages = result.errors;
-                let error_container = document.getElementById('errors');
-                error_container.innerHTML = ``;
-                let err = document.createElement('p');
-                err.className = "error";
-                err.innerText = "Errors";
-                error_container.appendChild(err);
-                error_messages.forEach(message => {
-                    let li = document.createElement('li');
-                    li.className = "error";
-                    li.innerText = message;
-                    error_container.appendChild(li)
-                });
-            } 
-        });    
+            .then(response => response.json())
+            .then(result => {
+                if (result.message) {
+                    // Good input
+                    let url = window.location.origin + "/listing/" + result.listing_title + "/" + result.listing_id;
+                    document.location.href = url;
+                }
+
+                if (result.errors) {
+                    let error_messages = result.errors;
+                    let error_container = document.getElementById('errors');
+                    error_container.innerHTML = ``;
+                    let err = document.createElement('p');
+                    err.className = "error";
+                    err.innerText = "Errors";
+                    error_container.appendChild(err);
+                    error_messages.forEach(message => {
+                        let li = document.createElement('li');
+                        li.className = "error";
+                        li.innerText = message;
+                        error_container.appendChild(li)
+                    });
+                }
+            });
     });
 }
 
