@@ -5,9 +5,10 @@
 {% block body %}
 <div class="home-view">
     <div class="title-search">
+        <img id="home-image" src="{% static 'servapp/painted_ladies.png' %}">
         <div class="home-elements">
-            <h1 class="home-subtitle">Shopping Local Made Simple</h1>
             <div class="search-form">
+                <h1 class="home-subtitle">Shopping Local Made Simple</h1>
                 <form class="form-inline home-form" method="GET" action="{% url 'search' %}">
                     <div class="form-inline" id="home-search-form">
                         <div class="form-group">
