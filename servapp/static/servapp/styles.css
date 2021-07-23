@@ -43,14 +43,35 @@ input.btn.btn-primary {
 }
 
 .home-view {
+  display: flex;
+  /* text-align: center; */
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+}
+
+.title-search {
+  background-image: url('painted_ladies.png');
+  background-size: cover;
+  /* position: absolute; */
   text-align: center;
+  justify-content: center;
+  /* margin: auto; */
+  display: flex;
+  width: 75%;
+  height: 75%;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  
 }
 
 #home-image {
   /* position: absolute; */
   /* margin: auto; */
   /* background-size: cover; */
-  display: block;
+  /* display: block; */
   /* aspect-ratio: auto; */
   width: 100%;
   height: 100%;
@@ -59,25 +80,16 @@ input.btn.btn-primary {
   z-index: -1;
 }
 
-.title-search {
-  background-size: cover;
-  position: absolute;
-  margin: auto;
-  display: block;
-  width: 75%;
-  height: 75%;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  text-align: center;
-}
+
 
 .home-elements {
-  position: absolute;
+  /* position: absolute; */
   margin: auto;
-  display: block;
-  width: 60%;
+  /* display: block; */
+  /* align-items: center;  */
+  text-align: center;
+  justify-content: center;
+  width: 100%;
   height: 36%;
   top: 0;
   bottom: 0;
@@ -101,6 +113,7 @@ input.btn.btn-primary {
 }
 
 .home-form {
+  width: 100%;
   align-items: center;
   justify-content: center;
 }
@@ -150,8 +163,9 @@ svg.mapboxgl-ctrl-geocoder--icon.mapboxgl-ctrl-geocoder--icon-search {
 }
 
 .search-form {
-  display: block;
+  /* display: block; */
   margin: auto;
+  width: 100%;
 }
 
 .geocoder-input {
@@ -176,6 +190,10 @@ svg.mapboxgl-ctrl-geocoder--icon.mapboxgl-ctrl-geocoder--icon-search {
 .no-border:active:hover:focus {
   border: 0;
   box-shadow: none;
+}
+
+.dropdown-menu-item {
+  font-size: 0.9rem;
 }
 
 div#geocoder-nav.geocoder-nav {
@@ -350,6 +368,26 @@ footer {
   margin-bottom: 6px;
   /* height: 24px; */
   position: relative;
+}
+
+#listing-suggestions {
+  width: 100%;
+  word-wrap: break-word;
+}
+
+.dropdown-menu {
+  padding: 0;
+  top: calc(100% + 6px);
+}
+
+.dropdown-item {
+  word-wrap: break-word;
+  font-size: 13px;
+}
+
+.dropdown-link {
+  word-wrap: break-word;
+  overflow: clipped;
 }
 
 .description-view {
@@ -921,6 +959,12 @@ footer {
   display: inline-block;
   width: 50px;
 }
+
+.mapboxgl-ctrl-geocoder.suggestions {
+  font-size: 0.9rem;
+}
+
+
 
 .form-inline {
   display: flex;

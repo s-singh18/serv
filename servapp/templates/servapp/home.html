@@ -5,32 +5,35 @@
 {% block body %}
 <div class="home-view">
     <div class="title-search">
-        <img id="home-image" src="{% static 'servapp/painted_ladies.png' %}">
+        <!-- <img id="home-image" src="{% static 'servapp/painted_ladies.png' %}"> -->
         <div class="home-elements">
             <div class="search-form">
                 <h1 class="home-subtitle">Shopping Local Made Simple</h1>
                 <form class="form-inline home-form" method="GET" action="{% url 'search' %}">
-                    <div class="form-inline" id="home-search-form">
-                        <div class="form-group">
-                            <input class="form-control" id="listing-input" type="text" name="listing_type"
-                                placeholder="Service">
-                        </div>
-                        <div class="form-group" id="location-div">
-                            <input class="form-control" id="location-input" type="text" name="location"
-                                placeholder="Location">
-                        </div>
-                        <input id="postcode" name="postcode" type="hidden" value="">
-                        <input id="place" name="place" type="hidden" value="">
-                        <input id="district" name="district" type="hidden" value="">
-                        <input id="region" name="region" type="hidden" value="">
-                        <input id="country" name="country" type="hidden" value="">
+                    <div class="form-group input-group" id="listing-div">
+                        <input class="form-control dropdown-toggle" id="listing-input" type="text" name="listing_type"
+                            placeholder="Service" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 
-                        <input class="btn btn-primary review-button" id="home-submit" type="submit" value="Submit">
+                        <ul class="dropdown-menu" aria-labelledby="listing-input" id="listing-suggestions">
+                        </ul>
                     </div>
-                </form>
+
+                    <div class="form-group" id="location-div">
+                        <input class="form-control" id="location-input" type="text" name="location"
+                            placeholder="Location">
+                    </div>
+                    <input id="postcode" name="postcode" type="hidden" value="">
+                    <input id="place" name="place" type="hidden" value="">
+                    <input id="district" name="district" type="hidden" value="">
+                    <input id="region" name="region" type="hidden" value="">
+                    <input id="country" name="country" type="hidden" value="">
+
+                    <input class="btn btn-primary review-button" id="home-submit" type="submit" value="Submit">
             </div>
+            </form>
         </div>
     </div>
+</div>
 </div>
 
 
@@ -38,5 +41,7 @@
 
 {% block script %}
 <script src="{% static 'servapp/states.js' %}"></script>
+<script src="{% static 'servapp/services.js' %}"></script>
+<script src="{% static 'servapp/services_list.js' %}"></script>
 <script src="{% static 'servapp/home.js' %}"></script>
 {% endblock %}

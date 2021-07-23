@@ -88,9 +88,9 @@ DATABASES = {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'serv',
         'USER': 'sss30',
-	'PASSWORD': os.environ.get("DJANGO_DB_PASSWORD", None),
-	'HOST': 'localhost',
-	'PORT': '',
+        'PASSWORD': os.environ.get("DJANGO_DB_PASSWORD", None),
+        'HOST': 'localhost',
+        'PORT': '',
     }
 }
 
@@ -100,7 +100,7 @@ REST_FRAMEWORK = {
     # or allow read-only access for unauthenticated users.
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',
-   ],
+    ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 6
 

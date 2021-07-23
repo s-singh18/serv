@@ -1,6 +1,5 @@
 var accessToken = document.querySelector('#mapbox-access-token').value;
 mapboxgl.accessToken = accessToken;
-
 const geocoder = new MapboxGeocoder({
     accessToken: mapboxgl.accessToken,
     marker: false,
@@ -16,8 +15,14 @@ const geocoder = new MapboxGeocoder({
     }
 });
 
+var listingDiv = document.getElementById("listing-div");
+var listingInput = document.getElementById("listing-input");
+var listingSuggestions = document.getElementById("listing-suggestions");
+
+
 document.addEventListener("DOMContentLoaded", function () {
     setGeocoder();
+    setListingSearch();
 
 });
 
@@ -65,6 +70,93 @@ function setGeocoder() {
         }
         document.getElementById("home-submit").focus();
 
+    });
+
+}
+
+function* filter(array, condition, maxSize) {
+    if (!maxSize || maxSize > array.length) {
+        maxSize = array.length;
+    }
+    let count = 0;
+    let i = 0;
+    while (count < maxSize && i < array.length) {
+        if (condition(array[i])) {
+            yield array[i];
+            count++;
+        }
+        i++;
+    }
+}
+
+function setListingSearch() {
+    listingSuggestions.classList.remove("show");
+    listingInput.addEventListener("keyup", (e) => {
+        console.log(e);
+        let results = [];
+        let input = listingInput.value;
+        // console.log(input)
+        if (input.length) {
+            let count = 0;
+            results = Array.from(filter(SERVICES_LIST, item => item.toLowerCase().includes(input.toLowerCase()), 5));
+            listingSuggestions.classList.add("show");
+            console.log(results);
+            renderResults(results, input);
+        } else {
+            listingSuggestions.classList.remove("show");
+            listingInput.setAttribute("aria-expanded", "false");
+        }
+        if (e.key == "Escape") {
+            listingSuggestions.classList.remove("show");
+            listingInput.setAttribute("aria-expanded", "false");
+        }
+    });
+
+    listingInput.addEventListener("click", () => {
+        if (listingInput.value.length == 0) {
+            console.log("No show");
+            listingSuggestions.classList.remove("show");
+            listingInput.setAttribute("aria-expanded", "false");
+        }
+    });
+}
+
+
+
+const array = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+console.log(Array.from(filter(array, i => i % 2 === 0, 2))); // expect 2 & 4
+
+
+function renderResults(results, input) {
+    listingSuggestions.innerHTML = ``;
+    if (input.length == 0) {
+        listingSuggestions.classList.remove("show");
+        listingInput.setAttribute("aria-expanded") = "false";
+    }
+    if (results.length == 0) {
+        return listingSuggestions.innerHTML = `<li class="dropdown-item"><a>No results found for query <b>"${input}"</b></a></li>`;
+    }
+    let content = results.map((item) => {
+        let li = document.createElement("li");
+        li.className = "dropdown-item";
+        li.innerHTML = `<a class="dropdown-link">${item}</a>`;
+        return li;
+    });
+    console.log(content);
+    let count = 0;
+    content.forEach((item) => {
+        // if (count == 0) {
+        //     item.classList.add("active");
+        //     count += 1;
+        // }
+
+        item.addEventListener('click', (e) => {
+            console.log(e)
+            listingInput.value = e.toElement.innerText;
+            listingSuggestions.classList.remove("show");
+        });
+        listingSuggestions.appendChild(item);
     });
 
 }
