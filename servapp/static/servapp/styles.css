@@ -116,6 +116,9 @@ input.btn.btn-primary {
   width: 100%;
   align-items: center;
   justify-content: center;
+  display: flex;
+  flex-direction: row;
+  padding: 0 15%;
 }
 
 
@@ -370,24 +373,26 @@ footer {
   position: relative;
 }
 
-#listing-suggestions {
-  width: 100%;
-  word-wrap: break-word;
-}
-
 .dropdown-menu {
   padding: 0;
-  top: calc(100% + 6px);
+  display: block;
+  width: 100%;
+  word-wrap: break-word;
+  cursor: pointer;
+  /* top: calc(100% + 6px); */
 }
 
 .dropdown-item {
+  overflow-wrap: break-word;
   word-wrap: break-word;
   font-size: 13px;
+  overflow: hidden;
 }
 
 .dropdown-link {
   word-wrap: break-word;
-  overflow: clipped;
+  
+  
 }
 
 .description-view {

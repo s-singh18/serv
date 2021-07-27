@@ -33,6 +33,7 @@ ALLOWED_HOSTS = ['resrvice.com', '143.110.234.55', 'localhost']
 MAPBOX_ACCESS_TOKEN = os.environ.get("MAPBOX_ACCESS_TOKEN", None)
 
 # Application definition
+# Live Reload: https://github.com/tjwalch/django-livereload-server
 
 INSTALLED_APPS = [
     'servapp',
