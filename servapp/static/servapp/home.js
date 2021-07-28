@@ -1,19 +1,4 @@
 var accessToken = document.querySelector('#mapbox-access-token').value;
-mapboxgl.accessToken = accessToken;
-const geocoder = new MapboxGeocoder({
-    accessToken: mapboxgl.accessToken,
-    marker: false,
-    mapboxgl: mapboxgl,
-    flyTo: false,
-    countries: 'us',
-    types: "place, postcode",
-    placeholder: "Location",
-    render: function (item) {
-        let place_name = item.place_name.replace(', United States', '');
-        return `${place_name}
-        `;
-    }
-});
 
 var listingDiv = document.getElementById("listing-div");
 var listingInput = document.getElementById("listing-input");
@@ -43,7 +28,9 @@ function setListingSearch() {
         if (listingInput.value.length) {
             let count = 0;
             listingSuggestions.style.display = "block";
-            results = Array.from(filter(SERVICES_LIST, item => item.toLowerCase().includes(listingInput.value.toLowerCase()), 5));
+            // item => item.toLowerCase().includes(listingInput.value.toLowerCase())
+            let services_list_copy = SERVICES_LIST.slice();
+            results = Array.from(filter(services_list_copy, item => item.substring(0, listingInput.value.length).toLowerCase().includes(listingInput.value.toLowerCase()), item => item.toLowerCase().includes(listingInput.value.toLowerCase()), 5));
             console.log(results);
             renderResults(results, listingInput, listingSuggestions);
         } else {
@@ -68,8 +55,8 @@ function setListingSearch() {
     // Click outside of input form
     document.addEventListener('click', (event) => {
         let withinBoundaries = event.composedPath().includes(listingDiv);
-        console.log(event.composedPath());
         if (!withinBoundaries) {
+            console.log(event.composedPath());
             // Click happened **OUTSIDE** element
             listingSuggestions.style.display = "none";
         }
@@ -164,19 +151,30 @@ function setGeocoder() {
     });
 }
 
-function* filter(array, condition, maxSize) {
+function* filter(array, condition1, condition2, maxSize) {
     if (!maxSize || maxSize > array.length) {
         maxSize = array.length;
     }
     let count = 0;
     let i = 0;
+    console.log(array[i]);
     while (count < maxSize && i < array.length) {
-        if (condition(array[i])) {
+        if (condition1(array[i])) {
             yield array[i];
+            // delete array[i]
             count++;
         }
         i++;
     }
+
+    // i = 0;
+    // while (count < maxSize && i < array.length) {
+    //     if (condition2(array[i])) {
+    //         yield array[i];
+    //         count++;
+    //     }
+    //     i++;
+    // }
 }
 
 
