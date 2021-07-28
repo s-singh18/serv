@@ -42,7 +42,7 @@ function search() {
 
     let titles = document.getElementsByClassName("card-title");
     var counter = 0;
-    if (listings_geojson.features.length > 0) {
+    if (listings_geojson.features) {
         listings_geojson.features.forEach(listing => {
             // make a marker for each feature and add to the map
             let popup_div = document.createElement('div');

@@ -25,14 +25,87 @@ var locationSuggestions = document.getElementById("location-suggestions");
 
 
 document.addEventListener("DOMContentLoaded", function () {
-    setGeocoder();
     setListingSearch();
-
+    setGeocoder();
+    // setInput(listingDiv, listingInput, listingSuggestions);
+    // setInput(locationDiv, locationInput, locationSuggestions)
 });
 
 
+
+
+
+function setListingSearch() {
+    listingInput.addEventListener("keyup", (e) => {
+        console.log(e);
+        let results = [];
+        // console.log(input)
+        if (listingInput.value.length) {
+            let count = 0;
+            listingSuggestions.style.display = "block";
+            results = Array.from(filter(SERVICES_LIST, item => item.toLowerCase().includes(listingInput.value.toLowerCase()), 5));
+            console.log(results);
+            renderResults(results, listingInput, listingSuggestions);
+        } else {
+            listingSuggestions.innerHTML = ``;
+        }
+
+        // Hide suggestions if escape key is pressed
+        if (e.key == "Escape") {
+            if (listingSuggestions.style.display == "none") {
+                listingSuggestions.style.display = "block";
+            } else {
+                listingSuggestions.style.display = "none";
+            }
+        }
+    });
+
+    // Click on input form
+    listingInput.addEventListener("click", () => {
+        listingSuggestions.style.display = "block";
+    });
+
+    // Click outside of input form
+    document.addEventListener('click', (event) => {
+        let withinBoundaries = event.composedPath().includes(listingDiv);
+        console.log(event.composedPath());
+        if (!withinBoundaries) {
+            // Click happened **OUTSIDE** element
+            listingSuggestions.style.display = "none";
+        }
+    });
+}
+
+function renderResults(results, input, suggestions_container) {
+    suggestions_container.innerHTML = ``;
+
+    if (results.length == 0) {
+        return suggestions_container.innerHTML = `<li class="dropdown-item" role="option"><a class="dropdown-link">No results found for query <b>"${input.value}"</b></a></li>`;
+    }
+    let content = results.map((item) => {
+        return createListElement(item);
+    });
+    console.log(content);
+    let count = 0;
+    content.forEach((item) => {
+        suggestions_container.appendChild(item);
+        item.addEventListener('click', (e) => {
+            // console.log(e)
+            input.value = e.toElement.innerText;
+            suggestions_container.style.display = "none";
+            focusInput(suggestions_container);
+        });
+        item.addEventListener('keypress', (e) => {
+            if (e.key == "Enter") {
+                input.value = e.toElement.innerText;
+                suggestions_container.style.display = "none";
+                focusInput(suggestions_container);
+            }
+        });
+    });
+}
+
 function setGeocoder() {
-    let suggestions = ``;
     locationInput.addEventListener("keyup", (e) => {
         let place = locationInput.value;
         if (place.length > 0) {
@@ -41,52 +114,55 @@ function setGeocoder() {
                 .then(response => response.json())
                 .then((data) => {
                     let features = data.features;
+                    locationSuggestions.innerHTML = ``;
+                    locationSuggestions.style.display = "block";
                     if (features.length > 0) {
-                        locationSuggestions.innerHTML = ``;
                         features.forEach((feature) => {
                             let place_name = feature.place_name.replace(", United States", "");
                             let li = createListElement(place_name);
                             li.addEventListener("click", (e) => {
                                 locationInput.value = e.toElement.innerText;
-                                locationSuggestions.classList.remove("show");
-                                locationInput.setAttribute("aria-expanded", "false");
-                                suggestions = locationSuggestions.innerHTML;
-                                locationSuggestions.innerHTML = ``;
+                                locationSuggestions.style.display = "none";
+                                focusInput(locationSuggestions);
+                            });
+                            li.addEventListener('keypress', (e) => {
+                                if (e.key == "Enter") {
+                                    locationInput.value = e.toElement.innerText;
+                                    locationSuggestions.style.display = "none";
+                                    focusInput(locationSuggestions);
+                                }
                             });
                             locationSuggestions.appendChild(li);
                         });
+                    } else {
+                        locationSuggestions.innerHTML = `<li class="dropdown-item" role="option"><a class="dropdown-link">No results found for query <b>"${input.value}"</b></a></li>`;
                     }
                 });
+        } else {
+            locationSuggestions.innerHTML = ``;
         }
-
 
         if (e.key == "Escape") {
-            locationSuggestions.classList.remove("show");
-            locationInput.setAttribute("aria-expanded", "false");
+            locationSuggestions.style.display = "none";
         }
 
     });
 
-    let listing_div = document.getElementById('listing-div');
+    // Click on input form
+    locationInput.addEventListener("click", () => {
+        locationSuggestions.style.display = "block";
+    });
+
 
     document.addEventListener('click', (event) => {
-        let withinBoundaries = event.composedPath().includes(listing_div)
+        let withinBoundaries = event.composedPath().includes(locationDiv)
 
-        if (withinBoundaries) {
-            // Click happened inside element
-            locationSuggestions.classList.add("show");
-            locationInput.setAttribute("aria-expanded", "true");
-        } else {
+        if (!withinBoundaries) {
             // Click happened **OUTSIDE** element
-            locationSuggestions.classList.remove("show");
-            locationInput.setAttribute("aria-expanded", "false");
+            locationSuggestions.style.display = "none";
         }
     });
-
-
 }
-
-
 
 function* filter(array, condition, maxSize) {
     if (!maxSize || maxSize > array.length) {
@@ -103,122 +179,21 @@ function* filter(array, condition, maxSize) {
     }
 }
 
-function setListingSearch() {
-    listingDiv.classList.remove("show");
-    listingInput.addEventListener("keyup", (e) => {
-        console.log(e);
-        let results = [];
-        let input = listingInput.value;
-        // console.log(input)
-        if (input.length) {
-            let count = 0;
-            results = Array.from(filter(SERVICES_LIST, item => item.toLowerCase().includes(input.toLowerCase()), 5));
-            listingDiv.classList.add("show");
-            console.log(results);
-            renderResults(results, input);
-        } else {
-            listingDiv.classList.remove("show");
-            listingInput.setAttribute("aria-expanded", "false");
-        }
-        if (e.key == "Escape") {
-            listingDiv.classList.remove("show");
-            listingInput.setAttribute("aria-expanded", "false");
-        }
-    });
 
-    listingInput.addEventListener("click", () => {
-        if (listingInput.value.length == 0) {
-            console.log("No show");
-            listingDiv.classList.remove("show");
-            listingInput.setAttribute("aria-expanded", "false");
-        }
-    });
-}
-
-
-
-const array = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-
-console.log(Array.from(filter(array, i => i % 2 === 0, 2))); // expect 2 & 4
-
-
-function renderResults(results, input) {
-    listingSuggestions.innerHTML = ``;
-    if (input.length == 0) {
-        listingDiv.classList.remove("show");
-        listingInput.setAttribute("aria-expanded") = "false";
-    }
-    if (results.length == 0) {
-        return listingSuggestions.innerHTML = `<li class="dropdown-item"><a class="dropdown-link">No results found for query <b>"${input}"</b></a></li>`;
-    }
-    let content = results.map((item) => {
-        return createListElement(item);
-    });
-    console.log(content);
-    let count = 0;
-    content.forEach((item) => {
-        item.addEventListener('click', (e) => {
-            console.log(e)
-            listingInput.value = e.toElement.innerText;
-            listingDiv.classList.remove("show");
-        });
-        listingSuggestions.appendChild(item);
-    });
-
-}
 
 function createListElement(item) {
     let a = document.createElement("a");
     a.className = "dropdown-item";
     a.innerText = item;
+    a.href = "javascript:";
+    a.setAttribute("role", "option")
     return a;
 }
 
-
-// function setGeocoder() {
-//     // Replace existing form element with geocoder
-//     document.getElementById('location-input').remove();
-
-//     geocoder.addTo('#location-div');
-//     let geocoder_element = document.querySelector('.mapboxgl-ctrl-geocoder--input');
-//     geocoder_element.id = "location-input";
-//     geocoder_element.name = "location";
-//     geocoder_element.placeholder = "Location"
-//     geocoder_element.className = "form-control";
-//     geocoder_element.setAttribute("tabIndex", "0");
-//     geocoder_element.style.width = '100%';
-//     let geocoder_div = document.querySelector(".mapboxgl-ctrl-geocoder.mapboxgl-ctrl");
-//     // geocoder_div.classList.add('form-group');
-//     geocoder_div.style.minWidth = "0px";
-//     geocoder_div.style.width = "100%";
-//     // geocoder_div.style.maxWidth = "3600px";
-//     geocoder_div.style.margin = "0px";
-
-//     geocoder.on('result', (result) => {
-//         let item = result.result;
-//         console.log(item);
-//         let place_name = item.place_name.replace(", United States", "");
-//         geocoder.setInput(place_name);
-//         if (item.place_type[0] == "postcode") {
-//             document.getElementById("postcode").value = item.text;
-//             document.getElementById("place").value = item.context[0].text;
-//             document.getElementById("district").value = item.context[1].text;
-//             document.getElementById("region").value = STATES[item.context[2].text];
-//             document.getElementById("country").value = item.context[3].text;
-
-//         } else {
-//             document.getElementById("place").value = item.text;
-//             if (item.context.length > 2) {
-//                 document.getElementById("district").value = item.context[0].text;
-//                 document.getElementById("region").value = STATES[item.context[1].text];
-//                 document.getElementById("country").value = item.context[2].text;
-//             } else {
-//                 document.getElementById("region").value = STATES[item.context[0].text];
-//                 document.getElementById("country").value = item.context[1].text;
-//             }
-//         }
-//         document.getElementById("home-submit").focus();
-
-//     });
-
-// }
+function focusInput(suggestions_container) {
+    if (suggestions_container == listingSuggestions) {
+        locationInput.focus()
+    } else if (suggestions_container == locationSuggestions) {
+        document.getElementById("home-submit").focus();
+    }
+}
