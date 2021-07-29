@@ -121,6 +121,12 @@ input.btn.btn-primary {
   padding: 0 15%;
 }
 
+.nav-form {
+  padding: 0 0;
+  margin-top: auto;
+  margin-bottom: auto;
+  align-items: center;
+}
 
 
 .title {
@@ -155,6 +161,15 @@ a.title {
 .navbar-brand {
   color: white;
   outline: none;
+}
+
+.nav-containter {
+  align-items: center;
+  justify-content: center;
+}
+
+.navbar-nav {
+  text-align: center;
 }
 
 a.nav-link {
@@ -379,10 +394,13 @@ footer {
   width: 100%;
   word-wrap: break-word;
   cursor: pointer;
+  text-align: center;
   /* top: calc(100% + 6px); */
 }
 
 .dropdown-item {
+  white-space: initial;
+  /* word-break: break-word; */
   overflow-wrap: break-word;
   word-wrap: break-word;
   font-size: 13px;
@@ -947,6 +965,14 @@ footer {
   cursor: pointer;
 }
 
+.nav-search {
+  display: flex;
+  align-items: center;
+}
+
+.nav-input {
+  margin: 0;
+}
 .geocoder {
   position: absolute;
   z-index: 1;

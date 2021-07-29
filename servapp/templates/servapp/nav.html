@@ -8,36 +8,37 @@
     <!-- <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button> -->
-    <div class="collapse navbar-collapse" id="navbarNav">
+    <div class="collapse navbar-collapse nav-container" id="navbarNav">
         <ul class="navbar-nav mx-auto">
-            <li class="nav-item active">
-                <div id="geocoder-nav" class="geocoder-nav">
-                    <form class="form-inline" method="GET" action="{% url 'search' %}">
-                        <div class="form-group">
-                            <input class="form-control" id="listing-input" type="text" name="listing_type"
-                                placeholder="Service">
+            <li class="nav-item active nav-search">
+                <form class="home-form nav-form" method="GET" action="{% url 'search' %}">
+                    <div class="form-group input-group dropdown nav-input">
+                        <input class="form-control dropdown-toggle" id="listing-input" type="text" name="listing_type"
+                            placeholder="Service" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <div class="dropdown-menu" id="listing-suggestions" role="menu">
                         </div>
-                        <div class="form-group" id="location-div">
-                            <input class="form-control" id="location-input" type="text" name="location"
-                                placeholder="Location">
+                    </div>
+                    <div class="form-group input-group dropdown nav-input" id="location-div">
+                        <input class="form-control dropdown-toggle" id="location-input" type="text" name="location"
+                            placeholder="Location" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <div class="dropdown-menu" id="location-suggestions" role="menu">
                         </div>
-                        <input class="form-control" type="hidden" name="username" id="username"
-                            value="{{ user.username }}">
-                        <input id="postcode" name="postcode" type="hidden" value="">
-                        <input id="place" name="place" type="hidden" value="">
-                        <input id="district" name="district" type="hidden" value="">
-                        <input id="region" name="region" type="hidden" value="">
-                        <input id="country" name="country" type="hidden" value="">
-
-                        <input class="btn btn-primary nav-submit" id="home-submit" type="submit" value="Submit">
-                    </form>
-                </div>
+                    </div>
+                    <input id="postcode" name="postcode" type="hidden" value="">
+                    <input id="place" name="place" type="hidden" value="">
+                    <input id="district" name="district" type="hidden" value="">
+                    <input id="region" name="region" type="hidden" value="">
+                    <input id="country" name="country" type="hidden" value="">
+                    <div class="form-group nav-input">
+                        <input class="btn btn-primary nav-submit " id="home-submit" type="submit" value="Submit">
+                    </div>
+                </form>
             </li>
         </ul>
         <div>
             <ul class="navbar-nav me-auto>
                 {% if user.is_authenticated %}
-                    <li class=" nav-item">
+                <li class=" nav-item">
                 <a class="nav-link" href="{% url 'profile' %}">{{ user.username }}</a>
                 </li>
                 <li class="nav-item">
@@ -69,7 +70,9 @@
 </nav>
 
 <script src="{% static 'servapp/states.js' %}"></script>
-<script src="{% static 'servapp/nav.js' %}"></script>
+<script src="{% static 'servapp/services_list.js' %}"></script>
+<script src="{% static 'servapp/home.js' %}"></script>
+<!-- <script src="{% static 'servapp/nav.js' %}"></script> -->
 {% block body %}
 {% endblock %}
 
