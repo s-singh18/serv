@@ -454,7 +454,7 @@ def edit_listing(request):
         try:
             data = json.loads(request.body)
             # Get contents of post
-            username = data.get("username", "")
+            id = data.get("id", "")
             listing_id = data.get("listing_id", "")
             title = data.get("title", "")
             listing_type = data.get("listing_type", "").title()

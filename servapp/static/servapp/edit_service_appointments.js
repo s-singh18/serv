@@ -56,8 +56,8 @@ var tabNav = document.getElementById('tab-nav')
 var paneContent = document.getElementById('pane-content');
 
 function loadServices() {
-    let username = document.getElementById('username').value;
-    fetch(`/get-services/${originalListingTitle}/${username}`)
+    let id = document.getElementById('id').value;
+    fetch(`/get-services/${originalListingTitle}/${id}`)
         .then(response => response.json())
         .then(result => {
             let service_name;
@@ -1625,7 +1625,6 @@ function submitListing() {
             ids.push(parseInt(service_ids.item(i).value));
         }
 
-        let listing_username = document.getElementById('username').value;
         let listing_id = document.getElementById('listing-id').value;
         let listing_title = document.getElementById('title').value;
         let listing_type = document.getElementById('listing-type').value;
@@ -1642,7 +1641,7 @@ function submitListing() {
             method: 'POST',
             mode: 'same-origin',
             body: JSON.stringify({
-                username: listing_username,
+                id: id,
                 listing_id: listing_id,
                 title: listing_title,
                 listing_type: listing_type,
