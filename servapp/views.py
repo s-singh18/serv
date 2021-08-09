@@ -349,7 +349,7 @@ def create_listing(request):
             # Get contents of post
             listing_username = data.get("listing_username", "")
             listing_title = data.get("listing_title", "")
-            listing_type = data.get("listing_type", "").title()
+            listing_type = data.get("listing_type", "")
             listing_address = data.get("listing_address", "")
             listing_location = data.get("listing_location", "")
             listing_description = data.get("listing_description", "")
@@ -360,7 +360,7 @@ def create_listing(request):
         except ValueError as err:
             listing_title = request.POST["listing_title"]
             listing_username = request.POST["listing_username"]
-            listing_type = request.POST["listing_type"].title()
+            listing_type = request.POST["category"].title()
             listing_address = request.POST["listing_address"]
             listing_description = request.POST["listing_description"]
             listing_location = request.POST["listing_location"]

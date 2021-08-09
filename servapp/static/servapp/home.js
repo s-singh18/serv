@@ -4,6 +4,7 @@ var listingDiv = document.getElementById("listing-div");
 var listingInput = document.getElementById("listing-input");
 var listingSuggestions = document.getElementById("listing-suggestions");
 
+var prevLocation = "";
 var locationDiv = document.getElementById("location-div");
 var locationInput = document.getElementById("location-input");
 var locationSuggestions = document.getElementById("location-suggestions");
@@ -21,6 +22,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 function setListingSearch() {
+    listingSuggestions.style.display = "none";
     listingInput.addEventListener("keyup", (e) => {
         console.log(e);
         let results = [];
@@ -93,9 +95,11 @@ function renderResults(results, input, suggestions_container) {
 }
 
 function setGeocoder() {
+    locationSuggestions.style.display = "none";
     locationInput.addEventListener("keyup", (e) => {
         let place = locationInput.value;
-        if (place.length > 0) {
+        if (place.length > 0 && prevLocation != place) {
+            prevLocation = place;
             let place_url = place.replace(" ", "%20");
             fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${place_url}.json?access_token=${accessToken}&country=us&language=en&types=place,postcode`)
                 .then(response => response.json())
@@ -128,18 +132,14 @@ function setGeocoder() {
         } else {
             locationSuggestions.innerHTML = ``;
         }
-
         if (e.key == "Escape") {
             locationSuggestions.style.display = "none";
         }
-
     });
-
     // Click on input form
     locationInput.addEventListener("click", () => {
         locationSuggestions.style.display = "block";
     });
-
 
     document.addEventListener('click', (event) => {
         let withinBoundaries = event.composedPath().includes(locationDiv)

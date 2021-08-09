@@ -798,20 +798,6 @@ footer {
   background-color: white;
 }
 
-/* .body-button {
-    color: white;
-    background-color: #430281;
-}
-
-.body-button:hover {
-    background-color: white; 
-    color: grey;
-}
-
-.body-button:focus {
-    background-color: white; 
-    color: grey;
-} */
 
 #week-calendar {
   border-color: black;
@@ -924,6 +910,11 @@ footer {
   justify-content: flex-end;
   text-align: right;
 }
+
+#map-view {
+  margin-top: 9rem;
+}
+
 .map-view {
   /* display: inline-block; */
   /* position: relative; */
@@ -995,7 +986,25 @@ footer {
   font-size: 0.9rem;
 }
 
+/* Related to categories */
+.indent-input {
+  margin-left: 3%;
+  margin-bottom: 1rem;
+  width: 97%
+}
+.category-link {
+  padding-left: 3%;
+  margin-bottom: auto;
+}
 
+.category-item {
+  padding-left: 3%;
+  margin-bottom: auto;
+}
+
+.remove-item {
+  float: right;
+}
 
 .form-inline {
   display: flex;
@@ -1066,19 +1075,3 @@ input[type="checkbox"]:checked:after {
   background-color: #430281;
 }
 
-/* Style the input fields */
-/* .form-inline input {
-    vertical-align: middle;
-    margin: 5px 10px 5px 0;
-    padding: 10px;
-    background-color: #fff;
-    border: 1px solid #ddd;
-  }
-  
-  /* Style the submit button */
-/* .form-inline button {
-    padding: 10px 20px;
-    background-color: dodgerblue;
-    border: 1px solid #ddd;
-    color: white;
-  } */

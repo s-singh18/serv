@@ -833,29 +833,36 @@ function submitListing() {
 
 
 
-        let listing_username = document.getElementById('listing-username').value;
-        let listing_title = document.getElementById('listing-title').value;
-        let listing_type = document.getElementById('listing-type').value;
-        let listing_address = document.getElementById('listing-address').value;
-        let listing_location = document.getElementById('listing-location').value;
-        let listing_description = document.getElementById('listing-description').value;
-
+        let listing_username = document.getElementById('listing-username');
+        let listing_title = document.getElementById('listing-title');
+        let listing_type = document.getElementById('listing-type');
+        let listing_address = document.getElementById('listing-address');
+        let listing_location = document.getElementById('listing-location');
+        let listing_description = document.getElementById('listing-description');
+        let listing_categories = categories.join(", ");
         // Send POST request
         const request = new Request(
             '/create-listing',
             { headers: { 'X-CSRFToken': csrftoken } }
         );
 
+        // Validations
+        let errors = getListingFormErrors(listing_username, listing_title, listing_categories, listing_address, listing_location, listing_description);
+        if (errors.length > 0) {
+            displayFormErrors(errors);
+            return;
+        }
+
         fetch(request, {
             method: 'POST',
             mode: 'same-origin',
             body: JSON.stringify({
-                listing_username: listing_username,
-                listing_title: listing_title,
-                listing_type: listing_type,
-                listing_address: listing_address,
-                listing_location: listing_location,
-                listing_description: listing_description,
+                listing_username: listing_username.value,
+                listing_title: listing_title.value,
+                listing_type: listing_categories,
+                listing_address: listing_address.value,
+                listing_location: listing_location.value,
+                listing_description: listing_description.value,
                 service_names: service_names,
                 service_rates: service_rates,
                 service_times: service_times,
@@ -886,5 +893,51 @@ function submitListing() {
                 }
             });
     });
+}
+
+// Validations
+function displayFormErrors(errors) {
+    let error_container = document.getElementById("errors");
+    error_container.innerHTML = ``;
+    errors.forEach((error) => {
+        let li = document.createElement("li");
+        li.className = "error";
+        li.innerText = error;
+        error_container.appendChild(li);
+    });
+    let br = document.createElement("br");
+    error_container.appendChild(br);
+}
+
+function getListingFormErrors(listing_username, listing_title, listing_categories, listing_address, listing_location, listing_description) {
+    let errors = [];
+    // Check title
+    if (getListingValidations(listing_username.value, "username")) {
+        errors.push(getListingValidations(listing_username.value, "username"))
+    }
+    if (getListingValidations(listing_title.value, "title")) {
+        errors.push(getListingValidations(listing_title.value, "title"));
+    }
+    if (getListingValidations(listing_categories, "categories", 1000)) {
+        errors.push(getListingValidations(listing_categories, "categories"));
+    }
+    if (getListingValidations(listing_address.value, "address", 1000)) {
+        errors.push(getListingValidations(listing_address.value, "address"));
+    }
+    // Skipping location
+    if (getListingValidations(listing_description.value, "description", "3000")) {
+        errors.push(getListingValidations(listing_description.value, "description", "6000"));
+    }
+    return errors;
+}
+
+function getListingValidations(value, s, len = 114) {
+    let error = null;
+    if (value == "") {
+        error = "No " + s + " given";
+    } else if (value.length > len || !/\S/.test(value)) {
+        error = "Invalid " + s;
+    }
+    return error
 }
 

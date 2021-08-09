@@ -9,38 +9,49 @@
     <h2>Create Listing</h2>
     <div id="errors">
         {% if errors %}
-            <p>Errors:</p>
-            {% for error in errors %}
-                <li class="error">{{ error }}</li>
-            {% empty %}
-            {% endfor %}
-            <br>
+        <p>Errors:</p>
+        {% for error in errors %}
+        <li class="error">{{ error }}</li>
+        {% empty %}
+        {% endfor %}
+        <br>
         {% endif %}
     </div>
-    
+
 
     <form id="listing-form" name="listing_form" action="{% url 'create_listing' %}" method="post">
         {% csrf_token %}
-        <input class="form-control" type="hidden" id="listing-username" name="listing_username" value="{{ user.username }}">
-    
+        <input class="form-control" type="hidden" id="listing-username" name="listing_username"
+            value="{{ user.username }}">
+
         <div class="form-group">
-            <input autofocus class="form-control" type="text" id="listing-title" name="listing_title" placeholder="Title">
+            <input autofocus class="form-control" type="text" id="listing-title" name="listing_title"
+                placeholder="Title">
         </div>
-        
-        <div class="form-group">
-            <input class="form-control" type="text" id="listing-type" name="listing_type" placeholder="Type">
+
+
+        <div class="form-group" id="category-div">
+            <label for="category">Categories:</label>
+            <div class="dropdown indent-input" id="category-dropdown">
+                <input class="form-control dropdown-toggle" id="category" type="text" name="category"
+                    placeholder="Category" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <div class="dropdown-menu" id="category-suggestions" role="menu">
+                </div>
+            </div>
         </div>
-        <div class="form-group" id="geocoder-address" >
-            <input class="form-control" type="text" id="listing-address" name="listing_address" placeholder="Address" >
+
+        <div class="form-group dropdown" id="address-div">
+            <input class="form-control dropdown-toggle" id="listing-address" type="text" name="listing_address"
+                placeholder="Address" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <div class="dropdown-menu" id="address-suggestions" role="menu">
+            </div>
         </div>
         <input class="form-control" id="listing-location" name="listing_location" type="hidden" value="">
         <br>
         <div class="form-group">
-            <textarea class="form-control" id="listing-description" name="listing_description" placeholder="Description"></textarea>
+            <textarea class="form-control" id="listing-description" name="listing_description"
+                placeholder="Description"></textarea>
         </div>
-        <!-- <div class="form-group">
-            <input class="form-control" type="number" name="rate" placeholder="Rate">
-        </div> -->
 
         <div class="form-group" id="services-view">
             <div class="card">
@@ -55,7 +66,7 @@
             </div>
         </div>
 
-        <input class="btn btn-primary modal-button" type="submit" id="submit-button" value="Submit" >
+        <input class="btn btn-primary modal-button" type="submit" id="submit-button" value="Submit">
     </form>
 </div>
 
@@ -69,8 +80,6 @@
 
 
 {% block script %}
-    <script src="{% static 'servapp/create_listing.js' %}"></script>
-    <script src="{% static 'servapp/create_service_appointments.js' %}"></script>
-    <!-- Promise polyfill script required to use Mapbox GL Geocoder in IE 11 -->
-    
+<script src="{% static 'servapp/create_listing.js' %}"></script>
+<script src="{% static 'servapp/create_service_appointments.js' %}"></script>
 {% endblock %}
