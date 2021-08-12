@@ -933,7 +933,7 @@ function getListingFormErrors(listing_username, listing_title, listing_categorie
 
 function getListingValidations(value, s, len = 114) {
     let error = null;
-    if (value == "") {
+    if (value == "" || value == undefined || value == null) {
         error = "No " + s + " given";
     } else if (value.length > len || !/\S/.test(value)) {
         error = "Invalid " + s;

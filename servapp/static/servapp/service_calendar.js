@@ -570,9 +570,9 @@ function setServiceSelectedDates(serviceDay, serviceDate, serviceMonth, serviceY
 
 
 function loadServiceBookings() {
-    let client_name = document.getElementById("username").value;
+    let client_id = document.getElementById("id").value;
     let client = "False";
-    fetch(`/get_day_bookings/${client_name}/${serviceSelectedDay}/${serviceSelectedDate}/${serviceSelectedMonth}/${serviceSelectedYear}/${client}`)
+    fetch(`/get_day_bookings/${client_id}/${serviceSelectedDay}/${serviceSelectedDate}/${serviceSelectedMonth}/${serviceSelectedYear}/${client}`)
         .then(response => response.json())
         .then(result => {
             let times = result.times;

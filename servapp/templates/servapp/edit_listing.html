@@ -9,27 +9,30 @@
     <h2 class="title">Edit Listing</h2>
     <div id="errors">
         {% if errors %}
-            <p>Errors:</p>
-            {% for error in errors %}
-                <li class="error">{{ error }}</li>
-            {% empty %}
-            {% endfor %}
-            <br>
+        <p>Errors:</p>
+        {% for error in errors %}
+        <li class="error">{{ error }}</li>
+        {% empty %}
+        {% endfor %}
+        <br>
         {% endif %}
     </div>
-    <br>
     <form id="listing-form" action="{% url 'edit_listing' %}" method="POST">
         {% csrf_token %}
         <input class="form-control" type="hidden" name="listing_id" id="listing-id" value="{{ listing.id }}">
         <div class="form-group">
             <input autofocus class="form-control" type="text" name="title" id="title" value="{{ listing.title }}">
         </div>
-        
-        <div class="form-group">
-            <input class="form-control" type="text" id="listing-type" name="listing_type" value="{{ listing.listing_type }}">
+
+        <div class="form-group" id="category-div">
+            <input class="form-control" type="text" id="listing-type" name="listing_type"
+                value="{{ listing.listing_type }}">
         </div>
-        <div class="form-group" id="geocoder-address" >
-            <input class="form-control" type="text" name="address" id="address" value="{{ listing.address }}">
+        <div class="form-group dropdown" id="address-div">
+            <input class="form-control dropdown-toggle" type="text" name="address" id="address"
+                value="{{ listing.address }}" placeholder="Address" data-toggle="dropdown" aria-haspopup="true"
+                aria-expanded="false">
+            <div class="dropdown-menu" id="address-suggestions" role="menu"></div>
         </div>
         <br>
         <div class="form-group">
@@ -64,9 +67,9 @@
 
 
 {% block script %}
-    <script src="{% static 'servapp/edit_listing.js' %}"></script>
-    <!-- <script src="{% static 'servapp/edit_service_skeleton.js' %}"></script> -->
-    <script src="{% static 'servapp/edit_service_appointments.js' %}"></script>
-    <!-- Promise polyfill script required to use Mapbox GL Geocoder in IE 11 -->
-    
+<script src="{% static 'servapp/edit_listing.js' %}"></script>
+<!-- <script src="{% static 'servapp/edit_service_skeleton.js' %}"></script> -->
+<script src="{% static 'servapp/edit_service_appointments.js' %}"></script>
+<!-- Promise polyfill script required to use Mapbox GL Geocoder in IE 11 -->
+
 {% endblock %}

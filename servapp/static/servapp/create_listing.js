@@ -96,7 +96,6 @@ function renderResults(results, input, suggestions, div, dropdown) {
     content.forEach((item) => {
         suggestions.appendChild(item);
         item.addEventListener('click', (e) => {
-            // console.log(e)
             addElement(e, input, suggestions, div, "category", categories, dropdown)
         });
         item.addEventListener('keypress', (e) => {
@@ -105,132 +104,6 @@ function renderResults(results, input, suggestions, div, dropdown) {
             }
         });
     });
-}
-
-function addElement(e, input, suggestions, div, type, values, dropdown) {
-    dropdown.remove()
-    let category_text = e.toElement.innerText;
-    let p = document.createElement("p");
-    p.className = type + "-item";
-    p.innerText = category_text;
-    div.appendChild(p);
-    values.push(category_text);
-    let remove = document.createElement("a");
-    remove.className = "remove-item";
-    remove.href = "javascript:;";
-    remove.innerText = "Remove";
-    p.appendChild(remove);
-    let len = document.querySelectorAll('.' + type + '-item').length;
-    if (len < CATEGORY_AMOUNT) {
-        addElementLink(div, type);
-    }
-
-    remove.addEventListener("click", (e) => {
-        console.log("Remove category");
-        p.remove();
-        let index = values.lastIndexOf(category_text);
-        if (index !== -1) {
-            values.splice(index, 1);
-        }
-        if (document.querySelector('.' + type + '-item') == null) {
-            let new_input = createInput(type);
-            let new_suggestions = createSuggestions(type);
-            let new_dropdown = document.createElement("div");
-            new_dropdown.className = "dropdown indent-input";
-            document.querySelector('.' + type + '-link').remove();
-            new_dropdown.appendChild(new_input);
-            new_dropdown.appendChild(new_suggestions);
-            div.appendChild(new_dropdown);
-            setCategories(new_input, new_suggestions, div, new_dropdown);
-        } else if (document.querySelector('.' + type + '-link') == null) {
-            console.log("Add element link");
-            // document.querySelector('.' + type + 'link').remove();
-            addElementLink(div, type);
-        }
-    });
-}
-
-function addElementLink(div, type) {
-    console.log("Add another category");
-    let a = document.createElement('a');
-    a.href = "javascript:;";
-    a.className = type + "-link";
-    a.innerText = "Add another " + type;
-    div.appendChild(a);
-    a.addEventListener('click', () => {
-        let input = createInput(type);
-        let sug = createSuggestions(type)
-
-        let dropdown = document.createElement("div");
-        dropdown.className = "dropdown indent-input";
-        div.removeChild(a);
-        div.appendChild(dropdown);
-        dropdown.appendChild(input);
-        dropdown.appendChild(sug);
-        setCategories(input, sug, div, dropdown);
-    });
-}
-
-function createListElement(item) {
-    let a = document.createElement("a");
-    a.className = "dropdown-item";
-    a.innerText = item;
-    a.href = "javascript:";
-    a.setAttribute("role", "option")
-    return a;
-}
-
-function createInput(type) {
-    let input = document.createElement('input');
-    input.className = "form-control input-group dropdown-toggle";
-    input.id = type;
-    input.type = "text";
-    input.name = type;
-    input.placeholder = type.charAt(0).toUpperCase() + type.substr(1).toLowerCase();
-    input.setAttribute("data-toggle", "dropdown");
-    input.setAttribute("aria-haspopup", "true");
-    input.setAttribute("aria-expanded", "false");
-    return input
-}
-
-function createSuggestions(type) {
-    let sug = document.createElement("div");
-    sug.className = "dropdown-menu";
-    sug.id = type + "-suggestions";
-    sug.setAttribute("role", "menu");
-    return sug;
-}
-
-function* filter(array, condition1, condition2, maxSize) {
-    if (!maxSize || maxSize > array.length) {
-        maxSize = array.length;
-    }
-    let count = 0;
-    let i = 0;
-    console.log(array[i]);
-    let categories = [];
-    document.querySelectorAll('.category-item').forEach((category) => {
-        categories.push(category);
-    });
-
-    while (count < maxSize && i < array.length) {
-        let category = array[i];
-        if (condition1(category) && !categories.includes(category)) {
-            yield category;
-            // delete array[i]
-            count++;
-        }
-        i++;
-    }
-
-    // i = 0;
-    // while (count < maxSize && i < array.length) {
-    //     if (condition2(array[i])) {
-    //         yield array[i];
-    //         count++;
-    //     }
-    //     i++;
-    // }
 }
 
 function setAddresses(input, suggestions, div) {
@@ -330,59 +203,6 @@ function loadMap() {
                     // document.querySelector('#mapbox-address').value = "";
                     document.getElementById('listing-location').value = "";
                 }
-            });
-    });
-}
-
-function geocodeAddress() {
-    geocoder_address.addTo('#geocoder-address');
-    let geocoder_div = document.getElementById('geocoder-address').children[1];
-    geocoder_div.style.width = "100%";
-    geocoder_div.style.maxWidth = "3600px";
-    geocoder_div.style.marginRight = "0px";
-    let geocoder_input = geocoder_div.children[1];
-    document.querySelector('#listing-address').remove();
-    geocoder_input.id = "listing-address";
-    geocoder_input.name = "listing-address";
-    geocoder_input.className = "form-control";
-
-
-    // search_form.addEventListener("submit", (event) => {
-    geocoder_address.on('result', (search_data) => {
-        // fetch(` https://nominatim.openstreetmap.org/search?format=json&q=${search_data.result.place_name}`)
-        fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${search_data.result.place_name}.json?limit=1&access_token=${accessToken}`)
-            .then(response => response.json())
-            .then(data => {
-                let features = data.features[0];
-                // let lat;
-                // let lon;
-                // if (data[0].boundingbox != undefined) {
-                //     let boundingbox = data[0].boundingbox;
-                //     let bbox = [[parseFloat(boundingbox[0]), parseFloat(boundingbox[2])], [parseFloat(boundingbox[1]), parseFloat(boundingbox[3])]]
-                //     lat = data[0].lat;
-                //     lon = data[0].lon;
-
-                //     map.fitBounds(bbox);
-                // } else {}
-                map.setView(features.center, 18);
-                // map.jumpTo({
-                //     center: data[0].center,
-                //     zoom: 12,
-                //     pitch: 45,
-                //     bearing: 90
-                // });
-                lat = features.center[1];
-                lon = features.center[0];
-
-                if (marker != undefined) {
-                    map.removeLayer(marker);
-                };
-
-                marker = L.marker([lat, lon]).addTo(map);
-                marker.bindPopup(search_data.result.place_name).openPopup();
-                document.querySelector('#listing-address').value = search_data.result.place_name;
-                // document.querySelector('#mapbox-address').value = search_data.result.place_name;
-                document.getElementById('listing-location').value = lat + ',' + lon;
             });
     });
 }

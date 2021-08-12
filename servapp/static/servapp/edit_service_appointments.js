@@ -1625,29 +1625,37 @@ function submitListing() {
             ids.push(parseInt(service_ids.item(i).value));
         }
 
-        let listing_id = document.getElementById('listing-id').value;
-        let listing_title = document.getElementById('title').value;
-        let listing_type = document.getElementById('listing-type').value;
-        let listing_address = document.getElementById('address').value;
-        let listing_location = document.getElementById('location').value;
-        let listing_description = document.getElementById('description').value;
-
+        let listing_id = document.getElementById('listing-id');
+        let listing_title = document.getElementById('title');
+        // let listing_type = document.getElementById('listing-type').value;
+        let listing_address = document.getElementById('address');
+        let listing_location = document.getElementById('location');
+        let listing_description = document.getElementById('description');
+        let listing_categories = categories.join(", ");
         // Send POST request
         const request = new Request(
             '/edit-listing',
             { headers: { 'X-CSRFToken': csrftoken } }
         );
+
+        // Validations
+        let errors = getListingFormErrors(listing_id, listing_title, listing_categories, listing_address, listing_location, listing_description);
+        if (errors.length > 0) {
+            displayFormErrors(errors);
+            return;
+        }
+
         fetch(request, {
             method: 'POST',
             mode: 'same-origin',
             body: JSON.stringify({
-                id: id,
-                listing_id: listing_id,
-                title: listing_title,
-                listing_type: listing_type,
-                address: listing_address,
-                location: listing_location,
-                description: listing_description,
+                id: id.value,
+                listing_id: listing_id.value,
+                title: listing_title.value,
+                listing_type: listing_categories,
+                address: listing_address.value,
+                location: listing_location.value,
+                description: listing_description.value,
                 service_ids: ids,
                 original_ids: originalIDs,
                 names: service_names,
@@ -1659,7 +1667,7 @@ function submitListing() {
             .then(result => {
                 if (result.message) {
                     // Good input
-                    let url = window.location.origin + "/listing/" + listing_title + "/" + listing_id;
+                    let url = window.location.origin + "/listing/" + listing_title.value + "/" + listing_id.value;
                     document.location.href = url;
                 }
                 if (result.errors) {
@@ -1681,3 +1689,48 @@ function submitListing() {
     });
 }
 
+// Validations
+function displayFormErrors(errors) {
+    let error_container = document.getElementById("errors");
+    error_container.innerHTML = ``;
+    errors.forEach((error) => {
+        let li = document.createElement("li");
+        li.className = "error";
+        li.innerText = error;
+        error_container.appendChild(li);
+    });
+    let br = document.createElement("br");
+    error_container.appendChild(br);
+}
+
+function getListingFormErrors(listing_username, listing_title, listing_categories, listing_address, listing_location, listing_description) {
+    let errors = [];
+    // Check title
+    // if (getListingValidations(listing_username.value, "username")) {
+    //     errors.push(getListingValidations(listing_username.value, "username"))
+    // }
+    if (getListingValidations(listing_title.value, "title")) {
+        errors.push(getListingValidations(listing_title.value, "title"));
+    }
+    if (getListingValidations(listing_categories, "categories", 1000)) {
+        errors.push(getListingValidations(listing_categories, "categories"));
+    }
+    if (getListingValidations(listing_address.value, "address", 1000)) {
+        errors.push(getListingValidations(listing_address.value, "address"));
+    }
+    // Skipping location
+    if (getListingValidations(listing_description.value, "description", "3000")) {
+        errors.push(getListingValidations(listing_description.value, "description", "6000"));
+    }
+    return errors;
+}
+
+function getListingValidations(value, s, len = 114) {
+    let error = null;
+    if (value == "" || value == undefined || value == null) {
+        error = "No " + s + " given";
+    } else if (value.length > len || !/\S/.test(value)) {
+        error = "Invalid " + s;
+    }
+    return error
+}

@@ -177,7 +177,72 @@ function* filter(array, condition1, condition2, maxSize) {
     // }
 }
 
+function addElement(e, input, suggestions, div, type, values, dropdown) {
+    dropdown.remove()
+    let category_text = e.toElement.innerText;
+    let p = document.createElement("p");
+    p.className = type + "-item";
+    p.innerText = category_text;
+    div.appendChild(p);
+    values.push(category_text);
+    let remove = document.createElement("a");
+    remove.className = "remove-item";
+    remove.href = "javascript:;";
+    remove.innerText = "Remove";
+    p.appendChild(remove);
+    let len = document.querySelectorAll('.' + type + '-item').length;
+    if (len < CATEGORY_AMOUNT) {
+        addElementLink(div, type);
+    }
 
+    remove.addEventListener("click", (e) => {
+        console.log(e);
+        p.remove();
+        let index = values.lastIndexOf(category_text);
+        if (index !== -1) {
+            values.splice(index, 1);
+        }
+        if (document.querySelector('.' + type + '-item') == null) {
+            let new_input = createInput(type);
+            let new_suggestions = createSuggestions(type);
+            let new_dropdown = document.createElement("div");
+            new_dropdown.className = "dropdown indent-input";
+            document.querySelector('.' + type + '-link').remove();
+            new_dropdown.appendChild(new_input);
+            new_dropdown.appendChild(new_suggestions);
+            div.appendChild(new_dropdown);
+            setCategories(new_input, new_suggestions, div, new_dropdown);
+        } else if (document.querySelector('.' + type + '-link') == null) {
+            console.log("Add element link");
+            // document.querySelector('.' + type + 'link').remove();
+            addElementLink(div, type);
+        }
+    });
+}
+
+// function removeElement(e) {
+
+// }
+
+function addElementLink(div, type) {
+    let a = document.createElement('a');
+    a.href = "javascript:;";
+    a.className = type + "-link";
+    a.innerText = "Add another " + type;
+    div.appendChild(a);
+    a.addEventListener('click', () => {
+        let input = createInput(type);
+        let sug = createSuggestions(type)
+
+        let dropdown = document.createElement("div");
+        dropdown.className = "dropdown indent-input";
+        div.removeChild(a);
+        div.appendChild(dropdown);
+        dropdown.appendChild(input);
+        dropdown.appendChild(sug);
+        setCategories(input, sug, div, dropdown);
+    });
+}
 
 function createListElement(item) {
     let a = document.createElement("a");
@@ -194,4 +259,26 @@ function focusInput(suggestions_container) {
     } else if (suggestions_container == locationSuggestions) {
         document.getElementById("home-submit").focus();
     }
+}
+
+// For create_listing and edit_listing
+function createInput(type) {
+    let input = document.createElement('input');
+    input.className = "form-control input-group dropdown-toggle";
+    input.id = type;
+    input.type = "text";
+    input.name = type;
+    input.placeholder = type.charAt(0).toUpperCase() + type.substr(1).toLowerCase();
+    input.setAttribute("data-toggle", "dropdown");
+    input.setAttribute("aria-haspopup", "true");
+    input.setAttribute("aria-expanded", "false");
+    return input
+}
+
+function createSuggestions(type) {
+    let sug = document.createElement("div");
+    sug.className = "dropdown-menu";
+    sug.id = type + "-suggestions";
+    sug.setAttribute("role", "menu");
+    return sug;
 }
