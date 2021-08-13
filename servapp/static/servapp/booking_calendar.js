@@ -661,7 +661,7 @@ function loadAppointments() {
     selectedAppointmentButton = undefined;
     selectedAppointment_AM_PM = undefined;
     bookingButton.disabled = true;
-    fetch(`/get_appointments/${listingTitle}/${selectedServiceButton.nextElementSibling.value}/${selectedDay}/${selectedDate}/${selectedMonth}/${selectedYear}`)
+    fetch(`/get_appointments/${listingID}/${selectedServiceButton.nextElementSibling.value}/${selectedDay}/${selectedDate}/${selectedMonth}/${selectedYear}`)
         .then(response => response.json())
         .then(result => {
             let appointment_am = document.getElementById('appointment-am');

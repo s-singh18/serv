@@ -12,7 +12,7 @@
                 <h1 class="home-subtitle">Shopping Local Made Simple</h1>
                 <form class="home-form" method="GET" action="{% url 'search' %}">
                     <div class="form-group input-group dropdown" id="listing-div">
-                        <input class="form-control dropdown-toggle" id="listing-input" type="text" name="listing_type"
+                        <input class="form-control dropdown-toggle" id="listing-input" type="text" name="category"
                             placeholder="Service" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <div class="dropdown-menu" id="listing-suggestions" role="menu">
                         </div>
@@ -47,5 +47,5 @@
 <script src="{% static 'servapp/states.js' %}"></script>
 <script src="{% static 'servapp/services.js' %}"></script>
 <script src="{% static 'servapp/services_list.js' %}"></script>
-<script src="{% static 'servapp/home.js' %}"></script>
+<script src="{% static 'servapp/search.js' %}"></script>
 {% endblock %}

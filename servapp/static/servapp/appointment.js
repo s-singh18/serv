@@ -39,7 +39,7 @@ function clickServiceButton() {
 
 function loadAppointments(service_name) {
     let listing_title = document.getElementById("listing-title").innerText;
-    fetch(`/get_appointments/${listing_title}/${service_name}/${selectedDay}/${selectedDate}/${selectedMonth}/${selectedYear}`)
+    fetch(`/get_appointments/${listingID}/${service_name}/${selectedDay}/${selectedDate}/${selectedMonth}/${selectedYear}`)
     .then(response => response.json())
     .then(result => {
         let appointment_am = document.getElementById('appointment-am');

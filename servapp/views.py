@@ -180,7 +180,7 @@ def profile(request):
 def search(request):
     # Get form fields
     if request.method == "GET":
-        listing_type = request.GET["listing_type"].strip().title()
+        category = request.GET["category"].strip().title()
         location = request.GET["location"].strip().title()
         postcode = request.GET["postcode"].strip().title()
         place = request.GET["place"].strip().title()
@@ -189,7 +189,7 @@ def search(request):
         country = request.GET["country"].strip().title()
 
         # if location and listing type field not filled
-        if location != "" and listing_type != "":
+        if location != "" and category != "":
             if not place and not postcode:
                 # (Old) Get data from Open Street Maps: "https://nominatim.openstreetmap.org/search.php?q=" + location_url + "&polygon_geojson=1&format=json"
                 # (New) Get geojson data from US Census
@@ -239,7 +239,7 @@ def search(request):
                     polygon = GEOSGeometry(polygon_geojson)
                     # Query listings filtering results within searched location
                     listing_list = Listing.objects.get_queryset().filter(
-                        listing_type__icontains=listing_type, location__within=polygon).order_by("-timestamp")
+                        category__icontains=category, location__within=polygon).order_by("-timestamp")
                     # Paginate results
                     page = request.GET.get('page', 1)
                     paginator = Paginator(listing_list, 6)
@@ -251,13 +251,13 @@ def search(request):
                         listings = paginator.page(paginator.num_pages)
                     # Serialize listing results into geojson object
                     listings_geojson = serialize('geojson', listings,
-                                                 fields=('title', 'user', 'listing_type', 'location', 'address', 'description', 'rate', 'timestamp'))
+                                                 fields=('title', 'user', 'category', 'location', 'address', 'description', 'rate', 'timestamp'))
                 else:
                     listings = ''
                     listings_geojson = ''
                     polygon_geojson = ''
                     center = ''
-                    listing_type = listing_type
+                    category = category
                     location = location
                 # Return objects to search.html
                 return render(request, "servapp/search.html",
@@ -265,7 +265,7 @@ def search(request):
                                'listings_geojson': listings_geojson,
                                'polygon_geojson': polygon_geojson,
                                'center': center,
-                               'listing_type': listing_type, 'location': location,
+                               'listing_type': category, 'location': location,
                                'mapbox_access_token': MAPBOX_ACCESS_TOKEN},
                               status=200)
         else:
@@ -403,7 +403,7 @@ def create_listing(request):
 
             # No errors create service
             if not errors:
-                listing = Listing.objects.create(title=listing_title, user=user, listing_type=listing_type,
+                listing = Listing.objects.create(title=listing_title, user=user, category=listing_type,
                                                  location=geos_point, address=listing_address, description=listing_description)
                 listing.save()
                 # Save listing title to session
@@ -597,8 +597,8 @@ def get_services(request, listing_title, username):
 
 
 @csrf_exempt
-def get_appointments(request, listing_title, service_id, day, date, month, year):
-    listing = Listing.objects.get(title=listing_title)
+def get_appointments(request, listing_id, service_id, day, date, month, year):
+    listing = Listing.objects.get(id=listing_id)
     service = Service.objects.get(id=service_id, listing=listing)
     appointment_date = datetime.date(int(year), int(month)+1, int(date))
     # Get bookings for the requested date
