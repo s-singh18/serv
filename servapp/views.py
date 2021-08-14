@@ -182,34 +182,40 @@ def search(request):
     if request.method == "GET":
         category = request.GET["category"].strip().title()
         location = request.GET["location"].strip().title()
-        postcode = request.GET["postcode"].strip().title()
-        place = request.GET["place"].strip().title()
-        district = request.GET["district"].strip().title()
-        region = request.GET["region"].strip().title()
-        country = request.GET["country"].strip().title()
+        bbox = tuple(map(float, request.GET["bbox"].strip().split(',')))
+        center = tuple(map(float, request.GET["center"].strip().split(',')))
 
         # if location and listing type field not filled
-        if location != "" and category != "":
-            if not place and not postcode:
-                # (Old) Get data from Open Street Maps: "https://nominatim.openstreetmap.org/search.php?q=" + location_url + "&polygon_geojson=1&format=json"
-                # (New) Get geojson data from US Census
-                location_url = location.replace(" ", "+")
-                if re.match('\d{5}', location_url):
-                    # Zip codes
-                    api_url = "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/tigerWMS_Current/MapServer/2/query?where=&text=" + location_url + \
-                        "&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&distance=&units=esriSRUnit_Foot&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&havingClause=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&returnExtentOnly=false&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&featureEncoding=esriDefault&f=geojson"
-                else:
-                    # Incorporated places (city, town, village)
-                    api_url = "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/tigerWMS_Current/MapServer/28/query?where=&text=" + location_url + \
-                        "&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&distance=&units=esriSRUnit_Foot&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&havingClause=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&returnExtentOnly=false&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&featureEncoding=esriDefault&f=geojson"
-            elif postcode:
-                api_url = "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/tigerWMS_Current/MapServer/2/query?where=&text=" + postcode + \
-                    "&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&distance=&units=esriSRUnit_Foot&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&havingClause=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&returnExtentOnly=false&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&featureEncoding=esriDefault&f=geojson"
-            elif postcode == "" and place and region:
-                city = place.replace(" ", "+")
-                api_url = "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/tigerWMS_Current/MapServer/28/query?where=" + "STATE=" + region + "+AND+BASENAME+LIKE+%27%25" + city + "%25%27" + \
-                    "&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&distance=&units=esriSRUnit_Foot&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&havingClause=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&returnExtentOnly=false&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&featureEncoding=esriDefault&f=geojson"
-            print(api_url)
+        if location is None and category is None:
+            return HttpResponseRedirect(reverse("home"))
+
+        if bbox and center:
+            print(bbox)
+            print(center)
+            polygon = Polygon.from_bbox(bbox)
+            # Query listings filtering results within searched location
+            listing_list = Listing.objects.get_queryset().filter(
+                category__icontains=category, location__within=polygon).order_by("-timestamp")
+            # Paginate results
+            page = request.GET.get('page', 1)
+            paginator = Paginator(listing_list, 6)
+            try:
+                listings = paginator.page(page)
+            except PageNotAnInteger:
+                listings = paginator.page(1)
+            except EmptyPage:
+                listings = paginator.page(paginator.num_pages)
+            # Serialize listing results into geojson object
+            listings_geojson = serialize('geojson', listings,
+                                         fields=('title', 'user', 'category', 'location', 'address', 'description', 'rate', 'timestamp'))
+        else:
+            # (Old) Get data from Open Street Maps: "https://nominatim.openstreetmap.org/search.php?q=" + location_url + "&polygon_geojson=1&format=json"
+            # (Old) Get geojson data from US Census: "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/tigerWMS_Current/MapServer/2/query?where=&text=" + location_url + \
+            #        "&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&distance=&units=esriSRUnit_Foot&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&havingClause=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&returnExtentOnly=false&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&featureEncoding=esriDefault&f=geojson"
+            # Postcode: "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/tigerWMS_Current/MapServer/2/query?where=&text=" + postcode + \
+            # "&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&distance=&units=esriSRUnit_Foot&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&havingClause=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&returnExtentOnly=false&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&featureEncoding=esriDefault&f=geojson"
+            api_url = "https://api.mapbox.com/geocoding/v5/mapbox.places/" + location.replace(
+                " ", "%20") + ".json?access_token=$" + MAPBOX_ACCESS_TOKEN + "&country=us&language=en&types=place,postcode"
             with urllib.request.urlopen(api_url) as url:
                 # Convert to JSON object
                 data = json.loads(url.read().decode())
@@ -231,45 +237,44 @@ def search(request):
                     else:
                         feature = None
 
-                if feature != None:
-                    center = json.dumps([float(feature['properties']['CENTLON']), float(
-                        feature['properties']['CENTLAT'])])
-                    polygon_geojson = json.dumps(feature['geometry'])
-                    # Convert JSON object to GEO Django object
-                    polygon = GEOSGeometry(polygon_geojson)
-                    # Query listings filtering results within searched location
-                    listing_list = Listing.objects.get_queryset().filter(
-                        category__icontains=category, location__within=polygon).order_by("-timestamp")
-                    # Paginate results
-                    page = request.GET.get('page', 1)
-                    paginator = Paginator(listing_list, 6)
-                    try:
-                        listings = paginator.page(page)
-                    except PageNotAnInteger:
-                        listings = paginator.page(1)
-                    except EmptyPage:
-                        listings = paginator.page(paginator.num_pages)
-                    # Serialize listing results into geojson object
-                    listings_geojson = serialize('geojson', listings,
-                                                 fields=('title', 'user', 'category', 'location', 'address', 'description', 'rate', 'timestamp'))
-                else:
-                    listings = ''
-                    listings_geojson = ''
-                    polygon_geojson = ''
-                    center = ''
-                    category = category
-                    location = location
-                # Return objects to search.html
-                return render(request, "servapp/search.html",
-                              {'listings': listings,
-                               'listings_geojson': listings_geojson,
-                               'polygon_geojson': polygon_geojson,
-                               'center': center,
-                               'listing_type': category, 'location': location,
-                               'mapbox_access_token': MAPBOX_ACCESS_TOKEN},
-                              status=200)
-        else:
-            return HttpResponseRedirect(reverse("home"))
+            if feature != None:
+                center = json.dumps([float(feature['properties']['CENTLON']), float(
+                    feature['properties']['CENTLAT'])])
+                bbox = json.dumps(feature['geometry'])
+                # Convert JSON object to GEO Django object
+                polygon = Polygon.from_bbox(bbox)
+                # Query listings filtering results within searched location
+                listing_list = Listing.objects.get_queryset().filter(
+                    category__icontains=category, location__within=polygon).order_by("-timestamp")
+                # Paginate results
+                page = request.GET.get('page', 1)
+                paginator = Paginator(listing_list, 6)
+                try:
+                    listings = paginator.page(page)
+                except PageNotAnInteger:
+                    listings = paginator.page(1)
+                except EmptyPage:
+                    listings = paginator.page(paginator.num_pages)
+                # Serialize listing results into geojson object
+                listings_geojson = serialize('geojson', listings,
+                                             fields=('title', 'user', 'category', 'location', 'address', 'description', 'rate', 'timestamp'))
+            else:
+                listings = ''
+                listings_geojson = ''
+                bbox = ''
+                center = ''
+                category = category
+                location = location
+        # Return objects to search.html
+        return render(request, "servapp/search.html",
+                      {'listings': listings,
+                       'listings_geojson': listings_geojson,
+                       'bbox': bbox,
+                       'center': center,
+                       'listing_type': category, 'location': location,
+                       'mapbox_access_token': MAPBOX_ACCESS_TOKEN},
+                      status=200)
+    return HttpResponseRedirect(reverse("home"))
 
 
 @csrf_exempt

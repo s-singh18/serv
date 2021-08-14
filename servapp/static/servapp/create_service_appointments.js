@@ -835,7 +835,7 @@ function submitListing() {
 
         let listing_username = document.getElementById('listing-username');
         let listing_title = document.getElementById('listing-title');
-        let listing_type = document.getElementById('listing-type');
+        let listing_category = document.getElementById('listing-category');
         let listing_address = document.getElementById('listing-address');
         let listing_location = document.getElementById('listing-location');
         let listing_description = document.getElementById('listing-description');

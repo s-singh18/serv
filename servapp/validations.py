@@ -2,6 +2,7 @@ import re
 
 from .models import User, Listing, Review, Service
 
+
 class UserValidation():
     def check_registration(self, username, email, password, confirmation):
         errors = []
@@ -27,7 +28,7 @@ class UserValidation():
         else:
             error = None
         return error
-    
+
     def check_email(self, email):
         if re.match("[^@]+@[^@]+\.[^@]+", email) == False:
             error = "Invalid Email"
@@ -59,16 +60,17 @@ class UserValidation():
             error = None
         return error
 
+
 class ListingValidation():
 
-    def check_create_listing(self, title, listing_type, address, description, user_id):
+    def check_create_listing(self, title, category, address, description, user_id):
         error = []
         if self.check_title(title) != None:
             error.append(self.check_title(title))
         if Listing.objects.filter(title=title).exists():
             error.append("Listing with that title already exists")
-        if self.check_type(listing_type) != None:
-            error.append(self.check_type(listing_type))
+        if self.check_type(category) != None:
+            error.append(self.check_type(category))
         if self.check_address(address) != None:
             error.append(self.check_address(address))
         if self.check_description(description) != None:
@@ -77,12 +79,12 @@ class ListingValidation():
             error.append(self.check_unique(user_id))
         return error
 
-    def check_edit_listing(self, title, listing_type, address, description):
+    def check_edit_listing(self, title, category, address, description):
         error = []
         if self.check_title(title) != None:
             error.append(self.check_title(title))
-        if self.check_type(listing_type) != None:
-            error.append(self.check_type(listing_type))
+        if self.check_type(category) != None:
+            error.append(self.check_type(category))
         if self.check_address(address) != None:
             error.append(self.check_address(address))
         if self.check_description(description) != None:
@@ -103,14 +105,14 @@ class ListingValidation():
             error = None
         return error
 
-    def check_type(self, listing_type):
-        if listing_type == "":
+    def check_type(self, category):
+        if category == "":
             error = "No type given"
-        elif len(listing_type) > 114:
+        elif len(category) > 114:
             error = "Invalid listing type"
-        elif re.match("^\w+$", listing_type) == False:
+        elif re.match("^\w+$", category) == False:
             error = "Invalid listing type"
-        elif listing_type.isspace():
+        elif category.isspace():
             error = "Invalid listing type"
         else:
             error = None
@@ -146,6 +148,7 @@ class ListingValidation():
             error = None
         return error
 
+
 class ReviewValidation():
 
     def check_review(self, header, body, listing_id, user_id):
@@ -169,7 +172,7 @@ class ReviewValidation():
         else:
             error = None
         return error
-        
+
     def check_body(self, body):
         if body == "":
             error = "No body given"
@@ -189,7 +192,8 @@ class ReviewValidation():
         else:
             error = None
         return error
-            
+
+
 class ServiceValidation():
 
     def check_create_service(self, name, rate, times):
@@ -202,7 +206,6 @@ class ServiceValidation():
             error.append(self.check_times(times))
         return error
 
-
     def check_edit_service(self, name, rate, times):
         error = []
         if self.check_name(name) != None:
@@ -212,7 +215,6 @@ class ServiceValidation():
         if self.check_times(times) != None:
             error.append(self.check_times(times))
         return error
-
 
     def check_name(self, name):
         if name == "":

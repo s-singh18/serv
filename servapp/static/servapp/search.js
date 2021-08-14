@@ -127,7 +127,7 @@ function setGeocoder() {
                             locationSuggestions.appendChild(li);
                         });
                     } else {
-                        locationSuggestions.innerHTML = `<li class="dropdown-item" role="option"><a class="dropdown-link">No results found for query <b>"${input.value}"</b></a></li>`;
+                        locationSuggestions.innerHTML = `<li class="dropdown-item" role="option"><a class="dropdown-link">No results found for query <b>"${locationInput.value}"</b></a></li>`;
                     }
                 });
         } else {
@@ -154,7 +154,10 @@ function setGeocoder() {
 
 function setSearchParams(feature) {
     console.log(feature);
-    
+    let bbox = document.getElementById("bbox");
+    let center = document.getElementById("center");
+    bbox.value = feature.bbox;
+    center.value = feature.center;
 
 }
 
@@ -270,9 +273,9 @@ function focusInput(suggestions_container) {
 function createInput(type) {
     let input = document.createElement('input');
     input.className = "form-control input-group dropdown-toggle";
-    input.id = type;
+    input.id = "listing_" + type;
     input.type = "text";
-    input.name = type;
+    input.name = "listing_" + type;
     input.placeholder = type.charAt(0).toUpperCase() + type.substr(1).toLowerCase();
     input.setAttribute("data-toggle", "dropdown");
     input.setAttribute("aria-haspopup", "true");

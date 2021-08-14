@@ -20,7 +20,7 @@ var geocoder_address = new MapboxGeocoder({
 });
 
 var categoryDiv = document.getElementById("category-div")
-var category = document.getElementById("category");
+var categoryInput = document.getElementById("listing-category");
 var categorySuggestions = document.getElementById("category-suggestions");
 var categoryDropdown = document.getElementById("category-dropdown");
 var categories = [];
@@ -31,7 +31,7 @@ var addressInput = document.getElementById("listing-address");
 var addressSuggestions = document.getElementById("address-suggestions");
 
 document.addEventListener("DOMContentLoaded", function () {
-    setCategories(category, categorySuggestions, categoryDiv, categoryDropdown);
+    setCategories(categoryInput, categorySuggestions, categoryDiv, categoryDropdown);
     setAddresses(addressInput, addressSuggestions, addressDiv)
     loadMap();
 
