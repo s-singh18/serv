@@ -35,6 +35,8 @@ router = routers.DefaultRouter()
 router.register(r'users', viewsets.UserViewSet)
 router.register(r'listings', viewsets.ListingViewSet)
 router.register(r'reviews', viewsets.ReviewViewSet)
+router.register(r'services', viewsets.ServiceViewSet)
+router.register(r'bookings', viewsets.BookingViewSet)
 # from serv.api import router
 
 handler404 = 'servapp.views.handler404'

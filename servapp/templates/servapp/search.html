@@ -23,47 +23,44 @@
         </div>
 
         {% empty %}
-        <h3 class="no-results">No results found for "{{ listing_type }}" in {{ location }}.</h3>
+        <h3 class="no-results">No results found for "{{ category }}" in {{ location }}.</h3>
 
         {% endfor %}
         {% if listings.has_other_pages %}
-        <div class="text-center">
-            <ul class="pagination">
-                {% if listings.has_previous %}
-                <li class="page-item"><a class="page-link"
-                        href="?listing_type={{ listing_type }}&location={{ location }}&page={{ listings.previous_page_number }}">&laquo;</a>
+        <ul class="pagination">
+            {% if listings.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?category={{ category }}&location={{ location }}&page=1"
+                    aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                    <span class="sr-only">begin</span>
+                </a>
+            </li>
+            {% endif %}
+
+            {% for n in listings.paginator.page_range %}
+            {% if listings.number == n %}
+            <li class="page-item active">
+                <span class="page-link">{{ n }}<span class="sr-only">(current)</span></span>
+            </li>
+            {% elif n > listings.number|add:'-3' and n < listings.number|add:'3' %} <li class="page-item"><a
+                    class="page-link" href="?category={{ category }}&location={{ location }}&page={{ n }}">{{ n }}</a>
                 </li>
-                {% else %}
-                <li class="disabled"><span></span></li>
                 {% endif %}
+                {% endfor %}
 
-                {% if listings.number|add:'-4' > 1 %}
-                <li class="page-item">...</li>
+                {% if listings.has_next %}
+                <li class="page-item">
+                    <a class="page-link"
+                        href="?category={{ category }}&location={{ location }}&page={{ listings.paginator.num_pages }}"
+                        aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                        <span class="sr-only">end</span>
+                    </a>
+                </li>
                 {% endif %}
+        </ul>
 
-                {% for i in listings.paginator.page_range %}
-                {% if listings.number == i %}
-                <li class="page-item active"><span class="page-link">{{ i }} <span
-                            class="sr-only">(current)</span></span></li>
-                {% elif i > listings.number|add:'-5' and i < listings.number|add:'10' %} <li class="page-item"><a
-                        class="page-link"
-                        href="?listing_type={{ listing_type }}&location={{ location }}&page={{ i }}">{{ i }}</a></li>
-                    {% endif %}
-                    {% endfor %}
-
-                    {% if listings.paginator.num_pages > listings.number|add:'4' %}
-                    <li>...</li>
-                    {% endif %}
-
-                    {% if listings.has_next %}
-                    <li class="page-item"><a class="page-link"
-                            href="?listing_type={{ listing_type }}&location={{ location }}&page={{ listings.next_page_number }}">&raquo;</a>
-                    </li>
-                    {% else %}
-                    <li class="disabled"><span></span></li>
-                    {% endif %}
-            </ul>
-        </div>
         {% endif %}
     </div>
 

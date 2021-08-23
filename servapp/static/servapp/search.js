@@ -122,7 +122,6 @@ function setGeocoder() {
                                 locationInput.value = e.toElement.innerText;
                                 locationSuggestions.style.display = "none";
                                 focusInput(locationSuggestions);
-                                setSearchParams(feature)
                             });
                             locationSuggestions.appendChild(li);
                         });
@@ -152,14 +151,6 @@ function setGeocoder() {
     });
 }
 
-function setSearchParams(feature) {
-    console.log(feature);
-    let bbox = document.getElementById("bbox");
-    let center = document.getElementById("center");
-    bbox.value = feature.bbox;
-    center.value = feature.center;
-
-}
 
 function* filter(array, condition1, condition2, maxSize) {
     if (!maxSize || maxSize > array.length) {

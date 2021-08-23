@@ -14,7 +14,7 @@
                 <form class="home-form nav-form" method="GET" action="{% url 'search' %}">
                     <div class="form-group input-group dropdown nav-input">
                         <input class="form-control dropdown-toggle" id="listing-input" type="text" name="category"
-                            placeholder="Service" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            placeholder="Category" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <div class="dropdown-menu" id="listing-suggestions" role="menu">
                         </div>
                     </div>
@@ -24,8 +24,6 @@
                         <div class="dropdown-menu" id="location-suggestions" role="menu">
                         </div>
                     </div>
-                    <input id="center" name="center" type="hidden" value="">
-                    <input id="bbox" name="bbox" type="hidden" value="">
                     <div class="form-group nav-input">
                         <input class="btn btn-primary nav-submit " id="home-submit" type="submit" value="Submit">
                     </div>

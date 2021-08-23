@@ -121,50 +121,31 @@ def logout_view(request):
 
 def register(request):
     if request.method == "POST":
+        username = request.POST["username"]
+        email = request.POST["email"]
+
+        # Ensure password matches confirmation
+        password = request.POST["password"]
+        confirmation = request.POST["confirmation"]
+
+        errors = []
+        errors = user_validation.check_registration(
+            username, email, password, confirmation)
+
+        if errors:
+            return render(request, "servapp/register.html", {'errors': errors})
+        # Attempt to create new user
         try:
-            data = json.loads(request.body)
-            username = data.get("username", "")
-            email = data.get("email", "")
-            password = data.get("password", "")
-            confirmation = data.get("confirmation")
+            user = User.objects.create_user(
+                username=username, email=email, password=password)
+            user.save()
+        except IntegrityError:
+            return render(request, "servapp/register.html", {
+                "message": "Email already taken."
+            })
+        login(request, user)
+        return HttpResponseRedirect(reverse("home"))
 
-            if password != confirmation:
-                return JsonResponse({'error': "Passwords must match"}, status=400)
-            try:
-                user = User.objects.create_user(
-                    username=username, email=email, password=password)
-                user.save()
-            except IntegrityError:
-                return JsonResponse({'error': "Email already taken"}, status=400)
-
-            login(request, user)
-            return JsonResponse({'message': "Account Registered!"}, status=200)
-        except ValueError as err:
-            username = request.POST["username"]
-            email = request.POST["email"]
-
-            # Ensure password matches confirmation
-            password = request.POST["password"]
-            confirmation = request.POST["confirmation"]
-
-            errors = []
-            errors = user_validation.check_registration(
-                username, email, password, confirmation)
-
-            if not errors:
-                # Attempt to create new user
-                try:
-                    user = User.objects.create_user(
-                        username=username, email=email, password=password)
-                    user.save()
-                except IntegrityError:
-                    return render(request, "servapp/register.html", {
-                        "message": "Email already taken."
-                    })
-                login(request, user)
-                return HttpResponseRedirect(reverse("home"))
-            else:
-                return render(request, "servapp/register.html", {'errors': errors})
     else:
         return render(request, "servapp/register.html", {'mapbox_access_token': MAPBOX_ACCESS_TOKEN})
 
@@ -182,23 +163,41 @@ def search(request):
     if request.method == "GET":
         category = request.GET["category"].strip().title()
         location = request.GET["location"].strip().title()
-        bbox = tuple(map(float, request.GET["bbox"].strip().split(',')))
-        center = tuple(map(float, request.GET["center"].strip().split(',')))
-
+        bbox = ""
+        center = ""
         # if location and listing type field not filled
-        if location is None and category is None:
+        if not location or not category:
             return HttpResponseRedirect(reverse("home"))
 
-        if bbox and center:
-            print(bbox)
-            print(center)
+        # (Old) Get data from Open Street Maps: "https://nominatim.openstreetmap.org/search.php?q=" + location_url + "&polygon_geojson=1&format=json"
+        # (Old) Get geojson data from US Census: "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/tigerWMS_Current/MapServer/2/query?where=&text=" + location_url + \
+        #        "&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&distance=&units=esriSRUnit_Foot&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&havingClause=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&returnExtentOnly=false&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&featureEncoding=esriDefault&f=geojson"
+        # Postcode: "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/tigerWMS_Current/MapServer/2/query?where=&text=" + postcode + \
+        # "&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&distance=&units=esriSRUnit_Foot&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&havingClause=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&returnExtentOnly=false&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&featureEncoding=esriDefault&f=geojson"
+        api_url = "https://api.mapbox.com/geocoding/v5/mapbox.places/" + location.replace(
+            " ", "%20") + ".json?access_token=" + MAPBOX_ACCESS_TOKEN + "&country=us&language=en&types=place,postcode"
+        with urllib.request.urlopen(api_url) as url:
+            # Convert to JSON object
+            data = json.loads(url.read().decode())
+            # If there are multiple features returned, find the one with the largest land area(AREALAND)
+            if 'error' in data:
+                features = None
+            else:
+                features = data['features']
+
+        if features != None:
+            # Get first feature
+            place = features[0]
+            bbox = place['bbox']
+            center = place['center']
+            # Convert JSON object to GEO Django object
             polygon = Polygon.from_bbox(bbox)
             # Query listings filtering results within searched location
             listing_list = Listing.objects.get_queryset().filter(
                 category__icontains=category, location__within=polygon).order_by("-timestamp")
             # Paginate results
             page = request.GET.get('page', 1)
-            paginator = Paginator(listing_list, 6)
+            paginator = Paginator(listing_list, 5)
             try:
                 listings = paginator.page(page)
             except PageNotAnInteger:
@@ -209,69 +208,20 @@ def search(request):
             listings_geojson = serialize('geojson', listings,
                                          fields=('title', 'user', 'category', 'location', 'address', 'description', 'rate', 'timestamp'))
         else:
-            # (Old) Get data from Open Street Maps: "https://nominatim.openstreetmap.org/search.php?q=" + location_url + "&polygon_geojson=1&format=json"
-            # (Old) Get geojson data from US Census: "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/tigerWMS_Current/MapServer/2/query?where=&text=" + location_url + \
-            #        "&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&distance=&units=esriSRUnit_Foot&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&havingClause=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&returnExtentOnly=false&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&featureEncoding=esriDefault&f=geojson"
-            # Postcode: "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/tigerWMS_Current/MapServer/2/query?where=&text=" + postcode + \
-            # "&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&distance=&units=esriSRUnit_Foot&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&havingClause=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&returnExtentOnly=false&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&featureEncoding=esriDefault&f=geojson"
-            api_url = "https://api.mapbox.com/geocoding/v5/mapbox.places/" + location.replace(
-                " ", "%20") + ".json?access_token=$" + MAPBOX_ACCESS_TOKEN + "&country=us&language=en&types=place,postcode"
-            with urllib.request.urlopen(api_url) as url:
-                # Convert to JSON object
-                data = json.loads(url.read().decode())
-                # If there are multiple features returned, find the one with the largest land area(AREALAND)
-                print(data)
-                if 'error' in data:
-                    feature = None
-                else:
-                    if len(data['features']) > 1:
-                        max_area = 0
-                        max_index = 0
-                        for i, f in enumerate(data['features']):
-                            if f['properties']['AREALAND'] > max_area:
-                                max_area = f['properties']['AREALAND']
-                                max_index = i
-                        feature = data['features'][max_index]
-                    elif len(data['features']) == 1:
-                        feature = data['features'][0]
-                    else:
-                        feature = None
-
-            if feature != None:
-                center = json.dumps([float(feature['properties']['CENTLON']), float(
-                    feature['properties']['CENTLAT'])])
-                bbox = json.dumps(feature['geometry'])
-                # Convert JSON object to GEO Django object
-                polygon = Polygon.from_bbox(bbox)
-                # Query listings filtering results within searched location
-                listing_list = Listing.objects.get_queryset().filter(
-                    category__icontains=category, location__within=polygon).order_by("-timestamp")
-                # Paginate results
-                page = request.GET.get('page', 1)
-                paginator = Paginator(listing_list, 6)
-                try:
-                    listings = paginator.page(page)
-                except PageNotAnInteger:
-                    listings = paginator.page(1)
-                except EmptyPage:
-                    listings = paginator.page(paginator.num_pages)
-                # Serialize listing results into geojson object
-                listings_geojson = serialize('geojson', listings,
-                                             fields=('title', 'user', 'category', 'location', 'address', 'description', 'rate', 'timestamp'))
-            else:
-                listings = ''
-                listings_geojson = ''
-                bbox = ''
-                center = ''
-                category = category
-                location = location
+            listings = ''
+            listings_geojson = ''
+            bbox = ''
+            center = ''
+            category = category
+            location = location
         # Return objects to search.html
+        print(listings)
         return render(request, "servapp/search.html",
                       {'listings': listings,
                        'listings_geojson': listings_geojson,
                        'bbox': bbox,
                        'center': center,
-                       'listing_type': category, 'location': location,
+                       'category': category, 'location': location,
                        'mapbox_access_token': MAPBOX_ACCESS_TOKEN},
                       status=200)
     return HttpResponseRedirect(reverse("home"))
@@ -287,31 +237,13 @@ def listing(request, title, id):
             '-timestamp').filter(listing=listing).all()
         services = Service.objects.filter(listing=listing).all()
         #
-        if request.method == "POST":
+        if request.method == "POST" and request.user.is_authenticated:
             # Check if user is logged in
-            if request.user.is_authenticated:
-                try:
-                    data = json.loads(request.body)
-                    header = data.get("header", "")
-                    body = data.get("body", "")
-                    user = User.objects.get(id=request.user.id)
-                    errors = review_validation.check_review(
-                        header, body, id, user.id)
-                    if not errors:
-                        Review.objects.create(
-                            header=header, body=body, user=user, listing=listing)
-                        reviews = Review.objects.order_by(
-                            '-timestamp').filter(listing=listing).all()
-                        return JsonResponse({'message': "Review Created"}, status=200)
-                    else:
-                        return JsonResponse({'errors': errors}, status=400)
-
-                except ValueError as err:
-                    header = request.POST["header"]
-                    body = request.POST["body"]
-
+            try:
+                data = json.loads(request.body)
+                header = data.get("header", "")
+                body = data.get("body", "")
                 user = User.objects.get(id=request.user.id)
-                # Check for errors
                 errors = review_validation.check_review(
                     header, body, id, user.id)
                 if not errors:
@@ -319,14 +251,31 @@ def listing(request, title, id):
                         header=header, body=body, user=user, listing=listing)
                     reviews = Review.objects.order_by(
                         '-timestamp').filter(listing=listing).all()
-                render(request, "servapp/listing.html",
-                       {'listing': listing, 'reviews': reviews,
-                        'listing_geojson': data, 'errors': errors,
-                        'services': services,
-                        'mapbox_access_token': MAPBOX_ACCESS_TOKEN},
-                       status=200)
-            else:
-                return HttpResponseRedirect(reverse("login"))
+                    return JsonResponse({'message': "Review Created"}, status=200)
+                else:
+                    return JsonResponse({'errors': errors}, status=400)
+
+            except ValueError as err:
+                header = request.POST["header"]
+                body = request.POST["body"]
+
+            user = User.objects.get(id=request.user.id)
+            # Check for errors
+            errors = review_validation.check_review(
+                header, body, id, user.id)
+            if not errors:
+                Review.objects.create(
+                    header=header, body=body, user=user, listing=listing)
+                reviews = Review.objects.order_by(
+                    '-timestamp').filter(listing=listing).all()
+            render(request, "servapp/listing.html",
+                   {'listing': listing, 'reviews': reviews,
+                    'listing_geojson': data, 'errors': errors,
+                    'services': services,
+                    'mapbox_access_token': MAPBOX_ACCESS_TOKEN},
+                   status=200)
+        else:
+            return HttpResponseRedirect(reverse("login"))
 
     except Listing.DoesNotExist:
         listing = None
