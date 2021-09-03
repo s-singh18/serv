@@ -68,6 +68,7 @@ def login_view(request):
             data = json.loads(request.body)
             email = data.get("email", "")
             password = data.get("password", "")
+            print("Authenticate")
             user = authenticate(request, email=email, password=password)
 
             if user is not None:
@@ -81,8 +82,10 @@ def login_view(request):
                     title = None
                 request.session['listing_id'] = id
                 request.session['listing_title'] = title
+                print("Login Successful")
                 return JsonResponse({'message': "Login Successful!"}, status=200)
             else:
+                print("Invalid Login")
                 return JsonResponse({'error': "Invalid email or password"}, status=400)
 
         except ValueError as err:
@@ -232,63 +235,81 @@ def listing(request, title, id):
     errors = []
     try:
         listing = Listing.objects.get(id=id)
-        data = get_geojson(id)
+        listing_geojson = serialize('geojson', [listing],
+                                    fields=('title', 'user', 'category', 'location', 'address', 'description', 'rate', 'timestamp'))
+        print(listing_geojson)
         reviews = Review.objects.order_by(
             '-timestamp').filter(listing=listing).all()
         services = Service.objects.filter(listing=listing).all()
-        #
-        if request.method == "POST" and request.user.is_authenticated:
+
+    except Listing.DoesNotExist:
+        listing = None
+        reviews = None
+        listing_geojson = None
+        services = None
+
+    return render(request, "servapp/listing.html",
+                  {'listing': listing, 'reviews': reviews,
+                   'listing_geojson': listing_geojson, 'errors': errors,
+                   'services': services,
+                   'mapbox_access_token': MAPBOX_ACCESS_TOKEN},
+                  status=200)
+
+
+@login_required
+def create_review(request):
+    # Write a review
+    if request.method == "POST":
+        if request.user.is_authenticated:
             # Check if user is logged in
             try:
                 data = json.loads(request.body)
                 header = data.get("header", "")
                 body = data.get("body", "")
+                listing_id = data.get("listing_id", "")
+                listing_title = data.get("listing_title", "")
                 user = User.objects.get(id=request.user.id)
+                listing = Listing.objects.get(
+                    id=listing_id, title=listing_title)
                 errors = review_validation.check_review(
-                    header, body, id, user.id)
-                if not errors:
-                    Review.objects.create(
-                        header=header, body=body, user=user, listing=listing)
-                    reviews = Review.objects.order_by(
-                        '-timestamp').filter(listing=listing).all()
-                    return JsonResponse({'message': "Review Created"}, status=200)
-                else:
+                    header, body, listing_id, user.id)
+                if errors:
                     return JsonResponse({'errors': errors}, status=400)
 
-            except ValueError as err:
-                header = request.POST["header"]
-                body = request.POST["body"]
-
-            user = User.objects.get(id=request.user.id)
-            # Check for errors
-            errors = review_validation.check_review(
-                header, body, id, user.id)
-            if not errors:
                 Review.objects.create(
                     header=header, body=body, user=user, listing=listing)
                 reviews = Review.objects.order_by(
                     '-timestamp').filter(listing=listing).all()
-            render(request, "servapp/listing.html",
-                   {'listing': listing, 'reviews': reviews,
-                    'listing_geojson': data, 'errors': errors,
-                    'services': services,
-                    'mapbox_access_token': MAPBOX_ACCESS_TOKEN},
-                   status=200)
+                return JsonResponse({'message': "Review Created"}, status=200)
+
+            except ValueError as err:
+                header = request.POST["header"]
+                body = request.POST["body"]
+                listing_id = request.POST["listing_id"]
+                listing_title = request.POST["listing_title"]
+
+            user = User.objects.get(id=request.user.id)
+            listing = Listing.objects.get(id=listing_id, title=listing_title)
+            services = Service.objects.filter(listing=listing)
+            # Check for errors
+            errors = review_validation.check_review(
+                header, body, id, user.id)
+            if errors:
+                return render(request, "servapp/listing.html",
+                              {'listing': listing, 'reviews': reviews,
+                               'listing_geojson': data, 'errors': errors,
+                               'services': services,
+                               'mapbox_access_token': MAPBOX_ACCESS_TOKEN},
+                              status=200)
+
+            Review.objects.create(
+                header=header, body=body, user=user, listing=listing)
+            reviews = Review.objects.order_by(
+                '-timestamp').filter(listing=listing).all()
+            return HttpResponseRedirect(reverse('listing', args=[listing.title, listing.id]))
+
         else:
             return HttpResponseRedirect(reverse("login"))
-
-    except Listing.DoesNotExist:
-        listing = None
-        reviews = None
-        data = None
-        services = None
-
-    return render(request, "servapp/listing.html",
-                  {'listing': listing, 'reviews': reviews,
-                   'listing_geojson': data, 'errors': errors,
-                   'services': services,
-                   'mapbox_access_token': MAPBOX_ACCESS_TOKEN},
-                  status=200)
 
 
 @login_required

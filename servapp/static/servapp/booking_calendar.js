@@ -36,8 +36,6 @@ let listingTitle = document.getElementById("listing-title").innerText;
 var bookingButton = document.getElementById("booking-button");
 var reviewButton = document.getElementById("review-button");
 
-var reviewHeader = document.getElementById("review-header").value;
-var reviewBody = document.getElementById("review-body").value;
 
 document.addEventListener("DOMContentLoaded", function () {
     clickServiceButton();
@@ -762,15 +760,21 @@ function createReview() {
     reviewButton.setAttribute("data-target", "#exampleModalCenter");
     reviewButton.addEventListener('click', (event) => {
         event.preventDefault();
+        let request_type = "Review";
+        // Check header and body
+        let errors = [];
+        let review_header = document.getElementById("review-header").value;
+        let review_body = document.getElementById("review-body").value;
+        let ch = checkHeader(review_header);
+        let cb = checkBody(review_body);
+        if (ch) errors.push(ch);
+        if (cb) errors.push(cb);
+        if (errors.length > 0) {
+            event.stopPropagation();
+            showErrors(errors)
+        }
         if (document.getElementById('login')) {
-            let request_type = "Review";
-            let errors = reviewValidation();
-            if (errors) {
-                showErrors(errors)
-            } else {
-                loadLoginModal(request_type);
-            }
-
+            loadLoginModal(request_type);
         } else {
             event.stopPropagation();
             sendReviewRequest();
@@ -788,9 +792,12 @@ function loadLoginModal(requestType) {
     let form_errors = document.createElement('form-errors');
     modal_body.appendChild(form_errors);
 
+    let login_form = document.createElement("form");
+    modal_body.appendChild(login_form)
+
     let email_div = document.createElement('div');
     email_div.className = "form-group";
-    modal_body.appendChild(email_div);
+    login_form.appendChild(email_div)
 
     let email_input = document.createElement('input');
     email_input.className = "form-control";
@@ -801,7 +808,7 @@ function loadLoginModal(requestType) {
 
     let password_div = document.createElement('div');
     password_div.className = "form-group";
-    modal_body.appendChild(password_div);
+    login_form.appendChild(password_div);
 
     let password_input = document.createElement('input');
     password_input.className = "form-control";
@@ -819,21 +826,20 @@ function loadLoginModal(requestType) {
     register_link.href = "#";
     register_link.role = "button";
     paragraph.appendChild(register_link);
-    modal_body.appendChild(paragraph);
+    login_form.appendChild(paragraph);
 
-    let modal_footer = document.getElementById('exampleModalFooter');
-    modal_footer.innerHTML = ``;
-    let login_button = document.createElement('button');
+    let login_button = document.createElement('input');
     login_button.className = "btn btn-primary modal-button";
-    login_button.innerText = "Login";
-    modal_footer.appendChild(login_button);
+    login_button.type = "submit";
+    login_button.value = "Login";
+    login_form.appendChild(login_button);
 
     register_link.addEventListener('click', (event) => {
         event.preventDefault();
         loadRegisterModal(requestType);
     });
 
-    login_button.addEventListener('click', () => {
+    login_form.addEventListener('submit', () => {
         let csrf = getCookie('csrftoken')
         let login_request = new Request(
             '/login',
@@ -858,14 +864,17 @@ function loadLoginModal(requestType) {
 
                     form_errors.appendChild(error);
                     form_errors.appendChild(br);
-                    return false;
                 } else {
                     document.getElementById('close-button').click();
                     // Review Request
                     if (requestType == "Review") {
-                        sessionStorage.setItem("reloading", "true");
-                        sessionStorage.setItem("header", reviewHeader)
-                        sessionStorage.setItem("body", reviewBody)
+                        // sessionStorage.setItem("reloading", "true");
+                        // let review_header = document.getElementById("review-header").value;
+                        // let review_body = document.getElementById("review-body").value;
+                        // sessionStorage.setItem("header", review_header)
+                        // sessionStorage.setItem("body", review_body)
+                        // location.reload();
+                        sendReviewRequest();
                         location.reload();
                     }
                     // Booking Request
@@ -887,9 +896,12 @@ function loadRegisterModal(requestType) {
     let form_errors = document.createElement('div');
     modal_body.appendChild(form_errors);
 
+    let register_form = document.createElement("form");
+    modal_body.appendChild(register_form)
+
     let user_div = document.createElement('div');
     user_div.className = "form-group";
-    modal_body.appendChild(user_div);
+    register_form.appendChild(user_div);
 
     let user_input = document.createElement('input');
     user_input.className = "form-control";
@@ -900,7 +912,7 @@ function loadRegisterModal(requestType) {
 
     let email_div = document.createElement('div');
     email_div.className = "form-group";
-    modal_body.appendChild(email_div);
+    register_form.appendChild(email_div);
 
     let email_input = document.createElement('input');
     email_input.className = "form-control";
@@ -911,7 +923,7 @@ function loadRegisterModal(requestType) {
 
     let password_div = document.createElement('div');
     password_div.className = "form-group";
-    modal_body.appendChild(password_div);
+    register_form.appendChild(password_div);
 
     let password_input = document.createElement('input');
     password_input.className = "form-control";
@@ -922,7 +934,7 @@ function loadRegisterModal(requestType) {
 
     let confirm_div = document.createElement('div');
     confirm_div.className = "form-group";
-    modal_body.appendChild(confirm_div);
+    register_form.appendChild(confirm_div);
 
     let confirm_input = document.createElement('input');
     confirm_input.className = "form-control";
@@ -940,14 +952,13 @@ function loadRegisterModal(requestType) {
     login_link.href = "#";
     login_link.role = "button";
     paragraph.appendChild(login_link);
-    modal_body.appendChild(paragraph);
+    register_form.appendChild(paragraph);
 
-    let modal_footer = document.getElementById('exampleModalFooter');
-    modal_footer.innerHTML = ``;
-    let register_button = document.createElement('button');
+    let register_button = document.createElement('input');
     register_button.className = "btn btn-primary modal-button";
-    register_button.innerText = "Register";
-    modal_footer.appendChild(register_button);
+    register_button.type = "submit";
+    register_button.value = "Register";
+    register_form.appendChild(register_button);
 
     login_link.addEventListener('click', (event) => {
         event.preventDefault();
@@ -986,8 +997,10 @@ function loadRegisterModal(requestType) {
                     document.getElementById('close-button').click();
                     if (requestType == "Review") {
                         sessionStorage.setItem("reloading", "true");
-                        sessionStorage.setItem("header", reviewHeader)
-                        sessionStorage.setItem("body", reviewBody)
+                        let review_header = document.getElementById("review-header").value;
+                        let review_body = document.getElementById("review-body").value;
+                        sessionStorage.setItem("header", review_header)
+                        sessionStorage.setItem("body", review_body)
                         location.reload();
                     }
 
@@ -1015,10 +1028,6 @@ function loadSuccessModal() {
     profile_link.innerText = "profile."
     success.appendChild(profile_link);
     modal_body.appendChild(success);
-
-
-    let modal_footer = document.getElementById('exampleModalFooter');
-    modal_footer.innerHTML = ``;
 
     selectedAppointmentButton.remove();
     selectedAppointmentButton = undefined;
@@ -1064,27 +1073,29 @@ function sendBookingRequest() {
 function sendReviewRequest() {
     let csrf = getCookie('csrftoken');
     let errors = reviewValidation();
-    if (errors.length > 0) {
-        let review_body;
-        let review_header;
-        if (sessionStorage.getItem('reloading')) {
-            review_header = sessionStorage.getItem('reviewHeader');
-            review_body = sessionStorage.getItem('reviewBody');
-        } else {
-            review_header = reviewHeader;
-            review_body = reviewBody;
-        }
+    if (errors.length == 0) {
+        let review_header = document.getElementById("review-header").value;
+        let review_body = document.getElementById("review-body").value;
+        // if (sessionStorage.getItem('reloading')) {
+        //     review_header = sessionStorage.getItem('reviewHeader');
+        //     review_body = sessionStorage.getItem('reviewBody');
+        // } else {
+        //     let review_header = document.getElementById("review-header").value;
+        //     let review_body = document.getElementById("review-body").value;
+        // }
         let create_request = new Request(
-            '/listing/' + listingTitle + "/" + listingID,
+            '/create-review',
             { headers: { 'X-CSRFToken': csrf } }
         );
 
-        // Create booking post request
+        // Create review
         fetch(create_request, {
             method: "POST",
             body: JSON.stringify({
                 header: review_header,
                 body: review_body,
+                listing_id: listingID,
+                listing_title: listingTitle,
             }),
         })
             .then(response => response.json())
@@ -1100,14 +1111,19 @@ function sendReviewRequest() {
 
 function reviewValidation() {
     let errors = [];
-    if (checkHeader != undefined) {
-        errors.push(checkHeader);
+    let review_header = document.getElementById("review-header").value;
+    let review_body = document.getElementById("review-body").value;
+    let ch = checkHeader(review_header);
+    let cb = checkBody(review_body);
+    let gr = getReview();
+    if (ch != undefined) {
+        errors.push(ch);
     }
-    if (checkBody != undefined) {
-        errors.push(checkBody);
+    if (cb != undefined) {
+        errors.push(cb);
     }
-    if (getReview != undefined) {
-        errors.push(getReview);
+    if (gr != undefined) {
+        errors.push(gr);
     }
     return errors
 }
@@ -1123,15 +1139,13 @@ function showErrors(errors) {
     });
 }
 
-function checkHeader() {
-    let header = reviewHeader;
-    // body: document.getElementById('review-body').value;
+function checkHeader(header) {
     let error;
     if (header == "") {
         error = "No header given";
     } else if (header.length > 300) {
         error = "Max review header length 300 characters";
-    } else if (header.trim().length) {
+    } else if (header.trim().length == 0) {
         error = "Invalid review header";
     } else {
         error = undefined
@@ -1139,15 +1153,13 @@ function checkHeader() {
     return error
 }
 
-function checkBody() {
-    let body = reviewBody;
-    // body: document.getElementById('review-body').value;
+function checkBody(body) {
     let error;
     if (body == "") {
         error = "No body given";
     } else if (body.length > 300) {
         error = "Max review body length 6000 characters";
-    } else if (body.trim().length) {
+    } else if (body.trim().length == 0) {
         error = "Invalid review body";
     } else {
         error = undefined
@@ -1156,12 +1168,13 @@ function checkBody() {
 }
 
 function getReview() {
-    // Create booking post request
-    fetch(`/get-review/{listingID}`)
+    fetch(`/get-review/${listingID}`)
         .then(response => response.json())
         .then(data => {
             if (data.error) {
                 return data.error
+            } else {
+                return undefined
             }
         });
 }

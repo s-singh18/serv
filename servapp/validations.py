@@ -17,10 +17,10 @@ class UserValidation():
         return errors
 
     def check_username(self, username):
-        if len(username) > 60:
-            error = "Username too long"
-        elif username == "":
+        if not username:
             error = "Username not given"
+        elif len(username) > 60:
+            error = "Username too long"
         elif username.isspace():
             error = "Invalid Username"
         elif re.match("^\w+$", username) == False:
@@ -30,10 +30,10 @@ class UserValidation():
         return error
 
     def check_email(self, email):
-        if re.match("[^@]+@[^@]+\.[^@]+", email) == False:
-            error = "Invalid Email"
-        elif email == "":
+        if not email:
             error = "Email not given"
+        elif re.match("[^@]+@[^@]+\.[^@]+", email) == False:
+            error = "Invalid Email"
         elif email.isspace():
             error = "Invalid Email"
         else:
@@ -43,10 +43,10 @@ class UserValidation():
     def check_password(self, password):
         reg = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!#%*?&]{6,}$"
         match_re = re.search(reg, password)
-        if not match_re:
-            error = "Password must contain a minimum six characters, at least one uppercase character, one lowercase character, one number and one special character."
-        elif password == "":
+        if not password:
             error = "Password not given"
+        elif not match_re:
+            error = "Password must contain a minimum six characters, at least one uppercase character, one lowercase character, one number and one special character."
         elif password.isspace():
             error = "Invalid Password"
         else:
@@ -54,7 +54,7 @@ class UserValidation():
         return error
 
     def check_confirmation(self, password, confirmation):
-        if confirmation != password:
+        if not confirmation or confirmation != password:
             error = "Passwords must match"
         else:
             error = None
@@ -93,7 +93,7 @@ class ListingValidation():
         return error
 
     def check_title(self, title):
-        if title == "":
+        if not title:
             error = "No title given"
         elif len(title) > 114:
             error = "Invalid title"
@@ -106,7 +106,7 @@ class ListingValidation():
         return error
 
     def check_type(self, category):
-        if category == "":
+        if not category:
             error = "No type given"
         elif len(category) > 114:
             error = "Invalid listing type"
@@ -119,7 +119,7 @@ class ListingValidation():
         return error
 
     def check_address(self, address):
-        if address == "":
+        if not address:
             error = "No address given"
         elif re.match("^\w+$", address) == False:
             error = "Invalid address"
@@ -130,7 +130,7 @@ class ListingValidation():
         return error
 
     def check_description(self, description):
-        if description == "":
+        if not description:
             error = "No description given"
         elif len(description) > 6000:
             error = "Invalid description"
@@ -163,7 +163,7 @@ class ReviewValidation():
         return error
 
     def check_header(self, header):
-        if header == "":
+        if not header:
             error = "No header given"
         elif len(header) > 300:
             error = "Max review header length 300 characters"
@@ -174,7 +174,7 @@ class ReviewValidation():
         return error
 
     def check_body(self, body):
-        if body == "":
+        if not body:
             error = "No body given"
         elif len(body) > 6000:
             error = "Max review body length 6000 characters"
@@ -217,7 +217,7 @@ class ServiceValidation():
         return error
 
     def check_name(self, name):
-        if name == "":
+        if not name:
             error = "No name given"
         elif len(name) > 114:
             error = "Invalid name"
@@ -230,7 +230,7 @@ class ServiceValidation():
         return error
 
     def check_rate(self, rate):
-        if rate == "":
+        if not rate:
             error = "No rate given"
         elif len(rate) > 9:
             error = "Invalid rate"
@@ -243,7 +243,7 @@ class ServiceValidation():
         return error
 
     def check_times(self, times):
-        if times == "" or times == "-;-;-;-;-;-;-":
+        if not times:
             error = "No times given"
         elif len(times) > 3000:
             error = "Invalid times"
