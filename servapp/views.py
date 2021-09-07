@@ -179,15 +179,15 @@ def search(request):
         # "&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&distance=&units=esriSRUnit_Foot&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&havingClause=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&returnExtentOnly=false&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&featureEncoding=esriDefault&f=geojson"
         api_url = "https://api.mapbox.com/geocoding/v5/mapbox.places/" + location.replace(
             " ", "%20") + ".json?access_token=" + MAPBOX_ACCESS_TOKEN + "&country=us&language=en&types=place,postcode"
+        features = None
         with urllib.request.urlopen(api_url) as url:
             # Convert to JSON object
             data = json.loads(url.read().decode())
+            print(data)
             # If there are multiple features returned, find the one with the largest land area(AREALAND)
-            if 'error' in data:
-                features = None
-            else:
+            if data['features']:
                 features = data['features']
-
+        # print(features)
         if features != None:
             # Get first feature
             place = features[0]

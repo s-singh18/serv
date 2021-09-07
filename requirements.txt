@@ -6,4 +6,3 @@ pip install djangorestframework-gis
 pip install django-filter
 pip install django-leaflet
 pip install geopy
-
