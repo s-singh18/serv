@@ -247,7 +247,7 @@ function createListElement(item) {
     let a = document.createElement("a");
     a.className = "dropdown-item";
     a.innerText = item;
-    a.href = "javascript:";
+    a.href = "#";
     a.setAttribute("role", "option")
     return a;
 }
@@ -278,6 +278,6 @@ function createSuggestions(type) {
     let sug = document.createElement("div");
     sug.className = "dropdown-menu";
     sug.id = type + "-suggestions";
-    sug.setAttribute("role", "menu");
+    sug.setAttribute("role", "listbox");
     return sug;
 }

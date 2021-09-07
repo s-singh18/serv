@@ -571,9 +571,9 @@ function setUserSelectedDates(day, date, month, year) {
 
 
 function loadUserBookings() {
-    let client_name = document.getElementById("username").value;
+    let client_id = document.getElementById("id").value;
     let client = "True";
-    fetch(`/get_day_bookings/${client_name}/${userSelectedDay}/${userSelectedDate}/${userSelectedMonth}/${userSelectedYear}/${client}`)
+    fetch(`/get_day_bookings/${client_id}/${userSelectedDay}/${userSelectedDate}/${userSelectedMonth}/${userSelectedYear}/${client}`)
     .then(response => response.json())
     .then(result => {
         let times = result.times;

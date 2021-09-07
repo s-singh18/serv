@@ -642,7 +642,7 @@ def create_booking(request):
         return JsonResponse({"error": "ValueError raised."}, status=400)
 
 
-def get_day_bookings(request, id, day, date, month, year, client):
+def get_day_bookings(request, client_id, day, date, month, year, client):
     user = User.objects.get(id=request.user.id)
     appointment_date = datetime.date(int(year), int(month)+1, int(date))
     if client == "True":

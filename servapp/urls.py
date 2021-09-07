@@ -19,7 +19,7 @@ urlpatterns = [
     path("get_appointments/<str:listing_id>/<str:service_id>/<str:day>/<str:date>/<str:month>/<str:year>",
          views.get_appointments, name="get_appointments"),
     path("create_booking", views.create_booking, name="create_booking"),
-    path("get_day_bookings/<str:name>/<str:day>/<str:date>/<str:month>/<str:year>/<str:client>",
+    path("get_day_bookings/<str:client_id>/<str:day>/<str:date>/<str:month>/<str:year>/<str:client>",
          views.get_day_bookings, name="get_day_bookings"),
     path("get-review/<str:listing_id>", views.get_review, name="get_review")
 ]
