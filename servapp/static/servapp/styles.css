@@ -48,15 +48,24 @@ input.btn.btn-primary {
   justify-content: center;
   height: 100%;
   width: 100%;
+
 }
 
 .title-search {
   background-image: url('painted_ladies.png');
   background-size: cover;
-  /* position: absolute; */
+  background-position: center;
+  background-repeat: no-repeat;
+  
+  height: 60vh;
+}
+
+/* .title-search {
+  background-size: cover;
+  position: absolute;
   text-align: center;
   justify-content: center;
-  /* margin: auto; */
+  margin: auto; 
   display: flex;
   width: 75%;
   height: 75%;
@@ -64,8 +73,8 @@ input.btn.btn-primary {
   bottom: 0;
   left: 0;
   right: 0;
-  
-}
+
+} */
 
 #home-image {
   /* position: absolute; */
@@ -110,6 +119,7 @@ input.btn.btn-primary {
   font-weight: bold;
   color: white;
   margin: auto;
+  text-align: center;
 }
 
 .home-form {

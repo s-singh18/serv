@@ -87,13 +87,13 @@ function renderResults(results, input, suggestions_container) {
         suggestions_container.appendChild(item);
         item.addEventListener('click', (e) => {
             // console.log(e)
-            input.value = e.toElement.innerText;
+            input.value = e.currentTarget.outerText;
             suggestions_container.style.display = "none";
             focusInput(suggestions_container);
         });
         item.addEventListener('keypress', (e) => {
             if (e.key == "Enter") {
-                input.value = e.toElement.innerText;
+                input.value = e.currentTarget.outerText;
                 suggestions_container.style.display = "none";
                 focusInput(suggestions_container);
             }
@@ -119,7 +119,7 @@ function setGeocoder() {
                             let place_name = feature.place_name.replace(", United States", "");
                             let li = createListElement(place_name);
                             li.addEventListener("click", (e) => {
-                                locationInput.value = e.toElement.innerText;
+                                locationInput.value = e.currentTarget.outerText;
                                 locationSuggestions.style.display = "none";
                                 focusInput(locationSuggestions);
                             });
@@ -180,7 +180,7 @@ function* filter(array, condition1, condition2, maxSize) {
 
 function addElement(e, input, suggestions, div, type, values, dropdown) {
     dropdown.remove()
-    let category_text = e.toElement.innerText;
+    let category_text = e.currentTarget.outerText;
     let p = document.createElement("p");
     p.className = type + "-item";
     p.innerText = category_text;

@@ -7,7 +7,7 @@
     <div class="listing-page-left container-fluid">
         <div class="listing-view">
             <h1 class="listing-title" id="listing-title">{{ listing.title }}</h1>
-            <h5 class="listing-listing-type">{{ listing.listing_type }}</h4>
+            <h5 class="listing-listing-type">{{ listing.category}}</h4>
                 <p class="listing-description">{{ listing.description }}</p>
                 <input class='form-control' id='listing-geojson' type="hidden" value="{{ listing_geojson }}">
                 <p class="listing-address">{{ listing.address }}</p>
