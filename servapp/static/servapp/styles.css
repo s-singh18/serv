@@ -10,12 +10,21 @@ body {
   font-family: Arial, Helvetica, sans-serif;
   height: 100%;
   margin: 0;
+  display: flex;
+  flex-direction: column;
+  
 }
 
-.footer-fixed-bottom {
-  position: fixed;
-  bottom: 0;
+main {
+  flex-grow: 1;
 }
+
+.footer-static {
+  margin-top: auto;
+  position: relative;
+  bottom: 0; 
+}
+
 .nav-bar {
   background-color: #430281;
 
