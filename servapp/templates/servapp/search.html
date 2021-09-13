@@ -4,69 +4,83 @@
 
 {% block body %}
 
-<div>
-    <div class="listings-view">
-        {% for listing in listings %}
-        <div class="card border-dark mb-3">
-            <div class="card-body">
-                <input class="form-control" id="listing-{{ listing.id }}" type="hidden" value="{{ listing.id }}">
-                <div class="card-title">
-                    <a class="title" href="{% url 'listing' title=listing.title id=listing.id %}">
-                        <h5>{{ listing.title }}</h5>
-                    </a>
-                </div>
-                <div class="card-subtitle">
-                    <h6>{{ listing.user.username }}</h6>
-                </div>
-                <p class="card-text">{{ listing.description }}</p>
-            </div>
-        </div>
-
-        {% empty %}
-        <h3 class="no-results">No results found for "{{ category }}" in {{ location }}.</h3>
-
-        {% endfor %}
-        {% if listings.has_other_pages %}
-        <ul class="pagination">
-            {% if listings.has_previous %}
-            <li class="page-item">
-                <a class="page-link" href="?category={{ category }}&location={{ location }}&page=1"
-                    aria-label="Previous">
-                    <span aria-hidden="true">&laquo;</span>
-                    <span class="sr-only">begin</span>
-                </a>
-            </li>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-6 py-4 px-2 pxl-5">
+            {% if listings %}
+            <h3 class="mb-4">Search results for "{{ category }}" in {{ location }}.</h3>
+            <hr class="my-4">
+                {% for listing in listings %}
+                    <div class="row">
+                        <div class="card border-dark mx-3 mb-3 w-100">
+                            <div class="card-body">
+                                <input class="form-control" id="listing-{{ listing.id }}" type="hidden" value="{{ listing.id }}">
+                                <div class="card-title">
+                                    <a class="title" href="{% url 'listing' title=listing.title id=listing.id %}">
+                                        <h5>{{ listing.title }}</h5>
+                                    </a>
+                                </div>
+                                <div class="card-subtitle">
+                                    <h6>{{ listing.user.username }}</h6>
+                                </div>
+                                <p class="card-text">{{ listing.description }}</p>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+                
+            {% else %}
+                <h3 class="mb-4">No results found for "{{ category }}" in {{ location }}.</h3>
             {% endif %}
 
-            {% for n in listings.paginator.page_range %}
-            {% if listings.number == n %}
-            <li class="page-item active">
-                <span class="page-link">{{ n }}<span class="sr-only">(current)</span></span>
-            </li>
-            {% elif n > listings.number|add:'-3' and n < listings.number|add:'3' %} <li class="page-item"><a
-                    class="page-link" href="?category={{ category }}&location={{ location }}&page={{ n }}">{{ n }}</a>
-                </li>
-                {% endif %}
-                {% endfor %}
+            {% if listings.has_other_pages %}
+            <div class="d-flex justify-content-center">
+                <ul class="pagination">
+                    {% if listings.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?category={{ category }}&location={{ location }}&page=1"
+                            aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                            <span class="sr-only">begin</span>
+                        </a>
+                    </li>
+                    {% endif %}
+        
+                    {% for n in listings.paginator.page_range %}
+                    {% if listings.number == n %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ n }}<span class="sr-only">(current)</span></span>
+                    </li>
+                    {% elif n > listings.number|add:'-3' and n < listings.number|add:'3' %} <li class="page-item"><a
+                            class="page-link" href="?category={{ category }}&location={{ location }}&page={{ n }}">{{ n }}</a>
+                        </li>
+                        {% endif %}
+                        {% endfor %}
+        
+                        {% if listings.has_next %}
+                        <li class="page-item">
+                            <a class="page-link"
+                                href="?category={{ category }}&location={{ location }}&page={{ listings.paginator.num_pages }}"
+                                aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                                <span class="sr-only">end</span>
+                            </a>
+                        </li>
+                        {% endif %}
+                </ul>
+             </div>
+            
+    
+            {% endif %}
+        </div>
+    
+        <!-- Handles map -->
 
-                {% if listings.has_next %}
-                <li class="page-item">
-                    <a class="page-link"
-                        href="?category={{ category }}&location={{ location }}&page={{ listings.paginator.num_pages }}"
-                        aria-label="Next">
-                        <span aria-hidden="true">&raquo;</span>
-                        <span class="sr-only">end</span>
-                    </a>
-                </li>
-                {% endif %}
-        </ul>
-
-        {% endif %}
+        <div class="col-lg-6 px-2 search-map pe-lg-0">
+            <div class="container-fluid" id="search-map" style="height: 100vh; width: 100%;"></div>
+        </div>
     </div>
-
-    <div class="map-view">
-        <div id='map'></div>
-    </div>
+   
 </div>
 
 

@@ -12,6 +12,10 @@ body {
   margin: 0;
 }
 
+.footer-fixed-bottom {
+  position: fixed;
+  bottom: 0;
+}
 .nav-bar {
   background-color: #430281;
 
@@ -945,6 +949,12 @@ footer {
   width: 100%;
 }
 
+.search-map {
+  position: fixed;
+  right: 0;
+  top: auto;
+}
+
 #map {
   margin-top: 72px;
   top: 10px;
@@ -1070,9 +1080,6 @@ footer {
   width: 90%;
 }
 
-.card {
-  margin-right: 6px;
-}
 
 .error404 {
   color: #430281;

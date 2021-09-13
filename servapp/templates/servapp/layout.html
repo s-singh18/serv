@@ -32,30 +32,31 @@
             #map { position: absolute; top: 0px; bottom: 0; width: 50%; height: 90%;border: 3px solid white; }
         </style>
     </head>
-    <body>
+    <body style="padding-top: 72px;">
         <div class="user-map">
             <input class="form-control" type="hidden" name="id" id="id" value="{{ user.id }}">
             <input id='mapbox-access-token' type="hidden" value= "{{ mapbox_access_token }}">
         </div>
         {% block nav %}
         {% endblock %}
+        
+        
+        
 
 
-        <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
-            <p class="col-md-4 mb-0 text-muted">© 2021 Rizrv LLC.</p>
-        
-            <!-- <a href="/" class="col-md-4 d-flex align-items-center justify-content-center mb-3 mb-md-0 me-md-auto link-dark text-decoration-none">
-            <svg class="bi me-2" width="40" height="32"><use xlink:href="#bootstrap"></use></svg>
-            </a>
-        
-            <ul class="nav col-md-4 justify-content-end">
-            <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">Home</a></li>
-            <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">Features</a></li>
-            <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">Pricing</a></li>
-            <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">FAQs</a></li>
-            <li class="nav-item"><a href="#" class="nav-link px-2 text-muted">About</a></li>
-            </ul> -->
+        <footer class="position-relative z-index-10 d-print-none footer-fixed-bottom">
+            <div class="container">
+                <p class="text-sm mb-md-0">© 2021 Rizrv LLC.</p>
+            </div>
         </footer>
+
+        <!-- <nav class="navbar-fixed-bottom" style="height: 10%; border-top: 1px solid #dee2e6;">
+            <div class="container-fluid">
+                <p class="text-muted">© 2021 Rizrv LLC.</p>
+            </div>
+            
+        </nav> -->
+
 
 
 
@@ -76,9 +77,6 @@
          <!-- Enable React frontend -->
         <!-- <script src="{% static 'dist/app.bundle.js' %}"></script> -->
     </body>
-    <!-- <footer>
-        <p class="copywrite">Copywrite © 2021 Rizrv LLC.</p>
-    </footer> -->
 </html>
 
 {% block script %}

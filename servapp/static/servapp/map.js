@@ -21,7 +21,7 @@ function search() {
     }
     console.log(bbox);
     var map = new mapboxgl.Map({
-        container: 'map',
+        container: 'search-map',
         style: 'mapbox://styles/mapbox/streets-v11',
         // center: center,
         bbox: bbox,

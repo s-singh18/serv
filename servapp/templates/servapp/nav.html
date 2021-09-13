@@ -3,73 +3,77 @@
 {% load static %}
 
 {% block nav %}
-<nav class="navbar navbar-expand-md navbar-custom py-3" style="background-color: #430280;">
-    <a class="navbar-brand nav-link" href="{% url 'home' %}">Resrvice</a>
-    <!-- <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button> -->
-    <div class="collapse navbar-collapse nav-container" id="navbarNav">
-        <ul class="navbar-nav mx-auto">
-            <li class="nav-item active nav-search">
-                {% if request.get_full_path != "/" %}
-                    <form class="home-form nav-form" method="GET" action="{% url 'search' %}">
-                        <div class="form-group input-group dropdown nav-input">
-                            <input autocomplete="off" class="form-control dropdown-toggle" id="listing-input" type="text" name="category"
-                                placeholder="Category" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <div class="dropdown-menu" id="listing-suggestions" role="menu">
-                            </div>
-                        </div>
-                        <div class="form-group input-group dropdown nav-input" id="location-div">
-                            <input autocomplete="off" class="form-control dropdown-toggle" id="location-input" type="text" name="location"
-                                placeholder="Location" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <div class="dropdown-menu" id="location-suggestions" role="menu">
-                            </div>
-                        </div>
-                        <div class="form-group nav-input">
-                            <input class="btn btn-primary nav-submit " id="home-submit" type="submit" value="Submit">
-                        </div>
-                    </form>
-                {% endif %}
-            </li>
-        </ul>
-        <div>
-            <ul class="navbar-nav me-auto>
-                {% if user.is_authenticated %}
-                <li class=" nav-item">
-                <a class="nav-link" href="{% url 'profile' %}">{{ user.username }}</a>
-                </li>
-                <li class="nav-item">
-                    {% if request.session.listing_id == None %}
-                    <a class="nav-link" href="{% url 'create_listing' %}">Create Listing</a>
-                    {% else %}
-                    <a class="nav-link"
-                        href="{% url 'listing' title=request.session.listing_title id=request.session.listing_id %}">
-                        {{ request.session.listing_title }}</a>
-                    {% endif %}
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'logout' %}">Logout</a>
-                </li>
-                {% else %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'login' %}">Create Listing</a>
-                </li>
-                <li class="nav-item" id="nav-login">
-                    <a class="nav-link" id="login" href="{% url 'login' %}">Login</a>
-                </li>
-                <li class="nav-item" id="nav-register">
-                    <a class="nav-link" href="{% url 'register' %}">Register</a>
-                </li>
-                {% endif %}
-            </ul>
+<header class="header">
+    <nav class="navbar navbar-expand-md fixed-top shadow navbar-custom py-3" style="background-color: #430280;">
+        <div class="container-fluid">
+            <a class="navbar-brand nav-link" href="{% url 'home' %}">Resrvice</a>
+            <div class="collapse navbar-collapse nav-container" id="navbarNav">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item active nav-search">
+                        {% if request.get_full_path != "/" %}
+                            <form class="home-form nav-form" method="GET" action="{% url 'search' %}">
+                                <div class="form-group input-group dropdown nav-input">
+                                    <input autocomplete="off" class="form-control dropdown-toggle" id="listing-input" type="text" name="category"
+                                        placeholder="Category" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <div class="dropdown-menu" id="listing-suggestions" role="menu">
+                                    </div>
+                                </div>
+                                <div class="form-group input-group dropdown nav-input" id="location-div">
+                                    <input autocomplete="off" class="form-control dropdown-toggle" id="location-input" type="text" name="location"
+                                        placeholder="Location" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <div class="dropdown-menu" id="location-suggestions" role="menu">
+                                    </div>
+                                </div>
+                                <div class="form-group nav-input">
+                                    <input class="btn btn-primary nav-submit " id="home-submit" type="submit" value="Submit">
+                                </div>
+                            </form>
+                        {% endif %}
+                    </li>
+                </ul>
+                <div>
+                    <ul class="navbar-nav me-auto>
+                        {% if user.is_authenticated %}
+                        <li class=" nav-item">
+                        <a class="nav-link" href="{% url 'profile' %}">{{ user.username }}</a>
+                        </li>
+                        <li class="nav-item">
+                            {% if request.session.listing_id == None %}
+                            <a class="nav-link" href="{% url 'create_listing' %}">Create Listing</a>
+                            {% else %}
+                            <a class="nav-link"
+                                href="{% url 'listing' title=request.session.listing_title id=request.session.listing_id %}">
+                                {{ request.session.listing_title }}</a>
+                            {% endif %}
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                        </li>
+                        {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'login' %}">Create Listing</a>
+                        </li>
+                        <li class="nav-item" id="nav-login">
+                            <a class="nav-link" id="login" href="{% url 'login' %}">Login</a>
+                        </li>
+                        <li class="nav-item" id="nav-register">
+                            <a class="nav-link" href="{% url 'register' %}">Register</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
         </div>
-    </div>
-</nav>
+    </nav>
+</header>
+
 
 <script src="{% static 'servapp/states.js' %}"></script>
 <script src="{% static 'servapp/services.js' %}"></script>
 <script src="{% static 'servapp/services_list.js' %}"></script>
-<script src="{% static 'servapp/search.js' %}"></script>
+{% if request.get_full_path != "/" %}
+    <script src="{% static 'servapp/search.js' %}"></script>
+{% endif %}
 <!-- <script src="{% static 'servapp/nav.js' %}"></script> -->
 
 {% block body %}
