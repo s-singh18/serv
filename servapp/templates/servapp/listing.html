@@ -3,161 +3,173 @@
 {% load static %}
 
 {% block body %}
-<div class="listing-page">
-    <div class="listing-page-left container-fluid">
-        <div class="listing-view">
-            <h1 class="listing-title" id="listing-title">{{ listing.title }}</h1>
-            <h5 class="listing-listing-type">{{ listing.category}}</h4>
-                <p class="listing-description">{{ listing.description }}</p>
-                <input class='form-control' id='listing-geojson' type="hidden" value="{{ listing_geojson }}">
-                <p class="listing-address">{{ listing.address }}</p>
-        </div>
-
-        <div class="static-map">
-            <img class="location-map">
-        </div>
-
-        <div class="review-view">
-            <hr>
-            <div class="errors" id="errors">
-                {% for error in errors %}
-                <li class="error">{{ error }}</li>
-                {% empty %}
-                {% endfor %}
+<main role="main" class="container-fluid">
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="text-block">
+                <h1 id="listing-title">{{ listing.title }}</h1>
+                <h5>{{ listing.category }}</h5>   
+                <p class="pb-0">{{ listing.description }}</p>
             </div>
-            <form id='review-form' method="POST" action="{% url 'create_review'%}">
-                {% csrf_token %}
-                <h5>Write a Review</h5>
-                <input class="form-control review-form-element" id="review-header" name="header" placeholder="Header">
-                <textarea class="form-control review-form-element" id="review-body" name="body"
-                    placeholder="Body"></textarea>
-                <input class="form-control listing-owner" id="listing-id" name="listing_id" type="hidden"
-                    value="{{ listing.id }}">
-                <input class="form-control" name="listing_title" type="hidden">
-                <input class="btn btn-primary review-button" type="submit" id="review-button" value="Submit">
-            </form>
-            <hr>
-            <div class="reviews">
+            <div class="text-block">
+                <h4 class="mb-4">Location</h4>
+                <img id="static-map" class="img-fluid" alt="Map">
+                <p class="pt-3">{{ listing.address }}</p>
+            </div>
+            <div class="text-block">
+                <div id="errors">
+                    {% for error in errors %}
+                    <li class="error">{{ error }}</li>
+                    {% empty %}
+                    {% endfor %}
+                </div>
+                <form id='review-form' method="POST" action="{% url 'create_review'%}">
+                    {% csrf_token %}
+                    <h4 class="mb-4">Write a Review</h4>
+                    <div class="form-group">
+                        <input class="form-control review-form-element" id="review-header" name="header" placeholder="Header">
+                        <textarea class="form-control review-form-element " id="review-body" name="body"
+                            placeholder="Body"></textarea>
+                        <input class="form-control listing-owner" id="listing-id" name="listing_id" type="hidden"
+                            value="{{ listing.id }}">
+                        <input class="form-control" name="listing_title" type="hidden">
+                    </div>
+                    <div class="form-group">
+                        <input class="btn btn-primary review-button" type="submit" id="review-button" value="Submit">
+                    </div>
+                    
+                    
+                </form>
+            </div>
+            <div class="text-block border-bottom-0">
+                <h4 class="mb-2">Reviews</h4>
                 {% for review in reviews %}
-                <!-- {% if review.user.username == user.username %}
-                            <a class="edit-link" id="edit-review" href="#">Edit</a>
-                        {% endif %} -->
-                <div class="review" id="review">
-                    <h4 class="review-user" id="review-user">{{ review.user.username }}</h3>
-                        <h5 class="review-header">{{ review.header }}</h6>
-                            <p class="review-body">{{ review.body }}</p>
-                            <hr>
+                <div class="d-flex d-block d-sm-flex review">
+                    <div>
+                        <h5 id="review-user">{{ review.user.username }}</h3>
+                        <h6 class="review-header">{{ review.header }}</h6>
+                        <p class="text-muted text-sm">{{ review.body }}</p>
+                    </div>
+                    
                 </div>
                 {% empty %}
-                <h3 class="review-user">No reviews for {{ listing.title }}</h3>
+                <div class="d-flex d-block d-sm-flex review">
+                    <h3 class="review-user">No reviews for {{ listing.title }}</h3>
+                </div>
                 {% endfor %}
             </div>
             <input id='mapbox-access-token' type="hidden" value="{{ mapbox_access_token }}">
             <input id='map-icon' type="hidden" value="{% static 'servapp/mapbox-icon.png' %}">
         </div>
-    </div>
+        <div class="col-lg-6">
+            {% if listing.user.username == user.username %}
+                <div class="w-100 text-right">
+                    <a class="text-right" id="edit-listing" href="{% url 'edit_listing' %}">Edit</a>
+                </div>
+            {% endif %}
+            <div class="shadow rounded sticky-top accordion-view" id="accordion">
+                <div class="listing-view">
+                    <div class="card">
+                        <div class="card-header" id="listings-header">
+                            <button class="btn btn-link text-left sc-text" id="listings-button" data-toggle="collapse"
+                                data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                Services</button>
+                        </div>
+                        <div id="collapseOne" class="panel-collapse show card-body" aria-labelledby="headingOne">
+                            <div class="form-inline" id="service-button-container">
+                                {% for service in services %}
+                                <div class="service">
+                                    <button type="button" class="btn btn-primary btn-sm service-button"
+                                        id="{{ service.name }}">{{ service.name }} - ${{ service.rate }}</button>
+                                    <input id="service-{{ service.id }}" type="hidden" value="{{ service.id }}">
+                                </div>
+                                {% empty %}
+                                <p>No services</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-    <div class="listing-page-right container-fluid">
-        {% if listing.user.username == user.username %}
-        <a class="edit-link" id="edit-listing" href="{% url 'edit_listing' %}">Edit</a>
-        {% endif %}
-        <div class="accordion-view" id="accordion">
-            <div class="listing-view">
                 <div class="card">
-                    <div class="card-header" id="listings-header">
-                        <button class="btn btn-link text-left sc-text" id="listings-button" data-toggle="collapse"
-                            data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                            Services</button>
-                    </div>
-                    <div id="collapseOne" class="panel-collapse show card-body" aria-labelledby="headingOne">
-                        <div class="form-inline" id="service-button-container">
-                            {% for service in services %}
-                            <div class="service">
-                                <button type="button" class="btn btn-primary btn-sm service-button"
-                                    id="{{ service.name }}">{{ service.name }} - ${{ service.rate }}</button>
-                                <input id="service-{{ service.id }}" type="hidden" value="{{ service.id }}">
+                    <div class="card-header" id="headingTwo">
+                        <h5 class="mb-0">
+                            <div id="header-box">
+                                <button class="btn btn-link text-left sc-text" id="monthAndYear" data-toggle="collapse"
+                                    data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+                                </button>
+                                <form class="form-inline d-flex flex-nowrap" id="month-year">
+                                    <select class="form-control col-sm-6" name="month" id="month" onchange="jump()">
+                                    </select>
+
+                                    <label for="year"></label>
+                                    <select class="form-control col-sm-6" name="year" id="year" onchange="jump()">
+                                    </select>
+                                </form>
+                                <div id="arrow-buttons">
+                                    <button class="btn btn-sm btn-outline-primary py-0 arrow-button" id="previous-button"
+                                        onclick="previous()">
+                                        < </button>
+                                            <button class="btn btn-sm btn-outline-primary py-0 arrow-button"
+                                                id="next-button" onclick="next()">></button>
+                                </div>
                             </div>
-                            {% empty %}
-                            <p>No services</p>
-                            {% endfor %}
-                        </div>
+                        </h5>
                     </div>
-                </div>
-            </div>
 
-            <div class="card">
-                <div class="card-header" id="headingTwo">
-                    <h5 class="mb-0">
-                        <div id="header-box">
-                            <button class="btn btn-link text-left sc-text" id="monthAndYear" data-toggle="collapse"
-                                data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
-                            </button>
-                            <form class="form-inline d-flex flex-nowrap" id="month-year">
-                                <select class="form-control col-sm-6" name="month" id="month" onchange="jump()">
-                                </select>
+                    <div id="collapseTwo" class="panel-collapse collapse" aria-labelledby="headingTwo">
+                        <table class="table table-bordered table-responsive-md" id="calendar">
+                            <thead>
+                                <tr>
+                                    <th>Sun</th>
+                                    <th>Mon</th>
+                                    <th>Tue</th>
+                                    <th>Wed</th>
+                                    <th>Thu</th>
+                                    <th>Fri</th>
+                                    <th>Sat</th>
+                                </tr>
+                            </thead>
 
-                                <label for="year"></label>
-                                <select class="form-control col-sm-6" name="year" id="year" onchange="jump()">
-                                </select>
-                            </form>
-                            <div id="arrow-buttons">
-                                <button class="btn btn-sm btn-outline-primary py-0 arrow-button" id="previous-button"
-                                    onclick="previous()">
-                                    < </button>
-                                        <button class="btn btn-sm btn-outline-primary py-0 arrow-button"
-                                            id="next-button" onclick="next()">></button>
-                            </div>
-                        </div>
-                    </h5>
-                </div>
-
-                <div id="collapseTwo" class="panel-collapse collapse" aria-labelledby="headingTwo">
-                    <table class="table table-bordered table-responsive-md" id="calendar">
-                        <thead>
-                            <tr>
-                                <th>Sun</th>
-                                <th>Mon</th>
-                                <th>Tue</th>
-                                <th>Wed</th>
-                                <th>Thu</th>
-                                <th>Fri</th>
-                                <th>Sat</th>
-                            </tr>
+                            <tbody id="calendar-body">
+                            </tbody>
+                        </table>
+                        <br />
+                    </div>
+                    <table class="table table-bordered table-responsive-md" id="week-calendar">
+                        <thead class="week-head">
                         </thead>
-
-                        <tbody id="calendar-body">
-                        </tbody>
                     </table>
-                    <br />
-                </div>
-                <table class="table table-bordered table-responsive-md" id="week-calendar">
-                    <thead class="week-head">
-                    </thead>
-                </table>
-                <div class="card-body" id="appointment-body">
-                    <h6 class="appointment-header">Appointments:</h6>
-                    <div class="row appointments">
-                        <div class="col left-div">
-                            <p class="centered-paragraph"><u>AM</u></p>
-                            <div class="appointment-div" id="appointment-am">
+                    <div class="card-body" id="appointment-body">
+                        <h6 class="appointment-header">Appointments:</h6>
+                        <div class="row appointments">
+                            <div class="col left-div">
+                                <p class="centered-paragraph"><u>AM</u></p>
+                                <div class="appointment-div" id="appointment-am">
+                                </div>
                             </div>
-                        </div>
-                        <div class="col right-div">
-                            <p class="centered-paragraph"><u>PM</u></p>
-                            <div class="appointment-div" id="appointment-pm">
+                            <div class="col right-div">
+                                <p class="centered-paragraph"><u>PM</u></p>
+                                <div class="appointment-div" id="appointment-pm">
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <hr>
-                <div class="book-container">
-                    <button type="button" class="btn btn-primary btn-lg btn-block book-button" id="booking-button">Book
-                        Now!</button>
+                    <hr>
+                    <div class="book-container">
+                        <button type="button" class="btn btn-primary btn-lg btn-block book-button" id="booking-button">Book
+                            Now!</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+</main>
 
+    <input class='form-control' id='listing-geojson' type="hidden" value="{{ listing_geojson }}">
+
+
+    
     <!-- Modal for login and register -->
     <input id="isAuthenticated" type="hidden" value="{{ request.user.is_authenticated }}">
     <!-- Modal -->

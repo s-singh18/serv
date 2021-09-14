@@ -30,7 +30,8 @@ function listing_page(properties, owner) {
     //   });
     // var staticImageUrl = request.url();
     // document.querySelector('.location-map').src = staticImageUrl;
-    document.querySelector('.static-map').innerHTML = `<img src='https://api.mapbox.com/styles/v1/mapbox/streets-v11/static/pin-s-s+430281(${coordinates[0]},${coordinates[1]})/${coordinates[0]},${coordinates[1]},15,0.00,0.00/500x300?access_token=${mapbox_access_token}'>`;
+    let static_map = document.querySelector('#static-map')
+    static_map.src = `https://api.mapbox.com/styles/v1/mapbox/streets-v11/static/pin-s-s+430281(${coordinates[0]},${coordinates[1]})/${coordinates[0]},${coordinates[1]},15,0.00,0.00/500x300?access_token=${mapbox_access_token}`;
 
     // document.querySelector('.static-map').innerHTML = `<img src='https://api.mapbox.com/styles/v1/mapbox/light-v10/static/url-https%3A%2F%2Fdocs.mapbox.com%2Fapi%2Fimg%2Fcustom-marker.png(${lon},${lat})/${lon},${lat},15/500x300?access_token=${mapbox_access_token}>';`
 

@@ -7,7 +7,7 @@
 html,
 body {
   background-color: whitesmoke;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   height: 100%;
   margin: 0;
   display: flex;
@@ -20,10 +20,12 @@ main {
 }
 
 .footer-static {
-  margin-top: auto;
+  margin-top: 1.5rem;
   position: relative;
   bottom: 0; 
+  background-color: #bbbbbb;
 }
+
 
 .nav-bar {
   background-color: #430281;
@@ -36,6 +38,22 @@ main {
     background-color: #430281;
     margin-right: 2px; 
 } */
+
+.text-block {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(0,0,0,.1);
+}
+
+.review {
+  padding-top: 1rem;
+  border-bottom: 1px solid rgba(0,0,0,.1);
+}
+
+.accordion-view {
+  top: 90px;
+  align-self: flex-start;
+}
 
 .register-link {
   color: #430281;
@@ -127,7 +145,7 @@ input.btn.btn-primary {
 }
 
 .home-subtitle {
-  font-family: "Arial";
+  /* font-family: "Arial"; */
   font-style: normal;
   font-weight: bold;
   color: white;
@@ -473,12 +491,7 @@ footer {
   width: 100%;
 }
 
-.accordion-view {
-  position: -webkit-sticky; /* for Safari */
-  position: sticky;
-  top: 12px;
-  align-self: flex-start;
-}
+
 
 #header-box {
   display: flex;
@@ -802,6 +815,8 @@ footer {
   background-color: white;
 }
 
+
+
 .review-button {
   color: white;
   background-color: #430281;
@@ -875,13 +890,6 @@ footer {
   float: left;
 }
 
-.static-map {
-  width: 100%;
-  float: left;
-  margin-top: 0px;
-  margin-left: 6px;
-  margin-bottom: 15px;
-}
 .review-view {
   width: 100%;
   float: left;
@@ -962,6 +970,12 @@ footer {
   position: fixed;
   right: 0;
   top: auto;
+}
+
+.shadow-left {
+  box-shadow: inset 0.5rem 0 1rem -0.5rem rgb(0 0 0 / 15%);
+  display: block;
+  z-index: 1000;
 }
 
 #map {
@@ -1056,7 +1070,7 @@ footer {
 
 .mapboxgl-popup-content {
   text-align: center;
-  font-family: Arial, Helvetica, sans-serif;
+  /* font-family: Arial, Helvetica, sans-serif; */
 }
 
 .page-view {
